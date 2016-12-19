@@ -2,7 +2,7 @@ var express = require('express');
 var app = express();
 var path = require('path');
 var bodyParser = require('body-parser');
-var decoder = require('./modules/decoder');
+var auth = require('./modules/auth');
 var privateData = require('./routes/private-data');
 var portDecision = process.env.PORT || 5000;
 
@@ -14,7 +14,7 @@ app.use(express.static('public'));
 app.use(bodyParser.json());
 
 // Decodes the token in the request header and attaches the decoded token to req.decodedToken on the request.
-app.use(decoder.token);
+app.use(auth.tokenDecoder);
 
 /* Whatever you do below this is protected by your authentication. */
 
