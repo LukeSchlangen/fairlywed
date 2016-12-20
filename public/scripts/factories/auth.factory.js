@@ -1,5 +1,5 @@
 app.factory("Auth", ["$firebaseAuth",
-  function ($firebaseAuth) {
-    return $firebaseAuth();
-  }
+    function ($firebaseAuth) {
+        return $firebaseAuth();
+    }
 ]);

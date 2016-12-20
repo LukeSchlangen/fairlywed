@@ -22,11 +22,14 @@
   <!-- Angular Application with Authentication -->
   <script src="scripts/client.js"></script>
   <script src="scripts/factories/auth.factory.js"></script>
-  <script src="scripts/controllers/sample.controller.js"></script>
+  <script src="scripts/directives/auth/auth.controller.js"></script>
+  <script src="scripts/directives/auth/auth.directive.js"></script>
+
 </head>
-<div ng-app="sampleApp" ng-controller="SampleCtrl">
-  <span ng-show="firebaseUser">{{ firebaseUser.displayName }}<button ng-click="auth.$signOut()">Sign Out</button></span>
-  <div ng-hide="firebaseUser"><button ng-click="auth.$signInWithPopup('google')">Sign In With Google</button></div>
+<div ng-app="sampleApp">
+
+  <auth></auth>
+
 </div>
 
 </html>
