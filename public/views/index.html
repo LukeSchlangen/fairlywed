@@ -1,10 +1,13 @@
 <!DOCTYPE html>
-<html ng-app="sampleApp">
+<html ng-app="app">
   <head>
     <meta charset="utf-8">
     <title>nodeFire with Authentication</title>
     <!-- AngularJS -->
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
+
+    <!--Angular ui-router-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.3.2/angular-ui-router.js"></script>
 
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/3.6.0/firebase.js"></script>
@@ -17,34 +20,13 @@
 
     <!-- Angular Application with Authentication -->
     <script src="scripts/client.js"></script>
+    <script src="scripts/factories/auth.factory.js"></script>
   </head>
-  <body ng-controller="SampleCtrl as sc">
+  <body ng-controller="AuthController as ac">
     <h1>fairlywed</h1>
     <h2>Finding the perfect wedding photographer can be challenging. We make it simple.</h2>
-    <button ng-click="sc.logIn()">Log In</button>
-    <button ng-click="sc.logOut()">Log Out</button>
-    <div ng-if="sc.secretData.length === 0">Log in to get some secret data.</div>
-    <table ng-if="sc.secretData.length > 0">
-      <thead>
-        <tr>
-          <th>
-            Secrecy Level
-          </th>
-          <th>
-            Secret Message
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr ng-repeat="secret in sc.secretData">
-          <td>
-            {{secret.secrecy_level}}
-          </td>
-          <td>
-            {{secret.secret_text}}
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    user is logged in {{ac.isLoggedIn}}
+    <button ng-click="ac.logIn()">Log In</button>
+    <button ng-click="ac.logOut()">Log Out</button>
   </body>
 </html>
