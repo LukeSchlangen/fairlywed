@@ -57,16 +57,7 @@ AngularFire with token authentication on Node backend server. This branch uses t
   1. Create a new postico database or select one you already use. In `server/modules/database-config.js`, change the connection string, currently `var connectionString = 'postgres://localhost:5432/sigma';`, to match the location of your database.
   2. Copy the queries from the `database.sql` file and run them in postico to create the necessary tables for this project. On the insert query, be sure to add your own name and give yourself a clearance_level from 1 to 5. This will determine what data you can see:
 
-    ```sql
-    INSERT INTO users (email, clearance_level)
-    VALUES ('lukeschlangen@gmail.com', 5),
-    ('youremail@gmail.com', 4), --Your Google Email added here
-    ('yourotheremail@gmail.com', 2), --Your Other Google Email added here
-    ('luke@primeacademy.io', 3);
-    ```
-  Because you have set up google OAuth, you will need to log in with a google account (an email with `@gmail.com` will work great). If you have a second google account, that will make it easy to see the differences for people with differing clearance levels.
-
-8. Run `npm start` to run your application on `localhost:5000`
+8. Run `npm start` to run your application on `localhost:5000`. Because you have set up google OAuth, you will need to log in with a google account (an email with `@gmail.com` will work great). If you have a second google account, that will make it easy to see the differences for people with differing clearance levels.
 
 ## Contributing
 1. The repository is open to contribution from all interested developers. Kindly send us Pull Requests with explanation as to what changes you have done.
@@ -74,4 +65,4 @@ AngularFire with token authentication on Node backend server. This branch uses t
 
 ## License
 
-1. The software is registered under the [MIT License](https://github.com/LukeSchlangen/nodeFire/blob/master/LICENSE.md)
+1. The software is UNLICENSED and is for the sole use of fairlywed.
