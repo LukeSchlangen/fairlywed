@@ -27,7 +27,8 @@ var tokenDecoder = function (req, res, next) {
               if (userSQLIdResult.rowCount === 0) {
                 // If the user is not in the database, this adds them to the database
                 var userEmail = req.decodedToken.email;
-                client.query('INSERT INTO users (firebase_user_id, email) VALUES ($1, $2) RETURNING id', [firebaseUserId, userEmail], function (err, newUserSQLIdResult) {
+                var userName = req.decodedToken.userName;
+                client.query('INSERT INTO users (name, email, firebase_user_id) VALUES ($1, $2, $3) RETURNING id', [userName, userEmail, firebaseUserId], function (err, newUserSQLIdResult) {
                   if (err) {
                     console.log('Error completing new user insert query task', error);
                     res.sendStatus(500);
