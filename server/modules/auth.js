@@ -65,6 +65,7 @@ var tokenDecoder = function (req, res, next) {
   } else {
     // Seems to be hit when chrome makes request for map files
     // Will also be hit when user does not send back an idToken in the header
+    // technically, some of these should return 403 and some should return 404
     res.sendStatus(404);
   }
 }
