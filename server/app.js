@@ -3,7 +3,7 @@ var app = express();
 var path = require('path');
 var bodyParser = require('body-parser');
 var auth = require('./modules/auth');
-var privateData = require('./routes/private-data');
+var userData = require('./routes/user-data');
 var portDecision = process.env.PORT || 5000;
 
 app.get('/', function(req, res){
@@ -19,7 +19,7 @@ app.use(auth.tokenDecoder);
 /* Whatever you do below this is protected by your authentication. */
 
 // This is the route for your secretData. The request gets here after it has been authenticated.
-// app.use("/privateData", privateData);
+app.use("/userData", userData);
 
 app.listen(portDecision, function(){
   console.log("Listening on port: ", portDecision);

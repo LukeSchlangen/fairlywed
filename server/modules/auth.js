@@ -27,25 +27,23 @@ var tokenDecoder = function (req, res, next) {
               if (userSQLIdResult.rowCount === 0) {
                 // If the user is not in the database, this adds them to the database
                 var userEmail = req.decodedToken.email;
-                var userName = req.decodedToken.userName;
+                var userName = req.decodedToken.name;
                 client.query('INSERT INTO users (name, email, firebase_user_id) VALUES ($1, $2, $3) RETURNING id', [userName, userEmail, firebaseUserId], function (err, newUserSQLIdResult) {
                   if (err) {
-                    console.log('Error completing new user insert query task', error);
+                    console.log('Error completing new user insert query task', err);
                     res.sendStatus(500);
                   } else {
                     // this adds the users id from the database to the request
                     req.decodedToken.userSQLId = newUserSQLIdResult.rows[0].id;
                     logger.write(req.decodedToken.userSQLId, "New user created");
-                    // next();
-                    res.sendStatus(501);
+                    next();
                   }
                 });
               } else {
                 // this adds the users id from the database to the request
                 req.decodedToken.userSQLId = userSQLIdResult.rows[0].id;
-                // next();
                 logger.write(req.decodedToken.userSQLId, "Logged in user interaction");
-                res.sendStatus(501);
+                next();
               }
               done();
             });

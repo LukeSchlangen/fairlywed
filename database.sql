@@ -16,7 +16,8 @@ CREATE TABLE logs (
 CREATE TABLE vendors (
 	id SERIAL PRIMARY KEY,
 	location VARCHAR(1000) NOT NULL,
-	name VARCHAR(500) NOT NULL
+	name VARCHAR(500) NOT NULL,
+	is_active BOOLEAN DEFAULT TRUE NOT NULL
 );
 
 CREATE TABLE users_vendors (
@@ -34,7 +35,8 @@ CREATE TABLE subvendors (
 	id SERIAL PRIMARY KEY,
 	name VARCHAR(500),
 	parent_vendor INT NOT NULL REFERENCES vendors,
-	vendor_type INT NOT NULL REFERENCES subvendortypes
+	vendor_type INT NOT NULL REFERENCES subvendortypes,
+	is_active BOOLEAN DEFAULT TRUE NOT NULL
 );
 
 CREATE TABLE clients (
