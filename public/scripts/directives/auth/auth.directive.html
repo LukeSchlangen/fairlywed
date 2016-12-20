@@ -1,2 +1,2 @@
-<span ng-show="firebaseUser">{{ firebaseUser.email }}<button ng-click="auth.$signOut()">Sign Out</button></span>
-<span ng-hide="firebaseUser"><button ng-click="auth.$signInWithPopup('google')">Sign In With Google</button></span>
+<span ng-show="vm.firebaseUser">{{ vm.firebaseUser.email }}<button ng-click="vm.auth.$signOut()">Sign Out</button></span>
+<span ng-hide="vm.firebaseUser"><button ng-click="vm.auth.$signInWithPopup('google')">Sign In With Google</button></span>

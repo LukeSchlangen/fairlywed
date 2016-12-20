@@ -1,10 +1,11 @@
-app.controller("AuthController", ["$scope", "Auth",
-    function ($scope, Auth) {
-        $scope.auth = Auth;
+app.controller("AuthController", ["Auth",
+    function (Auth) {
+        var self = this;
+        self.auth = Auth;
 
         // any time auth state changes, add the user data to scope
-        $scope.auth.$onAuthStateChanged(function (firebaseUser) {
-            $scope.firebaseUser = firebaseUser;
+        self.auth.$onAuthStateChanged(function (firebaseUser) {
+            self.firebaseUser = firebaseUser;
         });
     }
 ]);
