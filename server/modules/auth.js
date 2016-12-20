@@ -1,6 +1,7 @@
 var admin = require("firebase-admin");
 var pg = require('pg');
 var connectionString = require('../modules/database-config');
+var logger = require('./logger');
 
 admin.initializeApp({
   credential: admin.credential.cert("./server/firebase-service-account.json"),
@@ -15,31 +16,34 @@ var tokenDecoder = function (req, res, next) {
     admin.auth().verifyIdToken(req.headers.id_token).then(function (decodedToken) {
       req.decodedToken = decodedToken;
       pg.connect(connectionString, function (err, client, done) {
-        var userEmail = req.decodedToken.email;
-        client.query('SELECT id FROM users WHERE email=$1', [userEmail], function (err, userIdQueryResult) {
+        var firebaseUserId = req.decodedToken.user_id || req.decodedToken.uid;
+        client.query('SELECT id FROM users WHERE firebase_user_id=$1', [firebaseUserId], function (err, userSQLIdResult) {
           done();
           if (err) {
             console.log('Error completing user id query task', err);
             res.sendStatus(500);
           } else {
             pg.connect(connectionString, function (err, client, done) {
-              if (userIdQueryResult.rowCount === 0) {
+              if (userSQLIdResult.rowCount === 0) {
                 // If the user is not in the database, this adds them to the database
-                client.query('INSERT INTO users (email) VALUES ($1) RETURNING id', [userEmail], function (err, newUserIdQueryResult) {
+                var userEmail = req.decodedToken.email;
+                client.query('INSERT INTO users (firebase_user_id, email) VALUES ($1, $2) RETURNING id', [firebaseUserId, userEmail], function (err, newUserSQLIdResult) {
                   if (err) {
                     console.log('Error completing new user insert query task', error);
                     res.sendStatus(500);
                   } else {
                     // this adds the users id from the database to the request
-                    req.decodedToken.userId = newUserIdQueryResult.rows[0].id;
+                    req.decodedToken.userSQLId = newUserSQLIdResult.rows[0].id;
+                    logger.write(req.decodedToken.userSQLId, "New user created");
                     // next();
                     res.sendStatus(501);
                   }
                 });
               } else {
                 // this adds the users id from the database to the request
-                req.decodedToken.userId = userIdQueryResult.rows[0].id;
+                req.decodedToken.userSQLId = userSQLIdResult.rows[0].id;
                 // next();
+                logger.write(req.decodedToken.userSQLId, "Logged in user interaction");
                 res.sendStatus(501);
               }
               done();
