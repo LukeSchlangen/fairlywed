@@ -59,10 +59,6 @@ AngularFire with token authentication on Node backend server. This branch uses t
 
 8. Run `npm start` to run your application on `localhost:5000`. Because you have set up google OAuth, you will need to log in with a google account (an email with `@gmail.com` will work great). If you have a second google account, that will make it easy to see the differences for people with differing clearance levels.
 
-## Contributing
-1. The repository is open to contribution from all interested developers. Kindly send us Pull Requests with explanation as to what changes you have done.
-2. Also, you can write to us by opening an [Issue](https://github.com/LukeSchlangen/nodeFire/issues) and also solve a current issue if possible.
-
 ## License
 
 1. The software is UNLICENSED and is for the sole use of fairlywed.
