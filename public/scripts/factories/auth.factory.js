@@ -1,6 +1,6 @@
 app.factory("Auth", ["$firebaseAuth", "$http",
     function ($firebaseAuth, $http) {
-        auth = $firebaseAuth();
+        var auth = $firebaseAuth();
 
         auth.$onAuthStateChanged(function (firebaseUser) {
             // firebaseUser will be null if not logged in
