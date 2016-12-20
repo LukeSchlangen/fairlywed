@@ -1,32 +1,32 @@
 <!DOCTYPE html>
-<html ng-app="app">
-  <head>
-    <meta charset="utf-8">
-    <title>nodeFire with Authentication</title>
-    <!-- AngularJS -->
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
+<html>
 
-    <!--Angular ui-router-->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.3.2/angular-ui-router.js"></script>
+<head>
+  <meta charset="utf-8">
+  <title>nodeFire with Authentication</title>
+  <!-- AngularJS -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
 
-    <!-- Firebase -->
-    <script src="https://www.gstatic.com/firebasejs/3.6.0/firebase.js"></script>
+  <!--Angular ui-router-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.3.2/angular-ui-router.js"></script>
 
-    <!-- AngularFire -->
-    <script src="https://cdn.firebase.com/libs/angularfire/2.1.0/angularfire.min.js"></script>
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/3.6.0/firebase.js"></script>
 
-    <!-- Firebase Config -->
-    <script src="scripts/config.js"></script>
+  <!-- AngularFire -->
+  <script src="https://cdn.firebase.com/libs/angularfire/2.1.0/angularfire.min.js"></script>
 
-    <!-- Angular Application with Authentication -->
-    <script src="scripts/client.js"></script>
-    <script src="scripts/factories/auth.factory.js"></script>
-  </head>
-  <body ng-controller="AuthController as ac">
-    <h1>fairlywed</h1>
-    <h2>Finding the perfect wedding photographer can be challenging. We make it simple.</h2>
-    user is logged in {{ac.isLoggedIn}}
-    <button ng-click="ac.logIn()">Log In</button>
-    <button ng-click="ac.logOut()">Log Out</button>
-  </body>
+  <!-- Firebase Config -->
+  <script src="scripts/config.js"></script>
+
+  <!-- Angular Application with Authentication -->
+  <script src="scripts/client.js"></script>
+  <script src="scripts/factories/auth.factory.js"></script>
+  <script src="scripts/controllers/sample.controller.js"></script>
+</head>
+<div ng-app="sampleApp" ng-controller="SampleCtrl">
+  <span ng-show="firebaseUser">{{ firebaseUser.displayName }}<button ng-click="auth.$signOut()">Sign Out</button></span>
+  <div ng-hide="firebaseUser"><button ng-click="auth.$signInWithPopup('google')">Sign In With Google</button></div>
+</div>
+
 </html>
