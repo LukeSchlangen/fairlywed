@@ -6,7 +6,6 @@ var connectionString = require('../modules/database-config');
 router.get("/", function(req, res){
   pg.connect(connectionString, function(err, client, done){
     var userId = req.decodedToken.userSQLId;
-    // Check the user's level of permision based on their email
     client.query('SELECT * FROM users WHERE id=$1', [userId], function(err, userDataQueryResult){
       done();
       if(err){

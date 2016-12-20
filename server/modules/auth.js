@@ -33,14 +33,19 @@ var tokenDecoder = function (req, res, next) {
                     console.log('Error completing new user insert query task', err);
                     res.sendStatus(500);
                   } else {
-                    // this adds the users id from the database to the request
+                    // this adds the user's id from the database to the request to simplify future database queries
                     req.decodedToken.userSQLId = newUserSQLIdResult.rows[0].id;
                     logger.write(req.decodedToken.userSQLId, "New user created");
                     next();
                   }
                 });
+              } else if( userSQLIdResult.rowCount > 1 ) {
+                // If there is more than one user with the unique firebase id assigned, there is a major problem
+                console.error("More than one user with firebase_user_id: ", firebaseUserId);
+                res.sendStatus(500);
               } else {
-                // this adds the users id from the database to the request
+                // this else is for users that already exist. This should be the most common path
+                // this adds the user's id from the database to the request to simplify future database queries
                 req.decodedToken.userSQLId = userSQLIdResult.rows[0].id;
                 logger.write(req.decodedToken.userSQLId, "Logged in user interaction");
                 next();
