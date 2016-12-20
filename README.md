@@ -1,12 +1,11 @@
-# nodeFire with SQL Authorization
+# fairlywed with SQL Authorization
 AngularFire with token authentication on Node backend server. This branch uses the pg node module with a postgres database to show an authorization example.
 
-## Get Started with nodeFire
+## Get Started with fairlywed
 1. Run these commands to add the project locally:
   ```shell
-  $ git clone https://github.com/LukeSchlangen/nodeFire
-  $ cd nodeFire
-  $ git checkout sql-authorization
+  $ git clone https://github.com/LukeSchlangen/fairlywed
+  $ cd fairlywed
   $ npm install
   ```
 
