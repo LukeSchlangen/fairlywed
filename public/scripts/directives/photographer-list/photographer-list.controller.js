@@ -5,13 +5,13 @@ app.controller("PhotographerListController", ["Auth", "PhotographerFactory",
         self.photographerFactory = PhotographerFactory;
         self.photographerList = [];
 
-        // any time auth state changes, add the user data to scope
-        // self.auth.$onAuthStateChanged(function (firebaseUser) {
-        //     self.firebaseUser = firebaseUser;
+        // any time auth state changes, return back to default list of photographers
+        self.auth.$onAuthStateChanged(function (firebaseUser) {
+            self.firebaseUser = firebaseUser;
             self.photographerFactory.getPhotographers().then(function(data){
                 self.photographerList = data;
                 console.log('data returned is: ', data);
             })
-        // });
+        });
     }
 ]);
