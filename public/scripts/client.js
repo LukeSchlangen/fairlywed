@@ -17,4 +17,8 @@ app.config(function ($stateProvider, $urlRouterProvider) {
             url: '/videographers',
             templateUrl: 'views/videographers.html'
         })
+        .state('home.djs', {
+            url: '/djs',
+            templateUrl: 'views/djs.html'
+        })
 });
