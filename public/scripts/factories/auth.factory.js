@@ -1,4 +1,4 @@
-app.factory("Auth", ["$firebaseAuth", "$http",
+app.factory("AuthFactory", ["$firebaseAuth", "$http",
     function ($firebaseAuth, $http) {
         var auth = $firebaseAuth();
 

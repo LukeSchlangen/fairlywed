@@ -1,4 +1,4 @@
-app.controller("PhotographerListController", ["Auth", "PhotographerFactory",
+app.controller("PhotographerListController", ["AuthFactory", "PhotographerFactory",
     function (authFactory, PhotographerFactory) {
         var self = this;
         self.auth = authFactory;
