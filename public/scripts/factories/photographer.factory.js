@@ -3,10 +3,7 @@ app.factory("PhotographerFactory", ["$http",
         function getPhotographers() {
             return $http({
                 method: 'GET',
-                url: '/photographerData',
-                headers: {
-                    private_data_requested: false
-                }
+                url: '/photographerData'
             }).then(function (response) {
                 console.log('Photographer factory received data from the server: ', response.data);
                 return response.data;
