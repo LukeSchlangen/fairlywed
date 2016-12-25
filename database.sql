@@ -139,7 +139,8 @@ WHERE (SELECT ST_Distance(
 -- Only Returning photographers (regardless of location)
 SELECT COALESCE(subvendors.name, vendors.name) AS name, 
 packages.name AS package, 
-subvendors_packages.price 
+subvendors_packages.price, 
+subvendors.url_slug AS url 
 FROM subvendors JOIN subvendortypes ON subvendors.vendortype_id = subvendortypes.id 
 JOIN vendors ON vendors.id = subvendors.parent_vendor_id 
 JOIN subvendors_packages ON subvendors.id = subvendors_packages.subvendor_id 
