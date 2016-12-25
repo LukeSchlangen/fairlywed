@@ -1,1 +1,5 @@
 vm.photographerList: {{vm.photographerList}}
+
+<ul>
+    <li ng-repeat="photographer in vm.photographerList.photographers">{{photographer.name}} charges {{photographer.price}} for {{photographer.packageType}}</li>
+</ul>
