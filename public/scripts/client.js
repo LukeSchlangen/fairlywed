@@ -10,12 +10,8 @@ app.config(function ($stateProvider, $urlRouterProvider) {
             templateUrl: 'views/home.html'
         })
         .state('home.photographers', {
-            url: '/photographers',
-            templateUrl: 'views/photographers.html'
-        })
-        .state('home.photographers.search', {
-            url: '/search?package&param1&param2',
-            template: '<h1>new!!!!!!!!!!</h1>',
+            url: '/photographers?package&param1&param2',
+            templateUrl: 'views/photographers.html',
             controller: function ($scope, $stateParams) {
                 $scope.package = $stateParams.package;
                 $scope.param1 = $stateParams.param1;
