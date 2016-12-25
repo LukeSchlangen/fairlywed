@@ -93,6 +93,36 @@ VALUES ('Minnetonka Photography', 1, 1, 'minnetonka-photography', null),
 ('Bloomington Wedding Photography', 3, 1, 'bloomington-wedding-photography', null),
 (null, 3, 2, 'bloomington-videography', null);
 
+-- INSERTING PACKAGES
+INSERT INTO packages (name, vendortype_id)
+VALUES ('Two Photographers: 10 Hours', 1),
+('Two Photographers: 8 Hours', 1),
+('One Photographer: 10 Hours', 1),
+('One Photographer: 8 Hours', 1),
+('One Photographer: 6 Hours', 1),
+('One Photographer: 4 Hours', 1);
+
+
+-- INSERTING PACKAGE PRICES
+INSERT INTO subvendors_packages (subvendor_id, package_id, price)
+VALUES (1, 1, 2000),
+(1, 2, 1800),
+(1, 3, 1600),
+(1, 4, 1400),
+(1, 5, 1200),
+(1, 6, 1000),
+(4, 1, 1900),
+(4, 2, 1800),
+(4, 3, 1700),
+(4, 4, 1600),
+(4, 5, 1500),
+(4, 6, 1400),
+(5, 1, 900),
+(5, 2, 850),
+(5, 3, 750),
+(5, 4, 700),
+(5, 5, 650),
+(5, 6, 600);
 
 -- SAMPLE QUERIES
 
@@ -107,7 +137,11 @@ WHERE (SELECT ST_Distance(
 	)) < (SELECT COALESCE(subvendors.travelDistance, vendors.travelDistance)); -- This query would also need additional AND statements to limit to specific types of vendors, like photographers
 
 -- Only Returning photographers (regardless of location)
-SELECT COALESCE(subvendors.name, vendors.name) AS name 
+SELECT COALESCE(subvendors.name, vendors.name) AS name, 
+packages.name AS package, 
+subvendors_packages.price 
 FROM subvendors JOIN subvendortypes ON subvendors.vendortype_id = subvendortypes.id 
 JOIN vendors ON vendors.id = subvendors.parent_vendor_id 
+JOIN subvendors_packages ON subvendors.id = subvendors_packages.subvendor_id 
+JOIN packages ON subvendors_packages.package_id = packages.id 
 WHERE subvendortypes.name='photographer' LIMIT 10;

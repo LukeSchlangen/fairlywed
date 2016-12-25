@@ -6,10 +6,15 @@ var connectionString = require('../modules/database-config');
 router.get('/', function (req, res) {
   pg.connect(connectionString, function (err, client, done) {
     client.query(
-      'SELECT COALESCE(subvendors.name, vendors.name) AS name ' +
+      'SELECT COALESCE(' +
+      'subvendors.name, vendors.name) AS name, ' +
+      'packages.name AS package, ' +
+      'subvendors_packages.price ' +
       'FROM subvendors JOIN subvendortypes ON subvendors.vendortype_id = subvendortypes.id ' +
-      'JOIN vendors ON vendors.id = subvendors.parent_vendor_id WHERE subvendortypes.name=$1 ' +
-      'LIMIT 10;',
+      'JOIN vendors ON vendors.id = subvendors.parent_vendor_id ' +
+      'JOIN subvendors_packages ON subvendors.id = subvendors_packages.subvendor_id ' +
+      'JOIN packages ON subvendors_packages.package_id = packages.id ' +
+      'WHERE subvendortypes.name=$1 LIMIT 10;',
       ['photographer'],
       function (err, photographerQueryResult) {
         done();
