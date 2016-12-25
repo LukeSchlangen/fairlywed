@@ -107,5 +107,7 @@ WHERE (SELECT ST_Distance(
 	)) < (SELECT COALESCE(subvendors.travelDistance, vendors.travelDistance)); -- This query would also need additional AND statements to limit to specific types of vendors, like photographers
 
 -- Only Returning photographers (regardless of location)
-SELECT COALESCE(subvendors.name, vendors.name) FROM subvendors JOIN subvendortypes ON subvendors.vendortype_id = subvendortypes.id 
-JOIN vendors ON vendors.id = subvendors.parent_vendor_id WHERE subvendortypes.name='photographer' LIMIT 10;
+SELECT COALESCE(subvendors.name, vendors.name) AS name 
+FROM subvendors JOIN subvendortypes ON subvendors.vendortype_id = subvendortypes.id 
+JOIN vendors ON vendors.id = subvendors.parent_vendor_id 
+WHERE subvendortypes.name='photographer' LIMIT 10;
