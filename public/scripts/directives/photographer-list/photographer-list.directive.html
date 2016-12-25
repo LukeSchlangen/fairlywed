@@ -1,5 +1,9 @@
 vm.photographerList: {{vm.photographerList}}
 
+
+<a ui-sref="{ package: 1 }">New (query string)</a>
+
+<div ui-view></div>
 <ul>
     <li ng-repeat="photographer in vm.photographerList.photographers">{{photographer.name}} charges {{photographer.price}} for {{photographer.package}}</li>
 </ul>
