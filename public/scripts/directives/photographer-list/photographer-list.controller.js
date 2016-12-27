@@ -1,17 +1,10 @@
-app.controller("PhotographerListController", ["AuthFactory", "PhotographerFactory",
-    function (authFactory, PhotographerFactory) {
+app.controller("PhotographerListController", ["PhotographerFactory",
+    function (PhotographerFactory) {
         var self = this;
-        self.auth = authFactory;
-        self.photographerFactory = PhotographerFactory;
-        self.photographerList = [];
+        self.photographers = PhotographerFactory.photographers;
 
-        // any time auth state changes, return back to default list of photographers
-        self.auth.$onAuthStateChanged(function (firebaseUser) {
-            self.firebaseUser = firebaseUser;
-            self.photographerFactory.getPhotographers().then(function(data){
-                self.photographerList = data;
-                console.log('data returned is: ', data);
-            })
-        });
+        self.updatePhotographersList = function() {
+            PhotographerFactory.updatePhotographersList();
+        };
     }
 ]);
