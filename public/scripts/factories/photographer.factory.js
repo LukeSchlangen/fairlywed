@@ -1,4 +1,4 @@
-app.factory("PhotographerFactory", ["$interval", "$rootScope", "$q", "$http", function ($interval, $rootScope, $q, $http) {
+app.factory("PhotographerFactory", ["$http", function ($http) {
     return new (function AsyncTest() {
         this.photographers = { list: [] },
             this.updatePhotographersList = function () {
@@ -13,6 +13,5 @@ app.factory("PhotographerFactory", ["$interval", "$rootScope", "$q", "$http", fu
                     console.error('Error retreiving photographer data: ', err);
                 });
             }
-
     })();
 }]);
