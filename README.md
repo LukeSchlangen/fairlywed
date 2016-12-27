@@ -60,7 +60,7 @@ AngularFire with token authentication on Node backend server. This branch uses t
   5. Copy the queries from the `database.sql` file and run them in postico to create the necessary tables for this project. On the insert query, be sure to add your own name and give yourself a clearance_level from 1 to 5. This will determine what data you can see:
 
 8. Run `npm start` to run your application on `localhost:5000`. Because you have set up google OAuth, you will need to log in with a google account (an email with `@gmail.com` will work great). If you have a second google account, that will make it easy to see the differences for people with differing access levels. Most features should be available even without login. Vendor features or client featurea (such as creating a photographer account or purchasing a photographer package) require sign in.
-
+9. For security on your firebase-queue database, be sure to deploy or copy and paste the rules to firebase (stops people from adding any content they choose.
 ## License
 
 1. The software is UNLICENSED and is for the sole use of fairlywed. All other use is strictly prohibited.
