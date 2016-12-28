@@ -5,6 +5,7 @@ var bodyParser = require('body-parser');
 var auth = require('./modules/auth');
 var userData = require('./routes/user-data');
 var photographerData = require('./routes/photographer-data');
+var packageData = require('./routes/package-data');
 var portDecision = process.env.PORT || 5000;
 
 app.get('/', function(req, res){
@@ -15,6 +16,7 @@ app.use(express.static('public'));
 app.use(bodyParser.json());
 
 app.use("/photographerData", photographerData);
+app.use("/packageData", packageData);
 
 // Decodes the token in the request header and attaches the decoded token to req.decodedToken on the request.
 app.use(auth.tokenDecoder);

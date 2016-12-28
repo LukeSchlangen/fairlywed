@@ -23,7 +23,7 @@ router.get('/', function (req, res) {
       '		(CAST(ST_SetSRID(ST_Point($3, $4),4326) As geography))' +
       '	)) < (SELECT COALESCE(subvendors.travelDistance, vendors.travelDistance)) ' +
       'LIMIT 10;',
-      [ searchObject.vendorType, 'Two Photographers: 8 Hours', searchObject.longitude, searchObject.latitude],
+      [ searchObject.vendorType, searchObject.package, searchObject.longitude, searchObject.latitude],
       function (err, photographerQueryResult) {
         done();
         if (err) {
