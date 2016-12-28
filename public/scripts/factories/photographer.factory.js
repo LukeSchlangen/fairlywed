@@ -1,7 +1,7 @@
 app.factory("PhotographerFactory", ["$http", function ($http) {
-    return new (function AsyncTest() {
-        this.photographers = { list: [] };
-        this.updatePhotographersList = function () {
+    return {
+        photographers : { list: [] },
+        updatePhotographersList : function () {
             var self = this;
             $http({
                 method: 'GET',
@@ -13,5 +13,5 @@ app.factory("PhotographerFactory", ["$http", function ($http) {
                 console.error('Error retreiving photographer data: ', err);
             });
         }
-    })();
+    };
 }]);
