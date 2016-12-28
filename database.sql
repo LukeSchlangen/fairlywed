@@ -145,4 +145,24 @@ FROM subvendors JOIN subvendortypes ON subvendors.vendortype_id = subvendortypes
 JOIN vendors ON vendors.id = subvendors.parent_vendor_id 
 JOIN subvendors_packages ON subvendors.id = subvendors_packages.subvendor_id 
 JOIN packages ON subvendors_packages.package_id = packages.id 
-WHERE subvendortypes.name='photographer' LIMIT 10;
+WHERE subvendortypes.name='photographer' 
+AND packages.name='Two Photographers: 8 Hours' 
+LIMIT 10;
+
+-- Only Returning photographers that service a given area
+SELECT COALESCE(subvendors.name, vendors.name) AS name, 
+packages.name AS package, 
+subvendors_packages.price, 
+subvendors.url_slug AS url, 
+ST_Distance((SELECT COALESCE(subvendors.location, vendors.location)), CAST(ST_SetSRID(ST_Point(-93.4708, 44.8547),4326) As geography)) AS distance 
+FROM subvendors JOIN subvendortypes ON subvendors.vendortype_id = subvendortypes.id 
+JOIN vendors ON vendors.id = subvendors.parent_vendor_id 
+JOIN subvendors_packages ON subvendors.id = subvendors_packages.subvendor_id 
+JOIN packages ON subvendors_packages.package_id = packages.id 
+WHERE subvendortypes.name='photographer' 
+AND packages.name='Two Photographers: 8 Hours' 
+AND (SELECT ST_Distance(
+		(SELECT COALESCE(subvendors.location, vendors.location)),
+		(CAST(ST_SetSRID(ST_Point(-93.4708, 44.8547),4326) As geography))
+	)) < (SELECT COALESCE(subvendors.travelDistance, vendors.travelDistance))
+LIMIT 10;

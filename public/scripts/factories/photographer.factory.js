@@ -1,11 +1,13 @@
 app.factory("PhotographerFactory", ["$http", function ($http) {
     return {
         photographers : { list: [] },
-        updatePhotographersList : function () {
+        updatePhotographersList : function (searchObject) {
             var self = this;
+            searchObject.vendorType = 'photographer'
             $http({
                 method: 'GET',
-                url: '/photographerData'
+                url: '/photographerData',
+                params: { search: searchObject }
             }).then(function (response) {
                 console.log('Photographer factory received data from the server: ', response.data);
                 self.photographers.list = response.data;
