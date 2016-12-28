@@ -14,8 +14,8 @@ router.get('/', function (req, res) {
       'JOIN vendors ON vendors.id = subvendors.parent_vendor_id ' +
       'JOIN subvendors_packages ON subvendors.id = subvendors_packages.subvendor_id ' +
       'JOIN packages ON subvendors_packages.package_id = packages.id ' +
-      'WHERE subvendortypes.name=$1 LIMIT 10;',
-      ['photographer'],
+      'WHERE subvendortypes.name=$1 LIMIT $2;',
+      ['photographer', Math.floor(Math.random() * 11) + 1 ],
       function (err, photographerQueryResult) {
         done();
         if (err) {
