@@ -11,11 +11,11 @@ app.factory("PhotographerFactory", ["$http", function ($http) {
         searchObject.vendorType = 'photographer'
         $http({
             method: 'GET',
-            url: '/photographerData',
+            url: '/vendorData',
             params: { search: searchObject }
         }).then(function (response) {
             console.log('Photographer factory received photographer data from the server: ', response.data);
-            self.photographers.list = response.data.photographers;
+            self.photographers.list = response.data.vendors;
         }).catch(function (err) {
             console.error('Error retreiving photographer data: ', err);
         });

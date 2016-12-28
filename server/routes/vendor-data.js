@@ -24,13 +24,13 @@ router.get('/', function (req, res) {
       '	)) < (SELECT COALESCE(subvendors.travelDistance, vendors.travelDistance)) ' +
       'LIMIT 10;',
       [ searchObject.vendorType, searchObject.package, searchObject.longitude, searchObject.latitude],
-      function (err, photographerQueryResult) {
+      function (err, vendorQueryResult) {
         done();
         if (err) {
           console.log('Error user data root GET SQL query task', err);
           res.sendStatus(500);
         } else {
-          res.send({ photographers: photographerQueryResult.rows });
+          res.send({ vendors: vendorQueryResult.rows });
         }
       });
   });
