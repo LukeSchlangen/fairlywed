@@ -8,7 +8,10 @@ app.controller("PhotographerSearchController", ["PhotographerFactory", "$scope",
         };
         self.initialize = function() {
             var input = document.getElementById('searchTextField');
-            var autocomplete = new google.maps.places.Autocomplete(input);
+            var autocomplete = new google.maps.places.Autocomplete(input, {
+              types: ['(cities)'],
+              componentRestrictions: {'country': 'us'}
+            });
             console.log("Initializing google maps");
             google.maps.event.addListener(autocomplete, 'place_changed', function () {
                 var place = autocomplete.getPlace();
