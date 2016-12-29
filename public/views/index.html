@@ -26,18 +26,23 @@
   <script src="scripts/factories/auth.factory.js"></script>
   <script src="scripts/factories/photographer.factory.js"></script>
 
+  <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyBnVkpgWUFimXA6igDvgMCKN1GFBkf1wFI&libraries=places" type="text/javascript"></script>
+
   <!-- Angular Controllers - Should have a matching directive -->
   <script src="scripts/directives/auth/auth.controller.js"></script>
+  <script src="scripts/directives/photographer-search/photographer-search.controller.js"></script>
   <script src="scripts/directives/photographer-list/photographer-list.controller.js"></script>
 
   <!-- Angular Directives - Should have a matching controller -->
   <script src="scripts/directives/auth/auth.directive.js"></script>
+  <script src="scripts/directives/photographer-search/photographer-search.directive.js"></script>
   <script src="scripts/directives/photographer-list/photographer-list.directive.js"></script>
 
 </head>
 <div ng-app="sampleApp">
 
   <auth></auth>
+  <location-search></location-search>
   <div ui-view></div>
 
 </div>
