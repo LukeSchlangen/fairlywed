@@ -1,9 +1,12 @@
 <label for="package">Packages</label>
 <select ng-options="package for package in vm.packages.list" ng-model="vm.search.package" ng-change="vm.updatePhotographersList()"></select>
-<label for="latitude">Latitude</label>
+<br>
+<label for="location">Location - Where's the wedding?</label>
+<input id="searchTextField" type="text" size="50" placeholder="City or Venue Address" autocomplete="on" runat="server" ng-init="vm.initialize()" name="location"/> 
+<!--<label for="latitude">Latitude</label>
 <input type="text" name="latitude" ng-model="vm.search.latitude" placeholder="44.9212">
 <label for="longitude">Longitude</label>
-<input type="text" name="longitude" ng-model="vm.search.longitude" placeholder="-93.4687">
-<button ng-click="vm.updatePhotographersList()">Update photographerList test</button>
+<input type="text" name="longitude" ng-model="vm.search.longitude" placeholder="-93.4687">-->
+<!--<button ng-click="vm.updatePhotographersList()">Update photographerList test</button>-->
 <br>
 vm.search: {{vm.search}}
