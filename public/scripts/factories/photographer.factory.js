@@ -16,7 +16,7 @@ app.factory("PhotographerFactory", ["$http", "$stateParams", "$state", function 
     updatePackagesList();
 
     function updatePhotographersList() {
-        self.search.parameters.vendorType = 'photographer'
+        self.search.parameters.vendorType = 'photographer';
         $http({
             method: 'GET',
             url: '/vendorData',
@@ -24,7 +24,7 @@ app.factory("PhotographerFactory", ["$http", "$stateParams", "$state", function 
         }).then(function (response) {
             var newStateParameters = angular.copy(self.search.parameters);
             newStateParameters.package = self.search.parameters.package.id;
-            $state.transitionTo('home.photographers', newStateParameters, { notify: false });
+            $state.transitionTo('home.photographers', newStateParameters);
             console.log('Photographer factory received photographer data from the server: ', response.data);
             self.photographers.list = response.data.vendors;
         }).catch(function (err) {
@@ -39,7 +39,7 @@ app.factory("PhotographerFactory", ["$http", "$stateParams", "$state", function 
             params: { vendorType: 'photographer' }
         }).then(function (response) {
             console.log('Photographer factory received packages data from the server: ', response.data);
-            var currentPackageArray = response.data.packages.filter(function( package ) {
+            var currentPackageArray = response.data.packages.filter(function (package) {
                 return package.id == $stateParams.package;
             });
             self.search.parameters.package = currentPackageArray[0];
