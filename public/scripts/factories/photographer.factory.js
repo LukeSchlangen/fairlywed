@@ -1,4 +1,4 @@
-app.factory("PhotographerFactory", ["$http", "$stateParams", function ($http, $stateParams) {
+app.factory("PhotographerFactory", ["$http", "$stateParams", "$state", function ($http, $stateParams, $state) {
 
     console.log('photographer factory logging $stateParams: ', $stateParams);
 
@@ -22,6 +22,9 @@ app.factory("PhotographerFactory", ["$http", "$stateParams", function ($http, $s
             url: '/vendorData',
             params: { search: self.search.parameters }
         }).then(function (response) {
+            var newStateParameters = angular.copy(self.search.parameters);
+            newStateParameters.package = self.search.parameters.package.id;
+            $state.transitionTo('home.photographers', newStateParameters, { notify: false });
             console.log('Photographer factory received photographer data from the server: ', response.data);
             self.photographers.list = response.data.vendors;
         }).catch(function (err) {
