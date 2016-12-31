@@ -7,7 +7,7 @@ router.get('/', function (req, res) {
     var vendorType = req.query.vendorType;
     pg.connect(connectionString, function (err, client, done) {
         client.query(
-            'SELECT packages.name ' +
+            'SELECT packages.id, packages.name ' +
             'FROM packages ' +
             'JOIN subvendortypes ON packages.vendortype_id = subvendortypes.id ' +
             'WHERE subvendortypes.name = $1;',

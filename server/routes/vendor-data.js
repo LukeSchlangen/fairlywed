@@ -17,13 +17,13 @@ router.get('/', function (req, res) {
       'JOIN subvendors_packages ON subvendors.id = subvendors_packages.subvendor_id ' +
       'JOIN packages ON subvendors_packages.package_id = packages.id ' +
       'WHERE subvendortypes.name=$1 ' +
-      'AND packages.name=$2 ' +
+      'AND packages.id=$2 ' +
       'AND (SELECT ST_Distance(' +
       '		(SELECT COALESCE(subvendors.location, vendors.location)),' +
       '		(CAST(ST_SetSRID(ST_Point($3, $4),4326) As geography))' +
       '	)) < (SELECT COALESCE(subvendors.travelDistance, vendors.travelDistance)) ' +
       'LIMIT 10;',
-      [ searchObject.vendorType, searchObject.package, searchObject.longitude, searchObject.latitude],
+      [ searchObject.vendorType, searchObject.package.id, searchObject.longitude, searchObject.latitude],
       function (err, vendorQueryResult) {
         done();
         if (err) {
