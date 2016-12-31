@@ -10,12 +10,13 @@ app.config(function ($stateProvider, $urlRouterProvider) {
             templateUrl: 'views/home.html'
         })
         .state('home.photographers', {
-            url: '/photographers?package&param1&param2',
+            url: '/photographers?package&location&longitude&latitude',
             templateUrl: 'views/photographers.html',
             controller: function ($scope, $stateParams) {
                 $scope.package = $stateParams.package;
-                $scope.param1 = $stateParams.param1;
-                $scope.param2 = $stateParams.param2;
+                $scope.location = $stateParams.location;
+                $scope.longitude = $stateParams.longitude;
+                $scope.latitude = $stateParams.latitude;
                 console.log('$stateParams: ', $stateParams);
             }
         })
