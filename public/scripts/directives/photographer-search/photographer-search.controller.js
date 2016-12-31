@@ -17,6 +17,7 @@ app.controller("PhotographerSearchController", ["PhotographerFactory", "$scope",
                 var place = autocomplete.getPlace();
                 self.search.parameters.latitude = place.geometry.location.lat();
                 self.search.parameters.longitude = place.geometry.location.lng();
+                self.search.parameters.location = place.formatted_address;
                 self.updatePhotographersList();
             });
         }
