@@ -1,7 +1,7 @@
 app.controller("PhotographerSearchController", ["PhotographerFactory", "$scope", 
     function (PhotographerFactory, $scope) {
         var self = this;
-        PhotographerFactory.updatePhotographersList()
+        PhotographerFactory.updatePhotographersList() // required to add the parameters back to url on return to view
         self.search = PhotographerFactory.search;
         self.packages = PhotographerFactory.packages;
         self.updatePhotographersList = function () {
