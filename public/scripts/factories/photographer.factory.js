@@ -9,7 +9,7 @@ app.factory("PhotographerFactory", ["$http", "$stateParams", "$state", function 
     self.search.parameters.location = $stateParams.location;
     self.search.parameters.longitude = $stateParams.longitude;
     self.search.parameters.latitude = $stateParams.latitude;
-    self.search.parameters.package.id = $stateParams.package;
+    self.search.parameters.package.id = $stateParams.package ? $stateParams.package : 2;
     self.packages = { list: [] };
     self.photographers = { list: [] };
     updatePhotographersList();
