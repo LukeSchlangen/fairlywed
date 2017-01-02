@@ -1,6 +1,7 @@
 app.controller("PhotographerSearchController", ["PhotographerFactory", "$scope", 
     function (PhotographerFactory, $scope) {
         var self = this;
+        PhotographerFactory.updatePhotographersList()
         self.search = PhotographerFactory.search;
         self.packages = PhotographerFactory.packages;
         self.updatePhotographersList = function () {
