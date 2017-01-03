@@ -1,12 +1,10 @@
 app.controller("PhotographerSearchController", ["PhotographerFactory", "$scope", 
     function (PhotographerFactory, $scope) {
         var self = this;
-        PhotographerFactory.updatePhotographersList() // required to add the parameters back to url on return to view
         self.search = PhotographerFactory.search;
         self.packages = PhotographerFactory.packages;
-        self.updatePhotographersList = function () {
-            PhotographerFactory.updatePhotographersList();
-        };
+        self.updatePhotographersList = PhotographerFactory.updatePhotographersList;
+        self.updatePhotographersList(); // adds the parameters back to url on return to view
         self.initialize = function() {
             var input = document.getElementById('searchTextField');
             var autocomplete = new google.maps.places.Autocomplete(input, {

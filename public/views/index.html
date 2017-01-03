@@ -20,7 +20,7 @@
   <script src="scripts/config.js"></script>
 
   <!-- Main Angular Application File -->
-  <script src="scripts/client.js"></script>
+  <script src="scripts/app.js"></script>
 
   <!-- Angular Factories -->
   <script src="scripts/factories/auth.factory.js"></script>
@@ -42,7 +42,8 @@
 <div ng-app="sampleApp">
 
   <auth></auth>
-  <location-search></location-search>
+  <a ui-sref="home.photographers">home</a>
+<a ui-sref="account">account</a>
   <div ui-view></div>
 
 </div>
