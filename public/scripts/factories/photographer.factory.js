@@ -16,20 +16,24 @@ app.factory("PhotographerFactory", ["$http", "$stateParams", "$state", function 
     updatePackagesList();
 
     function updatePhotographersList() {
-        self.search.parameters.vendorType = 'photographer';
-        $http({
-            method: 'GET',
-            url: '/vendorData',
-            params: { search: self.search.parameters }
-        }).then(function (response) {
-            var newStateParameters = angular.copy(self.search.parameters);
-            newStateParameters.package = self.search.parameters.package.id;
-            $state.transitionTo('home.photographers', newStateParameters);
-            console.log('Photographer factory received photographer data from the server: ', response.data);
-            self.photographers.list = response.data.vendors;
-        }).catch(function (err) {
-            console.error('Error retreiving photographer data: ', err);
-        });
+        if (self.search.parameters.package.id && self.search.parameters.longitude && self.search.parameters.latitude) {
+            self.search.parameters.vendorType = 'photographer';
+            $http({
+                method: 'GET',
+                url: '/vendorData',
+                params: { search: self.search.parameters }
+            }).then(function (response) {
+                var newStateParameters = angular.copy(self.search.parameters);
+                newStateParameters.package = self.search.parameters.package.id;
+                $state.transitionTo('home.photographers', newStateParameters);
+                console.log('Photographer factory received photographer data from the server: ', response.data);
+                self.photographers.list = response.data.vendors;
+            }).catch(function (err) {
+                console.error('Error retreiving photographer data: ', err);
+            });
+        } else {
+            console.log("All searches must have a package id, longitude, and latitude");
+        }
     }
 
     function updatePackagesList() {
