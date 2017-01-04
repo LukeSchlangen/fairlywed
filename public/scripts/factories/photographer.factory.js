@@ -23,9 +23,6 @@ app.factory("PhotographerFactory", ["$http", "$stateParams", "$state", function 
                 url: '/vendorData',
                 params: { search: self.search.parameters }
             }).then(function (response) {
-                var newStateParameters = angular.copy(self.search.parameters);
-                newStateParameters.package = self.search.parameters.package.id;
-                $state.transitionTo('home.photographers', newStateParameters);
                 console.log('Photographer factory received photographer data from the server: ', response.data);
                 self.photographers.list = response.data.vendors;
             }).catch(function (err) {
@@ -34,6 +31,11 @@ app.factory("PhotographerFactory", ["$http", "$stateParams", "$state", function 
         } else {
             console.log("All photographer searches must have a package id, longitude, and latitude");
         }
+
+        // update routes
+        var newStateParameters = angular.copy(self.search.parameters);
+        newStateParameters.package = self.search.parameters.package.id;
+        $state.transitionTo('home.photographers', newStateParameters);
     }
 
     function updatePackagesList() {
