@@ -32,7 +32,7 @@ app.factory("PhotographerFactory", ["$http", "$stateParams", "$state", function 
                 console.error('Error retreiving photographer data: ', err);
             });
         } else {
-            console.log("All searches must have a package id, longitude, and latitude");
+            console.log("All photographer searches must have a package id, longitude, and latitude");
         }
     }
 
@@ -53,7 +53,7 @@ app.factory("PhotographerFactory", ["$http", "$stateParams", "$state", function 
                 console.error('Error retreiving photographer packages data: ', err);
             });
         } else {
-            console.log("All searches must have a package id, longitude, and latitude");
+            console.log("All package searches must have a package id");
         }
     }
 
