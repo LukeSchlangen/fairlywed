@@ -37,20 +37,24 @@ app.factory("PhotographerFactory", ["$http", "$stateParams", "$state", function 
     }
 
     function updatePackagesList() {
-        $http({
-            method: 'GET',
-            url: '/packageData',
-            params: { vendorType: 'photographer' }
-        }).then(function (response) {
-            console.log('Photographer factory received packages data from the server: ', response.data);
-            var currentPackageArray = response.data.packages.filter(function (package) {
-                return package.id == $stateParams.package;
+        if (self.search.parameters.package.id) {
+            $http({
+                method: 'GET',
+                url: '/packageData',
+                params: { vendorType: 'photographer' }
+            }).then(function (response) {
+                console.log('Photographer factory received packages data from the server: ', response.data);
+                var currentPackageArray = response.data.packages.filter(function (package) {
+                    return package.id == $stateParams.package;
+                });
+                self.search.parameters.package = currentPackageArray[0];
+                self.packages.list = response.data.packages;
+            }).catch(function (err) {
+                console.error('Error retreiving photographer packages data: ', err);
             });
-            self.search.parameters.package = currentPackageArray[0];
-            self.packages.list = response.data.packages;
-        }).catch(function (err) {
-            console.error('Error retreiving photographer packages data: ', err);
-        });
+        } else {
+            console.log("All searches must have a package id, longitude, and latitude");
+        }
     }
 
     return {

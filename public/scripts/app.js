@@ -2,7 +2,7 @@ var app = angular.module("sampleApp", ["firebase", "ui.router"]);
 
 app.config(function ($stateProvider, $urlRouterProvider) {
 
-    $urlRouterProvider.otherwise('/home');
+    $urlRouterProvider.otherwise('/home/photographers');
 
     $stateProvider
         .state('home', {
