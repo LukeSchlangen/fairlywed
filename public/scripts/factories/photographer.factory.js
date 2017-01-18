@@ -44,8 +44,8 @@ app.factory("PhotographerFactory", ["$http", "$stateParams", "$state", function 
                 params: { vendorType: 'photographer' }
             }).then(function (response) {
                 console.log('Photographer factory received packages data from the server: ', response.data);
-                var currentPackageArray = response.data.packages.filter(function (package) {
-                    return package.id == $stateParams.package;
+                var currentPackageArray = response.data.packages.filter(function (photoPackage) {
+                    return photoPackage.id == $stateParams.package;
                 });
                 self.search.parameters.package = currentPackageArray[0];
                 self.packages.list = response.data.packages;

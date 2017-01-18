@@ -1,4 +1,4 @@
-var app = angular.module("sampleApp", ["firebase", "ui.router"]);
+const app = angular.module("sampleApp", ["firebase", "ui.router"]);
 
 app.config(function ($stateProvider, $urlRouterProvider) {
 

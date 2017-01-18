@@ -1,9 +1,11 @@
-  // Initialize Firebase
-  var config = {
-    apiKey: "AIzaSyCvUVLVpjThEnm-HhxT00y3cWnr9nBxxAc",
-    authDomain: "farilywed.firebaseapp.com",
-    databaseURL: "https://farilywed.firebaseio.com",
-    storageBucket: "farilywed.appspot.com",
-    messagingSenderId: "802702759835"
+import * as config from '../../env.json'
+import { firebase } from 'firebase-admin'
+// Initialize Firebase
+  const firebaseConfig = {
+    apiKey: config.FIREBASE_API_KEY,
+    authDomain: config.FIREBASE_AUTH_DOMAIN,
+    databaseURL: config.FIREBASE_DATABASE_URL,
+    storageBucket: config.FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: config.FIREBASE_MESSAGING_SENDER_ID
   };
-  firebase.initializeApp(config);
+firebase.initializeApp(firebaseConfig);

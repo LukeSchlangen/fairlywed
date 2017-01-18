@@ -4,15 +4,27 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node server/app.js",
-    "test": "nodemon server/app.js"
+    "start": "gulp; NODE_PATH=./dist/ node dist/server/app.js",
+    "test": "nodemon dist/server/app.js"
   },
   "author": "Luke Schlangen",
   "license": "UNLICENSED",
   "dependencies": {
+    "babel-preset-es2015": "^6.18.0",
     "body-parser": "^1.15.2",
+    "dotenv": "^4.0.0",
     "express": "^4.14.0",
     "firebase-admin": "^4.0.3",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^6.1.2",
+    "gulp-dotenv-to-json": "^1.1.2",
+    "gulp-sourcemaps": "^2.4.0",
     "pg": "^6.1.0"
+  },
+  "devDependencies": {
+    "babel-loader": "^6.2.10",
+    "babel-preset-es2015": "^6.18.0",
+    "webpack": "2.2.0-rc.6",
+    "webpack-stream": "^3.2.0"
   }
 }
