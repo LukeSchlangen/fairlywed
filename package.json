@@ -17,6 +17,7 @@
     "firebase-admin": "^4.0.3",
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
+    "gulp-concat": "^2.6.1",
     "gulp-dotenv-to-json": "^1.1.2",
     "gulp-sourcemaps": "^2.4.0",
     "pg": "^6.1.0"

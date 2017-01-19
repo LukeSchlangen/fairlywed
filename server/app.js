@@ -12,7 +12,7 @@ app.get('/', function(req, res){
   res.sendFile(path.resolve('./dist/public/views/index.html'));
 });
 
-app.use(express.static('public'));
+app.use(express.static('dist/public'));
 app.use(bodyParser.json());
 
 app.use("/vendorData", vendorData);
