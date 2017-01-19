@@ -1,11 +1,10 @@
 var express = require('express');
 var router = express.Router();
-var pg = require('pg');
-var connectionString = require('../modules/database-config');
+var pool = require('../modules/pg-pool');
 
 router.get('/', function (req, res) {
   var searchObject = JSON.parse(req.query.search);
-  pg.connect(connectionString, function (err, client, done) {
+  pool.connect(function (err, client, done) {
     client.query(
       'SELECT COALESCE(subvendors.name, vendors.name) AS name, ' +
       'packages.name AS package, ' +

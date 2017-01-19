@@ -1,11 +1,9 @@
 var admin = require("firebase-admin");
-var pg = require('pg');
-var connectionString = require('../modules/database-config');
+var pool = require('../modules/pg-pool');
 var logger = require('./logger');
 var dotenv = require('dotenv')
-console.log(dotenv)
 dotenv.config();
-console.log(process.env)
+
 admin.initializeApp({
   credential: admin.credential.cert({
     "type": process.env.FIREBASE_SERVICE_ACCOUNT_TYPE,
@@ -30,7 +28,7 @@ var tokenDecoder = function (req, res, next) {
   if (req.headers.id_token) {
     admin.auth().verifyIdToken(req.headers.id_token).then(function (decodedToken) {
       req.decodedToken = decodedToken;
-      pg.connect(connectionString, function (err, client, done) {
+      pool.connect(function (err, client, done) {
         var firebaseUserId = req.decodedToken.user_id || req.decodedToken.uid;
         client.query('SELECT id FROM users WHERE firebase_user_id=$1', [firebaseUserId], function (err, userSQLIdResult) {
           done();
@@ -38,7 +36,7 @@ var tokenDecoder = function (req, res, next) {
             console.log('Error completing user id query task', err);
             res.sendStatus(500);
           } else {
-            pg.connect(connectionString, function (err, client, done) {
+            pool.connect(function (err, client, done) {
               if (userSQLIdResult.rowCount === 0) {
                 // If the user is not in the database, this adds them to the database
                 var userEmail = req.decodedToken.email;
@@ -54,7 +52,7 @@ var tokenDecoder = function (req, res, next) {
                     next();
                   }
                 });
-              } else if( userSQLIdResult.rowCount > 1 ) {
+              } else if (userSQLIdResult.rowCount > 1) {
                 // If there is more than one user with the unique firebase id assigned, there is a major problem
                 console.error("More than one user with firebase_user_id: ", firebaseUserId);
                 res.sendStatus(500);

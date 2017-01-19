@@ -1,5 +1,4 @@
-var pg = require('pg');
-var connectionString = require('../modules/database-config');
+var pool = require('../modules/pg-pool');
 
 function write(userSQLId, action) {
     pg.connect(connectionString, function(err, client, done){

@@ -23,17 +23,19 @@ app.factory("PhotographerFactory", ["$http", "$stateParams", "$state", function 
                 url: '/vendorData',
                 params: { search: self.search.parameters }
             }).then(function (response) {
-                var newStateParameters = angular.copy(self.search.parameters);
-                newStateParameters.package = self.search.parameters.package.id;
-                $state.transitionTo('home.photographers', newStateParameters);
                 console.log('Photographer factory received photographer data from the server: ', response.data);
                 self.photographers.list = response.data.vendors;
             }).catch(function (err) {
                 console.error('Error retreiving photographer data: ', err);
             });
         } else {
-            console.log("All searches must have a package id, longitude, and latitude");
+            console.log("All photographer searches must have a package id, longitude, and latitude");
         }
+
+        // update routes
+        var newStateParameters = angular.copy(self.search.parameters);
+        newStateParameters.package = self.search.parameters.package.id;
+        $state.transitionTo('home.photographers', newStateParameters);
     }
 
     function updatePackagesList() {
@@ -53,7 +55,7 @@ app.factory("PhotographerFactory", ["$http", "$stateParams", "$state", function 
                 console.error('Error retreiving photographer packages data: ', err);
             });
         } else {
-            console.log("All searches must have a package id, longitude, and latitude");
+            console.log("All package searches must have a package id");
         }
     }
 
