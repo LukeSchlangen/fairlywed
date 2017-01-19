@@ -30,7 +30,7 @@ gulp.task('babel', () => {
 });
 
  gulp.task('moveHTML', () => {
-     gulp.src(['public/**/*.html', 'node_modules/**/*.*'], {base: '.'})
+     gulp.src(['public/**/**', 'node_modules/**/*.*'], {base: '.'})
      .pipe(gulp.dest('dist'))
  });
 
@@ -38,8 +38,8 @@ gulp.task('webpack', ['dotenvToJson'], function() {
     return gulp.src('./public/scripts/config.js')
   .pipe(webpack( require('./webpack.config.js') ))
   .pipe(gulp.dest('dist/'));
-} )
+} );
 
-gulp.task('default', ['webpack']);
+gulp.task('default', ['moveHTML','webpack']);
 
 
