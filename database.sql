@@ -71,6 +71,18 @@ CREATE TABLE users_clients (
 	PRIMARY KEY(user_id, client_id)
 );
 
+CREATE TABLE availability (
+	id SERIAL PRIMARY KEY,
+	status VARCHAR(500) NOT NULL
+);
+
+CREATE TABLE subvendor_availability (
+	subvendor_id INT NOT NULL REFERENCES subvendors,
+	day DATE,
+    availability_id INT NOT NULL REFERENCES subvendors,
+	PRIMARY KEY(subvendor_id, day)
+);
+
 
 -- INSERTING SAMPLE VENDOR DATA
 
@@ -123,6 +135,16 @@ VALUES (1, 1, 2000),
 (5, 4, 700),
 (5, 5, 650),
 (5, 6, 600);
+
+INSERT INTO availability (status)
+VALUES ('available'), ('booked');
+
+
+-- Need more dates for good data
+INSERT INTO subvendor_availability ('subvendor_id', 'day', 'availability_id')
+VALUES (1, '2017-02-02', 1),
+(4, '2017-02-02', 1),
+(5, '2017-02-02', 1);
 
 -- SAMPLE QUERIES
 
