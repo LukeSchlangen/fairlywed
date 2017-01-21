@@ -115,7 +115,7 @@ VALUES ('Two Photographers: 10 Hours', 1),
 ('One Photographer: 4 Hours', 1);
 
 
--- INSERTING PACKAGE PRICES
+-- INSERTING PACKAGE PRICES - All photographer subvendors offer each package
 INSERT INTO subvendors_packages (subvendor_id, package_id, price)
 VALUES (1, 1, 2000),
 (1, 2, 1800),
@@ -140,7 +140,7 @@ VALUES (1, 1, 2000),
 INSERT INTO availability (status)
 VALUES ('available'), ('booked');
 
--- INSERTING SAMPLE AVAILABILITY
+-- INSERTING SAMPLE AVAILABILITY - All photographer subvendors available for next 100 days
 DO
 $do$
 BEGIN 
