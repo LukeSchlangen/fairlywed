@@ -136,15 +136,24 @@ VALUES (1, 1, 2000),
 (5, 5, 650),
 (5, 6, 600);
 
+-- CREATING AVAILABILITY STATUSES
 INSERT INTO availability (status)
 VALUES ('available'), ('booked');
 
-
--- Need more dates for good data
-INSERT INTO subvendor_availability ('subvendor_id', 'day', 'availability_id')
-VALUES (1, '2017-02-02', 1),
-(4, '2017-02-02', 1),
-(5, '2017-02-02', 1);
+-- INSERTING SAMPLE AVAILABILITY
+DO
+$do$
+BEGIN 
+FOR i IN 1..100 LOOP
+   INSERT INTO subvendor_availability (subvendor_id, day, availability_id)
+   VALUES (1, (CURRENT_DATE) + i, 1);
+   INSERT INTO subvendor_availability (subvendor_id, day, availability_id)
+   VALUES (4, (CURRENT_DATE) + i, 1);
+   INSERT INTO subvendor_availability (subvendor_id, day, availability_id)
+   VALUES (5, (CURRENT_DATE) + i, 1);
+END LOOP;
+END
+$do$;
 
 -- SAMPLE QUERIES
 
