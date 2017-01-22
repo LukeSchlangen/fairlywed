@@ -67,3 +67,6 @@ AngularFire with token authentication on Node backend server. This branch uses t
 ## License
 
 1. The software is UNLICENSED and is for the sole use of fairlywed. All other use is strictly prohibited.
+
+## Deploying 
+Additional deployment steps can be found at github.com/LukeSchlangen/nodeFire

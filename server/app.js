@@ -1,4 +1,4 @@
-var express = require('express');
+const express = require('express');
 var app = express();
 var path = require('path');
 var bodyParser = require('body-parser');
@@ -9,10 +9,10 @@ var packageData = require('./routes/package-data');
 var portDecision = process.env.PORT || 5000;
 
 app.get('/', function(req, res){
-  res.sendFile(path.resolve('./public/views/index.html'));
+  res.sendFile(path.resolve('./dist/public/views/index.html'));
 });
 
-app.use(express.static('public'));
+app.use(express.static('dist/public'));
 app.use(bodyParser.json());
 
 app.use("/vendorData", vendorData);
