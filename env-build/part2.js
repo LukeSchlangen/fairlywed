@@ -1,5 +1,7 @@
-import * as config from '../../env.json'
-import { firebase } from 'firebase-admin'
+; 
+
+// import * as config from '../../env.json'
+// import { firebase } from 'firebase-admin'
 // Initialize Firebase
   const firebaseConfig = {
     apiKey: config.FIREBASE_API_KEY,
