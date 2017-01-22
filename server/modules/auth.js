@@ -1,11 +1,23 @@
 var admin = require("firebase-admin");
-var pg = require('pg');
-var connectionString = require('../modules/database-config');
+var pool = require('../modules/pg-pool');
 var logger = require('./logger');
+require('dotenv').config();
 
 admin.initializeApp({
-  credential: admin.credential.cert("./server/firebase-service-account.json"),
-  databaseURL: "https://sigma-test-run.firebaseio.com" // replace this line with your URL
+  credential: admin.credential.cert({
+    "type": process.env.FIREBASE_SERVICE_ACCOUNT_TYPE,
+    "project_id": process.env.FIREBASE_SERVICE_ACCOUNT_PROJECT_ID,
+    "private_key_id": process.env.FIREBASE_SERVICE_ACCOUNT_PRIVATE_KEY_ID,
+    "private_key": process.env.FIREBASE_SERVICE_ACCOUNT_PRIVATE_KEY,
+    "client_email": process.env.FIREBASE_SERVICE_ACCOUNT_CLIENT_EMAIL,
+    "client_id": process.env.FIREBASE_SERVICE_ACCOUNT_CLIENT_ID,
+    "auth_uri": process.env.FIREBASE_SERVICE_ACCOUNT_AUTH_URI,
+    "token_uri": process.env.FIREBASE_SERVICE_ACCOUNT_TOKEN_URI,
+    "auth_provider_x509_cert_url": process.env.FIREBASE_SERVICE_ACCOUNT_AUTH_PROVIDER_X509_CERT_URL,
+    "client_x509_cert_url": process.env.FIREBASE_SERVICE_ACCOUNT_CLIENT_X509_CERT_URL
+  }
+  ),
+  databaseURL: process.env.FIREBASE_DATABASE_URL
 });
 
 /* This is where the magic happens. We pull the id_token off of the request,
@@ -15,7 +27,7 @@ var tokenDecoder = function (req, res, next) {
   if (req.headers.id_token) {
     admin.auth().verifyIdToken(req.headers.id_token).then(function (decodedToken) {
       req.decodedToken = decodedToken;
-      pg.connect(connectionString, function (err, client, done) {
+      pool.connect(function (err, client, done) {
         var firebaseUserId = req.decodedToken.user_id || req.decodedToken.uid;
         client.query('SELECT id FROM users WHERE firebase_user_id=$1', [firebaseUserId], function (err, userSQLIdResult) {
           done();
@@ -23,7 +35,7 @@ var tokenDecoder = function (req, res, next) {
             console.log('Error completing user id query task', err);
             res.sendStatus(500);
           } else {
-            pg.connect(connectionString, function (err, client, done) {
+            pool.connect(function (err, client, done) {
               if (userSQLIdResult.rowCount === 0) {
                 // If the user is not in the database, this adds them to the database
                 var userEmail = req.decodedToken.email;
@@ -39,7 +51,7 @@ var tokenDecoder = function (req, res, next) {
                     next();
                   }
                 });
-              } else if( userSQLIdResult.rowCount > 1 ) {
+              } else if (userSQLIdResult.rowCount > 1) {
                 // If there is more than one user with the unique firebase id assigned, there is a major problem
                 console.error("More than one user with firebase_user_id: ", firebaseUserId);
                 res.sendStatus(500);

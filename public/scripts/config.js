@@ -1,9 +1,9 @@
   // Initialize Firebase
   var config = {
-    apiKey: "AIzaSyCvUVLVpjThEnm-HhxT00y3cWnr9nBxxAc",
-    authDomain: "farilywed.firebaseapp.com",
-    databaseURL: "https://farilywed.firebaseio.com",
-    storageBucket: "farilywed.appspot.com",
-    messagingSenderId: "802702759835"
+    apiKey: process.env.FIREBASE_API_KEY,
+    authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+    databaseURL: process.env.FIREBASE_DATABASE_URL,
+    storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID
   };
   firebase.initializeApp(config);
