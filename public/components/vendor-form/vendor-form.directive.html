@@ -1,10 +1,21 @@
+<h2>Vendor</h2>
+<p>Vendor is the name of the business.</p>
+<input type="text" placeholder="Alice's Wedding Vendors LLC">
+<p>In order for you to accept payment, you will need a Stripe Account</p>
+<button>Some way to set up a Stripe Account</button>
+
+<h2>Subvendor</h2>
+<p>Subvendor is the name of an individual photographer or team of photographers (maybe you always work in twos). If that's you, great!</p>
+<label for="firstName">First Name</label>
+<input type="text" placeholder="firstName">
+<label for="lastName">Last Name</label>
+<input type="text" placeholder="lastName">
 <label for="package">Packages</label>
-<!--<select ng-options="item as item.label for item in items track by item.id" ng-model="selected"></select>-->
 <ul>
-<li ng-repeat="package in vm.packages.list">{{package}}</li>
+<li ng-repeat="package in vm.packages.list">{{package}} - Your Rate: $<input type="text"><button>save</button></li>
 </ul>
+
 <br>
 <label for="location">Where's the wedding?</label>
 <input id="searchTextField" type="text" size="50" placeholder="City" autocomplete="on" runat="server" ng-init="vm.initialize()" name="location"/> 
 <br>
-vm.search: {{vm.search}}
