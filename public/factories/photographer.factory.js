@@ -12,7 +12,7 @@ app.factory("PhotographerFactory", ["$http", "$stateParams", "$state", function 
     self.search.parameters.longitude = $stateParams.longitude;
     self.search.parameters.latitude = $stateParams.latitude;
     self.search.parameters.package.id = $stateParams.package ? $stateParams.package : 2;
-    self.search.parameters.date = $stateParams.date || new Date(new Date().setFullYear(new Date().getFullYear() + 1));
+    self.search.parameters.date = new Date($stateParams.date) || new Date(new Date().setFullYear(new Date().getFullYear() + 1));
     self.packages = { list: [] };
     self.photographers = { list: [] };
     // ------------------------------------------------------------------------------------ //
@@ -41,6 +41,7 @@ app.factory("PhotographerFactory", ["$http", "$stateParams", "$state", function 
         // update route parameters based on search
         var newStateParameters = angular.copy(self.search.parameters);
         newStateParameters.package = self.search.parameters.package.id;
+        newStateParameters.date = self.search.parameters.date.toDateString();
         console.log('newStateParameters:', newStateParameters)
         $state.transitionTo('home.photographers', newStateParameters);
     }
