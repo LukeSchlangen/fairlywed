@@ -10,19 +10,22 @@ router.get('/', function (req, res) {
       'packages.name AS package, ' +
       'subvendors_packages.price, ' +
       'subvendors.url_slug AS url, ' +
+      'subvendor_availability.day AS day, ' +
       'ST_Distance((SELECT COALESCE(subvendors.location, vendors.location)), CAST(ST_SetSRID(ST_Point($3, $4),4326) As geography)) AS distance ' +
       'FROM subvendors JOIN subvendortypes ON subvendors.vendortype_id = subvendortypes.id ' +
       'JOIN vendors ON vendors.id = subvendors.parent_vendor_id ' +
       'JOIN subvendors_packages ON subvendors.id = subvendors_packages.subvendor_id ' +
       'JOIN packages ON subvendors_packages.package_id = packages.id ' +
+      'JOIN subvendor_availability ON subvendor_availability.subvendor_id = subvendors.id ' +
       'WHERE subvendortypes.name=$1 ' +
       'AND packages.id=$2 ' +
       'AND (SELECT ST_Distance(' +
       '		(SELECT COALESCE(subvendors.location, vendors.location)),' +
       '		(CAST(ST_SetSRID(ST_Point($3, $4),4326) As geography))' +
       '	)) < (SELECT COALESCE(subvendors.travelDistance, vendors.travelDistance)) ' +
+      'AND subvendor_availability.day = $5 ' +
       'LIMIT 10;',
-      [ searchObject.vendorType, searchObject.package.id, searchObject.longitude, searchObject.latitude],
+      [ searchObject.vendorType, searchObject.package.id, searchObject.longitude, searchObject.latitude, searchObject.date ],
       function (err, vendorQueryResult) {
         done();
         if (err) {

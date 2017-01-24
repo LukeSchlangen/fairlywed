@@ -8,7 +8,7 @@ app.config(function ($stateProvider, $urlRouterProvider) {
             templateUrl: 'views/home/home.html'
         })
         .state('home.photographers', {
-            url: '/photographers?package&location&longitude&latitude',
+            url: '/photographers?package&location&longitude&latitude&date',
             templateUrl: 'views/home/photographers.html'
         })
         .state('home.videographers', {
