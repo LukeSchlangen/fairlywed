@@ -1,10 +1,10 @@
 # Mock Users
 Mock users are pulled from [https://randomuser.me/](https://randomuser.me/)
 
-* Alice Fotogrofo
-  * alicefotogrofo@gmail.com
+* Alice Fotografo
+  * alicefotografo@gmail.com
   * emailforfairlywed
-  * ![Alice Fotogrofo](84.jpg)
+  * ![Alice Fotografo](84.jpg)
 
 * Betsy Novia
   * betsynovia@gmail.com
