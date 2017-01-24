@@ -71,6 +71,18 @@ CREATE TABLE users_clients (
 	PRIMARY KEY(user_id, client_id)
 );
 
+CREATE TABLE availability (
+	id SERIAL PRIMARY KEY,
+	status VARCHAR(500) NOT NULL
+);
+
+CREATE TABLE subvendor_availability (
+	subvendor_id INT NOT NULL REFERENCES subvendors,
+	day DATE,
+    availability_id INT NOT NULL REFERENCES subvendors,
+	PRIMARY KEY(subvendor_id, day)
+);
+
 
 -- INSERTING SAMPLE VENDOR DATA
 
@@ -103,7 +115,7 @@ VALUES ('Two Photographers: 10 Hours', 1),
 ('One Photographer: 4 Hours', 1);
 
 
--- INSERTING PACKAGE PRICES
+-- INSERTING PACKAGE PRICES - All photographer subvendors offer each package
 INSERT INTO subvendors_packages (subvendor_id, package_id, price)
 VALUES (1, 1, 2000),
 (1, 2, 1800),
@@ -123,6 +135,25 @@ VALUES (1, 1, 2000),
 (5, 4, 700),
 (5, 5, 650),
 (5, 6, 600);
+
+-- CREATING AVAILABILITY STATUSES
+INSERT INTO availability (status)
+VALUES ('available'), ('booked');
+
+-- INSERTING SAMPLE AVAILABILITY - All photographer subvendors available for next 100 days
+DO
+$do$
+BEGIN 
+FOR i IN 1..100 LOOP
+   INSERT INTO subvendor_availability (subvendor_id, day, availability_id)
+   VALUES (1, (CURRENT_DATE) + i, 1);
+   INSERT INTO subvendor_availability (subvendor_id, day, availability_id)
+   VALUES (4, (CURRENT_DATE) + i, 1);
+   INSERT INTO subvendor_availability (subvendor_id, day, availability_id)
+   VALUES (5, (CURRENT_DATE) + i, 1);
+END LOOP;
+END
+$do$;
 
 -- SAMPLE QUERIES
 

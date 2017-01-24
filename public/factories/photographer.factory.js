@@ -3,6 +3,8 @@ app.factory("PhotographerFactory", ["$http", "$stateParams", "$state", function 
     console.log('photographer factory logging $stateParams: ', $stateParams);
 
     var self = this;
+
+    // -- SETTING DEFAULT VALUES FOR SEARCH OR GETTING THEM FROM STATE PARAMETERS ROUTING -- //
     if (!self.search) { self.search = {}; };
     if (!self.search.parameters) { self.search.parameters = {}; }
     if (!self.search.parameters.package) { self.search.parameters.package = {}; }
@@ -10,11 +12,15 @@ app.factory("PhotographerFactory", ["$http", "$stateParams", "$state", function 
     self.search.parameters.longitude = $stateParams.longitude;
     self.search.parameters.latitude = $stateParams.latitude;
     self.search.parameters.package.id = $stateParams.package ? $stateParams.package : 2;
+    self.search.parameters.date = $stateParams.date || new Date(new Date().setFullYear(new Date().getFullYear() + 1));
     self.packages = { list: [] };
     self.photographers = { list: [] };
-    updatePhotographersList();
-    updatePackagesList();
+    // ------------------------------------------------------------------------------------ //
 
+    updatePhotographersList(); // Loading photographers list for the first time
+    updatePackagesList(); // Loading packages list for the first time
+
+    // -- RETURNING LIST OF PHOTOGRAPHERS BASED ON SEARCH PARAMETERS -- //
     function updatePhotographersList() {
         if (self.search.parameters.package.id && self.search.parameters.longitude && self.search.parameters.latitude) {
             self.search.parameters.vendorType = 'photographer';
@@ -32,11 +38,13 @@ app.factory("PhotographerFactory", ["$http", "$stateParams", "$state", function 
             console.log("All photographer searches must have a package id, longitude, and latitude");
         }
 
-        // update routes
+        // update route parameters based on search
         var newStateParameters = angular.copy(self.search.parameters);
         newStateParameters.package = self.search.parameters.package.id;
+        console.log('newStateParameters:', newStateParameters)
         $state.transitionTo('home.photographers', newStateParameters);
     }
+    // --------------------------------------------------------------- //
 
     function updatePackagesList() {
         if (self.search.parameters.package.id) {
