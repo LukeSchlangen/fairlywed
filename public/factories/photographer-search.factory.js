@@ -8,12 +8,11 @@ app.factory("PhotographerSearchFactory", ["PackagesFactory", "$http", "$statePar
     if (!self.search) { self.search = {}; };
     if (!self.search.parameters) { self.search.parameters = {}; }
     if (!self.search.parameters.package) { self.search.parameters.package = {}; }
-    self.search.parameters.location = $stateParams.location;
-    self.search.parameters.longitude = $stateParams.longitude;
-    self.search.parameters.latitude = $stateParams.latitude;
+    self.search.parameters.location = $stateParams.location || "Minneapolis, MN, USA";
+    self.search.parameters.longitude = $stateParams.longitude || -93.26501080000003;
+    self.search.parameters.latitude = $stateParams.latitude || 44.977753;
     self.search.parameters.package.id = $stateParams.package ? $stateParams.package : 2;
-    self.search.parameters.date = new Date($stateParams.date) || new Date(new Date().setFullYear(new Date().getFullYear() + 1));
-    // self.packages = { list: [] };
+    self.search.parameters.date = $stateParams.date ? new Date($stateParams.date) : new Date(new Date().setFullYear(new Date().getFullYear() + 1));
     self.packages = PackagesFactory.packages;
     self.photographers = { list: [] };
     // ------------------------------------------------------------------------------------ //
