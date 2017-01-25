@@ -11,6 +11,10 @@ app.controller("VendorFormController", ["PackagesFactory",
             google.maps.event.addListener(autocomplete, 'place_changed', function () {
                 var place = autocomplete.getPlace();
             });
-        }
+        };
+
+        self.updatePrice = function(package) {
+            console.log('Package price update: ', package)
+        };
     }
 ]);

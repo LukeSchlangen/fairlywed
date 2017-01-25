@@ -5,17 +5,20 @@
 <button>Some way to set up a Stripe Account</button>
 
 <h2>Subvendor</h2>
-<p>Subvendor is the name of an individual photographer or team of photographers (maybe you always work in twos). If that's you, great!</p>
+<p>Subvendor is the name of an individual photographer or team of photographers (maybe you always work in twos). If that's you,
+    great!</p>
 <label for="firstName">First Name</label>
 <input type="text" placeholder="firstName">
 <label for="lastName">Last Name</label>
 <input type="text" placeholder="lastName">
 <label for="package">Packages</label>
 <ul>
-<li ng-repeat="package in vm.packages.list">{{package}} - Your Rate: $<input type="text"><button>save</button></li>
+    <li ng-repeat="package in vm.packages.list">{{package}} - Your Rate: $<input type="number" ng-model="package.price">
+        <button ng-click="vm.updatePrice(package)">save</button>
+    </li>
 </ul>
-
 <br>
 <label for="location">Where are you located?</label>
-<input id="searchTextField" type="text" size="50" placeholder="City" autocomplete="on" runat="server" ng-init="vm.initialize()" name="location"/> 
+<input id="searchTextField" type="text" size="50" placeholder="City" autocomplete="on" runat="server" ng-init="vm.initialize()"
+    name="location" />
 <br>
