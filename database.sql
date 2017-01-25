@@ -19,7 +19,7 @@ CREATE TABLE vendors (
 	id SERIAL PRIMARY KEY,
 	name VARCHAR(500) NOT NULL,
 	location geography NOT NULL,
-	travelDistance INT NOT NULL DEFAULT 10000, -- Default to 10 kilometer radius
+	travelDistance INT NOT NULL DEFAULT 100000, -- Default to 100 kilometer radius
 	is_active BOOLEAN DEFAULT TRUE NOT NULL
 );
 
@@ -94,7 +94,8 @@ VALUES ('photographer'), ('videographer'), ('dj');
 INSERT INTO vendors (name, location)
 VALUES ('Big Time Minnetonka Wedding Vendor', CAST(ST_SetSRID(ST_Point(-93.4687, 44.9212),4326) As geography)),
 ('Edina Wedding Photography', CAST(ST_SetSRID(ST_Point(-93.3499, 44.8897),4326) As geography)),
-('The Bloomington Wedding Vendor', CAST(ST_SetSRID(ST_Point(-86.5264, 39.1653),4326) As geography));
+('The Bloomington Wedding Vendor', CAST(ST_SetSRID(ST_Point(-86.5264, 39.1653),4326) As geography)),
+('Minneapolis Wedding Vendor', CAST(ST_SetSRID(ST_Point(-93.2650, 44.9777),4326) As geography));
     
 -- INSERTING SUBVENDORS
 INSERT INTO subvendors (name, parent_vendor_id, vendortype_id, url_slug, location)
@@ -103,7 +104,8 @@ VALUES ('Minnetonka Photography', 1, 1, 'minnetonka-photography', null),
 ('Minnetonka DJ', 1, 3, 'minnetonka-dj', CAST(ST_SetSRID(ST_Point(-93.3687, 45.0212),4326) As geography)), -- the dj is stationed out of a different office and has a different location
 (null, 2, 1, 'edina-wedding-photography', null),
 ('Bloomington Wedding Photography', 3, 1, 'bloomington-wedding-photography', null),
-(null, 3, 2, 'bloomington-videography', null);
+(null, 3, 2, 'bloomington-videography', null),
+('Minneapolis Wedding Photographers', 4, 1, 'mineapolis-wedding-photographers', null);
 
 -- INSERTING PACKAGES
 INSERT INTO packages (name, vendortype_id)
@@ -112,7 +114,13 @@ VALUES ('Two Photographers: 10 Hours', 1),
 ('One Photographer: 10 Hours', 1),
 ('One Photographer: 8 Hours', 1),
 ('One Photographer: 6 Hours', 1),
-('One Photographer: 4 Hours', 1);
+('One Photographer: 4 Hours', 1),
+('Two Photographers: 10 Hours - 1 hour Engagement Session Included', 1),
+('Two Photographers: 8 Hours - 1 hour Engagement Session Included', 1),
+('One Photographer: 10 Hours - 1 hour Engagement Session Included', 1),
+('One Photographer: 8 Hours - 1 hour Engagement Session Included', 1),
+('One Photographer: 6 Hours - 1 hour Engagement Session Included', 1),
+('One Photographer: 4 Hours - 1 hour Engagement Session Included', 1);
 
 
 -- INSERTING PACKAGE PRICES - All photographer subvendors offer each package
@@ -134,7 +142,13 @@ VALUES (1, 1, 2000),
 (5, 3, 750),
 (5, 4, 700),
 (5, 5, 650),
-(5, 6, 600);
+(5, 6, 600),
+(7, 1, 1900),
+(7, 2, 1800),
+(7, 3, 1700),
+(7, 4, 1600),
+(7, 5, 1500),
+(7, 6, 1400);
 
 -- CREATING AVAILABILITY STATUSES
 INSERT INTO availability (status)
@@ -144,13 +158,15 @@ VALUES ('available'), ('booked');
 DO
 $do$
 BEGIN 
-FOR i IN 1..100 LOOP
+FOR i IN 1..800 LOOP
    INSERT INTO subvendor_availability (subvendor_id, day, availability_id)
    VALUES (1, (CURRENT_DATE) + i, 1);
    INSERT INTO subvendor_availability (subvendor_id, day, availability_id)
    VALUES (4, (CURRENT_DATE) + i, 1);
    INSERT INTO subvendor_availability (subvendor_id, day, availability_id)
    VALUES (5, (CURRENT_DATE) + i, 1);
+   INSERT INTO subvendor_availability (subvendor_id, day, availability_id)
+   VALUES (6, (CURRENT_DATE) + i, 1);
 END LOOP;
 END
 $do$;
@@ -185,7 +201,7 @@ SELECT COALESCE(subvendors.name, vendors.name) AS name,
 packages.name AS package, 
 subvendors_packages.price, 
 subvendors.url_slug AS url, 
-ST_Distance((SELECT COALESCE(subvendors.location, vendors.location)), CAST(ST_SetSRID(ST_Point(-93.4708, 44.8547),4326) As geography)) AS distance 
+ST_Distance((SELECT COALESCE(subvendors.location, vendors.location)), CAST(ST_SetSRID(ST_Point(-93.26501080000003, 44.977753),4326) As geography)) AS distance 
 FROM subvendors JOIN subvendortypes ON subvendors.vendortype_id = subvendortypes.id 
 JOIN vendors ON vendors.id = subvendors.parent_vendor_id 
 JOIN subvendors_packages ON subvendors.id = subvendors_packages.subvendor_id 
@@ -194,6 +210,6 @@ WHERE subvendortypes.name='photographer'
 AND packages.name='Two Photographers: 8 Hours' 
 AND (SELECT ST_Distance(
 		(SELECT COALESCE(subvendors.location, vendors.location)),
-		(CAST(ST_SetSRID(ST_Point(-93.4708, 44.8547),4326) As geography))
+		(CAST(ST_SetSRID(ST_Point(-93.26501080000003, 44.977753),4326) As geography))
 	)) < (SELECT COALESCE(subvendors.travelDistance, vendors.travelDistance))
 LIMIT 10;
