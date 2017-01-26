@@ -2,6 +2,7 @@ app.controller("VendorFormController", ["PackagesFactory",
     function (PackagesFactory) {
         var self = this;
         self.packages = PackagesFactory.packages;
+        PackagesFactory.updateList();
         self.initialize = function() {
             var input = document.getElementById('searchTextField');
             var autocomplete = new google.maps.places.Autocomplete(input, {
