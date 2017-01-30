@@ -26,7 +26,7 @@ app.factory("PhotographerSearchFactory", ["PackagesFactory", "$http", "$statePar
             self.search.parameters.vendorType = 'photographer';
             $http({
                 method: 'GET',
-                url: '/vendorData',
+                url: '/vendorSearchData',
                 params: { search: self.search.parameters }
             }).then(function (response) {
                 console.log('Photographer factory received photographer data from the server: ', response.data);
