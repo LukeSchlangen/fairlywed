@@ -1,4 +1,4 @@
-app.controller("VendorFormController", ["PackagesFactory", 
+app.controller("VendorAccountController", ["PackagesFactory", 
     function (PackagesFactory) {
         var self = this;
         self.packages = PackagesFactory.packages;

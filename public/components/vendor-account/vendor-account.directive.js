@@ -1,9 +1,9 @@
-app.directive('vendorForm', function () {
+app.directive('vendorAccount', function () {
     return {
         restrict: 'E',
         scope: {},
         templateUrl: 'components/vendor-form/vendor-form.directive.html',
-        controller: 'VendorFormController',
+        controller: 'VendorAccountController',
         controllerAs: 'vm'
     };
 });
