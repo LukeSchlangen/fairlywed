@@ -1,7 +1,7 @@
 <ol>
     <li ng-repeat="vendor in vm.vendors.list">
         <ol>
-            <li ng-repeat="subvendor in vendor">
+            <li ng-repeat="subvendor in vendor.subvendors">{{vendor.id}}
                 <ol>
                     <li ng-repeat="package in subvendor">
                         {{package}}

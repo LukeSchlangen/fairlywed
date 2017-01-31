@@ -21,25 +21,29 @@ router.get("/", function (req, res) {
                     res.sendStatus(500);
                 } else {
                     var vendorList = [];
-                    var currentVendor = vendorQueryResult.rows[0].parent_vendor_id;
                     var currentSubvendor = vendorQueryResult.rows[0].subvendor_id;
-                    var currentVendorArray = [];
+                    var currentVendorObject = { 
+                        id: vendorQueryResult.rows[0].parent_vendor_id,
+                        subvendors: []
+                     };
                     var currentSubvendorArray = [];
                     vendorQueryResult.rows.forEach(function(package){
                         if(currentSubvendor !== package.subvendor_id){
                             currentSubvendor = package.subvendor_id;
-                            currentVendorArray.push(currentSubvendorArray);
+                            currentVendorObject.subvendors.push(currentSubvendorArray);
                             currentSubvendorArray = [];
                         }
-                        if(currentVendor !== package.parent_vendor_id){
-                            currentVendor = package.parent_vendor_id;
-                            vendorList.push(currentVendorArray);
-                            currentVendorArray = [];
+                        if(currentVendorObject.id !== package.parent_vendor_id){
+                            vendorList.push(currentVendorObject);
+                            currentVendorObject = {
+                                id: package.parent_vendor_id,
+                                subvendors: []
+                            }
                         }
                         currentSubvendorArray.push(package);
                     });
-                    currentVendorArray.push(currentSubvendorArray);
-                    vendorList.push(currentVendorArray);
+                    currentVendorObject.subvendors.push(currentSubvendorArray);
+                    vendorList.push(currentVendorObject);
 
                     res.send({ vendors: vendorList });
                 }
