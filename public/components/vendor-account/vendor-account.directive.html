@@ -1,22 +1,25 @@
-<ol>
-    <li ng-repeat="vendor in vm.vendors.list">Vendor ID: {{vendor.id}}
-        <ol>
-            <li ng-repeat="subvendor in vendor.subvendors">Subvendor ID: {{subvendor.id}}
-                <ol>
-                    <li ng-repeat="package in subvendor.packages">Package ID: {{package.id}}
-                        {{package}}
-                    </li>
-                </ol>
-            </li>
-        </ol>
-    </li>
-</ol>
-
 <h2>Vendors</h2>
+<section ng-repeat="vendor in vm.vendors.list">
+    <h3>{{vendor.name}}<input type="text" ng-model="vendor.name"></h3>
+    <button>Some way to set up a Stripe Account</button>
+    <section ng-repeat="subvendor in vendor.subvendors">
+        <h4>{{subvendor.name || vendor.name}}<input type="text" ng-model="subvendor.name"></h4>
+        <ul>
+            <li ng-repeat="package in subvendor.packages">Package ID: {{package.id}} {{package}}
+            </li>
+        </ul>
+        <label for="package">Packages</label>
+        <ul>
+            <li ng-repeat="package in vm.packages.list">
+                <input type="checkbox" ng-model="package.is_active"> {{package}} - Your Rate: $<input type="number" ng-model="package.price">
+                <button ng-click="vm.updatePrice(package)">save</button>
+            </li>
+        </ul>
+    </section>
+</section>
 <p>What is the legal name of your business?</p>
 <input type="text" placeholder="Alice's Wedding Vendors LLC">
 <p>In order for you to accept payment, you will need a Stripe Account</p>
-<button>Some way to set up a Stripe Account</button>
 
 <h2>Subvendor</h2>
 <p>What is the name of an individual photographer or team of photographers.</p>

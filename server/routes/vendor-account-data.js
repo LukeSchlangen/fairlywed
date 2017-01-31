@@ -5,7 +5,16 @@ var pool = require('../modules/pg-pool');
 router.get("/", function (req, res) {
     pool.connect(function (err, client, done) {
         var userId = req.decodedToken.userSQLId;
-        client.query('SELECT * FROM subvendors ' +
+        client.query('SELECT subvendors.parent_vendor_id AS parent_vendor_id, ' +
+            'subvendors_packages.subvendor_id AS subvendor_id, ' +
+            'packages.id AS package_id, ' +
+            'vendors.name AS vendor_name, ' +
+            'subvendors.name AS subvendor_name, ' +
+            'packages.name AS package_name, ' +
+            'subvendors_packages.price AS price, ' +
+            'subvendors_packages.is_active AS is_active, ' +
+            'packages.name AS package_name ' +
+            'FROM subvendors ' +
             'FULL OUTER JOIN vendors ON subvendors.parent_vendor_id=vendors.id ' +
             'FULL OUTER JOIN users_vendors ON users_vendors.vendor_id=vendors.id ' +
             'FULL OUTER JOIN users ON users.id=users_vendors.user_id ' +
@@ -23,11 +32,13 @@ router.get("/", function (req, res) {
                     var vendorList = [];
                     var currentSubvendorObject = {
                         id: vendorQueryResult.rows[0].subvendor_id,
+                        name: vendorQueryResult.rows[0].subvendor_name,
                         packages: []
                     };
 
                     var currentVendorObject = {
                         id: vendorQueryResult.rows[0].parent_vendor_id,
+                        name: vendorQueryResult.rows[0].vendor_name,
                         subvendors: []
                     };
                     vendorQueryResult.rows.forEach(function (package) {
@@ -35,6 +46,7 @@ router.get("/", function (req, res) {
                             currentVendorObject.subvendors.push(currentSubvendorObject);
                             currentSubvendorObject = {
                                 id: package.subvendor_id,
+                                name: package.subvendor_name,
                                 packages: []
                             };
                         }
@@ -42,6 +54,7 @@ router.get("/", function (req, res) {
                             vendorList.push(currentVendorObject);
                             currentVendorObject = {
                                 id: package.parent_vendor_id,
+                                name: package.vendor_name,
                                 subvendors: []
                             };
                         }
