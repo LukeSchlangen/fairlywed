@@ -1,8 +1,10 @@
-app.controller("VendorAccountController", ["PackagesFactory", 
-    function (PackagesFactory) {
+app.controller("VendorAccountController", ["PackagesFactory", "VendorAccountFactory", 
+    function (PackagesFactory, VendorAccountFactory) {
         var self = this;
         self.packages = PackagesFactory.packages;
+        self.vendors = VendorAccountFactory.vendors;
         PackagesFactory.updateList();
+        VendorAccountFactory.updateList();
         self.initialize = function() {
             var input = document.getElementById('searchTextField');
             var autocomplete = new google.maps.places.Autocomplete(input, {
@@ -13,6 +15,7 @@ app.controller("VendorAccountController", ["PackagesFactory",
                 var place = autocomplete.getPlace();
             });
         };
+
 
         self.updatePrice = function(package) {
             console.log('Package price update: ', package)

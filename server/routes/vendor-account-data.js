@@ -9,13 +9,13 @@ router.get("/", function (req, res) {
             'JOIN vendors ON subvendors.parent_vendor_id=vendors.id ' +
             'JOIN users_vendors ON users_vendors.vendor_id=vendors.id ' +
             'JOIN users ON users.id=users_vendors.user_id ' +
-            'WHERE users.id=$1;', [userId], function (err, userDataQueryResult) {
+            'WHERE users.id=$1;', [userId], function (err, vendorQueryResult) {
                 done();
                 if (err) {
-                    console.log('Error user data root GET SQL query task', err);
+                    console.log('Error vendor data GET SQL query task', err);
                     res.sendStatus(500);
                 } else {
-                    res.send({ name: userDataQueryResult.rows[0].name });
+                    res.send({ vendors: vendorQueryResult.rows });
                 }
             });
     });
