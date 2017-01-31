@@ -213,3 +213,12 @@ AND (SELECT ST_Distance(
 		(CAST(ST_SetSRID(ST_Point(-93.26501080000003, 44.977753),4326) As geography))
 	)) < (SELECT COALESCE(subvendors.travelDistance, vendors.travelDistance))
 LIMIT 10;
+
+SELECT * FROM subvendors 
+FULL OUTER JOIN vendors ON subvendors.parent_vendor_id=vendors.id 
+FULL OUTER JOIN users_vendors ON users_vendors.vendor_id=vendors.id 
+FULL OUTER JOIN users ON users.id=users_vendors.user_id 
+FULL OUTER JOIN subvendors_packages ON subvendors.id=subvendors_packages.subvendor_id 
+FULL OUTER JOIN packages ON packages.id=subvendors_packages.package_id 
+WHERE users.id=1
+ORDER BY subvendors.parent_vendor_id, subvendors_packages.subvendor_id, subvendors_packages.package_id;
