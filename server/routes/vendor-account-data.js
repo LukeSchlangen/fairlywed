@@ -9,11 +9,11 @@ router.get("/", function (req, res) {
             'FULL OUTER JOIN vendors ON subvendors.parent_vendor_id=vendors.id ' +
             'FULL OUTER JOIN users_vendors ON users_vendors.vendor_id=vendors.id ' +
             'FULL OUTER JOIN users ON users.id=users_vendors.user_id ' +
-            'JOIN subvendors_packages ON subvendors.id=subvendors_packages.subvendor_id ' +
+            'FULL OUTER JOIN subvendors_packages ON subvendors.id=subvendors_packages.subvendor_id ' +
             'FULL OUTER JOIN packages ON packages.id=subvendors_packages.package_id ' +
             'WHERE users.id=$1 ' +
-            'ORDER BY subvendors.parent_vendor_id, subvendors_packages.subvendor_id, subvendors_packages.package_id;', 
-            [userId], 
+            'ORDER BY subvendors.parent_vendor_id, subvendors_packages.subvendor_id, subvendors_packages.package_id;',
+            [userId],
             function (err, vendorQueryResult) {
                 done();
                 if (err) {
@@ -21,28 +21,33 @@ router.get("/", function (req, res) {
                     res.sendStatus(500);
                 } else {
                     var vendorList = [];
-                    var currentSubvendor = vendorQueryResult.rows[0].subvendor_id;
-                    var currentVendorObject = { 
+                    var currentSubvendorObject = {
+                        id: vendorQueryResult.rows[0].subvendor_id,
+                        packages: []
+                    };
+
+                    var currentVendorObject = {
                         id: vendorQueryResult.rows[0].parent_vendor_id,
                         subvendors: []
-                     };
-                    var currentSubvendorArray = [];
-                    vendorQueryResult.rows.forEach(function(package){
-                        if(currentSubvendor !== package.subvendor_id){
-                            currentSubvendor = package.subvendor_id;
-                            currentVendorObject.subvendors.push(currentSubvendorArray);
-                            currentSubvendorArray = [];
+                    };
+                    vendorQueryResult.rows.forEach(function (package) {
+                        if (currentSubvendorObject.id !== package.subvendor_id) {
+                            currentVendorObject.subvendors.push(currentSubvendorObject);
+                            currentSubvendorObject = {
+                                id: package.subvendor_id,
+                                packages: []
+                            };
                         }
-                        if(currentVendorObject.id !== package.parent_vendor_id){
+                        if (currentVendorObject.id !== package.parent_vendor_id) {
                             vendorList.push(currentVendorObject);
                             currentVendorObject = {
                                 id: package.parent_vendor_id,
                                 subvendors: []
-                            }
+                            };
                         }
-                        currentSubvendorArray.push(package);
+                        currentSubvendorObject.packages.push(package);
                     });
-                    currentVendorObject.subvendors.push(currentSubvendorArray);
+                    currentVendorObject.subvendors.push(currentSubvendorObject);
                     vendorList.push(currentVendorObject);
 
                     res.send({ vendors: vendorList });
