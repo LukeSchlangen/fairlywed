@@ -31,4 +31,8 @@ app.config(function ($stateProvider, $urlRouterProvider) {
             url: '/vendor',
             templateUrl: 'views/account/vendor.html'
         })
+        .state('account.vendor.details', {
+            url: '/vendor/details/:id',
+            templateUrl: 'views/account/vendor-details.html'
+        })
 });
