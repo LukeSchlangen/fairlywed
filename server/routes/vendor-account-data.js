@@ -9,6 +9,8 @@ router.get("/", function (req, res) {
             'JOIN vendors ON subvendors.parent_vendor_id=vendors.id ' +
             'JOIN users_vendors ON users_vendors.vendor_id=vendors.id ' +
             'JOIN users ON users.id=users_vendors.user_id ' +
+            'JOIN subvendors_packages ON subvendors.id=subvendors_packages.subvendor_id ' +
+            'JOIN packages ON packages.id=subvendors_packages.package_id ' +
             'WHERE users.id=$1;', [userId], function (err, vendorQueryResult) {
                 done();
                 if (err) {
