@@ -2,6 +2,12 @@
 vendor details directive, state params: {{vm.params}}
 
 subvendor details array: {{vm.subvendors}}
+<a ui-sref=".subvendor">Subvendor clicker</a>
+<section ng-repeat="subvendor in vm.subvendors.list">
+    <a ui-sref=".subvendor.details({subvendorId: subvendor.id})">{{subvendor.name || subvendor.parent_vendor_name}}, Subvendor ID is {{subvendor.id}}</a>
+</section>
+
+<div ui-view></div>
 
 <h2>Subvendor</h2>
 <p>What is the name of an individual photographer or team of photographers.</p>

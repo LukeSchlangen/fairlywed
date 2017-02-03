@@ -6,7 +6,10 @@ router.get("/", function (req, res) {
     pool.connect(function (err, client, done) {
         var userId = req.decodedToken.userSQLId;
         var vendorId = req.headers.vendor_id;
-        client.query('SELECT * ' +
+        client.query('SELECT vendors.name AS parent_vendor_name, ' +
+            'vendors.id AS parent_vendor_id, ' +
+            'subvendors.id AS id, ' +
+            'subvendors.name AS name ' +
             'FROM subvendors ' +
             'FULL OUTER JOIN vendors ON vendors.id=subvendors.parent_vendor_id ' + 
             'FULL OUTER JOIN users_vendors ON users_vendors.vendor_id=vendors.id ' +

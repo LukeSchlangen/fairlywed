@@ -35,4 +35,12 @@ app.config(function ($stateProvider, $urlRouterProvider) {
             url: '/details/:vendorId',
             templateUrl: 'views/account/vendor-details.html'
         })
+        .state('account.vendor.details.subvendor', {
+            url: '/subvendor',
+            template: '<div ui-view></div>'
+        })
+        .state('account.vendor.details.subvendor.details', {
+            url: '/details/:subvendorId',
+            templateUrl: 'views/account/subvendor-details.html'
+        })
 });
