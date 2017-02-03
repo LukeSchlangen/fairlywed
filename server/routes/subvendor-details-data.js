@@ -15,7 +15,7 @@ router.get("/", function (req, res) {
             'FULL OUTER JOIN users_vendors ON users_vendors.vendor_id=vendors.id ' +
             'FULL OUTER JOIN subvendors_packages ON subvendors_packages.subvendor_id=subvendors.id  ' +
             'FULL OUTER JOIN packages ON subvendors_packages.package_id=packages.id ' +
-            'WHERE (users_vendors.user_id=$1 AND subvendors.id=$2 AND packages.vendor_type=subvendor.vendortype_id) ' +
+            'WHERE (users_vendors.user_id=$1 AND subvendors.id=$2) ' +
             'ORDER BY subvendors.id;',
             [userId, subvendorId],
             function (err, subvendorQueryResult) {
