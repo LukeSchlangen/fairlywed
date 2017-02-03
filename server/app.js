@@ -7,6 +7,7 @@ var userData = require('./routes/user-data');
 var vendorSearchData = require('./routes/vendor-search-data');
 var vendorAccountData = require('./routes/vendor-account-data');
 var vendorDetailsData = require('./routes/vendor-details-data');
+var subvendorDetailsData = require('./routes/subvendor-details-data');
 var packageData = require('./routes/package-data');
 var portDecision = process.env.PORT || 5000;
 
@@ -27,6 +28,7 @@ app.use(auth.tokenDecoder);
 app.use("/userData", userData);
 app.use("/vendorAccountData", vendorAccountData);
 app.use("/vendorDetailsData", vendorDetailsData);
+app.use("/subvendorDetailsData", subvendorDetailsData);
 
 app.listen(portDecision, function(){
   console.log("Listening on port: ", portDecision);

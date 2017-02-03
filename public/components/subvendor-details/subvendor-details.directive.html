@@ -1,0 +1,15 @@
+
+subvendor details directive, state params: {{vm.params}}
+
+package details array: {{vm.packages}}
+
+<ul>
+    <li ng-repeat="package in vm.packages.list">{{package.name}}, id {{package.id}}, price {{package.price}}, active {{package.is_active}}</li>
+</ul>
+
+<!--<a ui-sref=".subvendor">Subvendor clicker</a>
+<section ng-repeat="subvendor in vm.subvendors.list">
+    <a ui-sref=".subvendor.details({subvendorId: subvendor.id})">{{subvendor.name || subvendor.parent_vendor_name}}, Subvendor ID is {{subvendor.id}}</a>
+</section>
+
+<div ui-view></div>-->
