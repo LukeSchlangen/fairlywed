@@ -1,5 +1,5 @@
-app.controller("VendorAccountController", ["PackagesFactory", "VendorAccountFactory", 
-    function (PackagesFactory, VendorAccountFactory) {
+app.controller("VendorAccountController", ["PackagesFactory", "VendorAccountFactory", "$state",
+    function (PackagesFactory, VendorAccountFactory, $state) {
         var self = this;
         self.packages = PackagesFactory.packages;
         self.vendors = VendorAccountFactory.vendors;
@@ -20,5 +20,8 @@ app.controller("VendorAccountController", ["PackagesFactory", "VendorAccountFact
         self.updatePrice = function(package) {
             console.log('Package price update: ', package)
         };
+        self.reloadState = function() {
+            $state.reload();
+        }
     }
 ]);

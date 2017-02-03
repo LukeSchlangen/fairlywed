@@ -1,6 +1,6 @@
 <h2>Vendors</h2>
 <section ng-repeat="vendor in vm.vendors.list">
-    <a ui-sref=".details({vendorId: vendor.id})" ng-click="vm.updateSubvendorsList()">{{vendor.name}}, ID is {{vendor.id}}<input type="text" ng-model="vendor.name"></a>
+    <a ui-sref=".details({vendorId: vendor.id})" ng-click="vm.reloadState()">{{vendor.name}}, ID is {{vendor.id}}<input type="text" ng-model="vendor.name"></a>
     <button>Some way to set up a Stripe Account</button>
 </section>
 <p>What is the legal name of your business?</p>
