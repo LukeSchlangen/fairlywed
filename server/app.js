@@ -6,6 +6,7 @@ var auth = require('./modules/auth');
 var userData = require('./routes/user-data');
 var vendorSearchData = require('./routes/vendor-search-data');
 var vendorAccountData = require('./routes/vendor-account-data');
+var vendorDetailsData = require('./routes/vendor-details-data');
 var packageData = require('./routes/package-data');
 var portDecision = process.env.PORT || 5000;
 
@@ -25,6 +26,7 @@ app.use(auth.tokenDecoder);
 /* Whatever you do below this is protected by your authentication. */
 app.use("/userData", userData);
 app.use("/vendorAccountData", vendorAccountData);
+app.use("/vendorDetailsData", vendorDetailsData);
 
 app.listen(portDecision, function(){
   console.log("Listening on port: ", portDecision);
