@@ -1,9 +1,6 @@
 <h2>Vendors</h2>
 <section ng-repeat="vendor in vm.vendors.list">
     <a ui-sref=".details({vendorId: vendor.id})">{{vendor.name}}, ID is {{vendor.id}}<input type="text" ng-model="vendor.name"></a>
-    <button>Some way to set up a Stripe Account</button>
 </section>
-<p>What is the legal name of your business?</p>
-<p>In order for you to accept payment, you will need a Stripe Account</p>
 
 <div ui-view></div>
