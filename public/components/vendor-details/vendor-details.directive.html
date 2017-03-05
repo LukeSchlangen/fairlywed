@@ -1,11 +1,6 @@
-
-vendor details directive, state params: {{vm.params}}
-
 <p>What is the legal name of your business?</p>
 <p>In order for you to accept payment, you will need a Stripe Account</p>
 <button>Some way to set up a Stripe Account</button>
-
-subvendor details array: {{vm.subvendors}}
 <a ui-sref=".subvendor">Subvendor clicker</a>
 <section ng-repeat="subvendor in vm.subvendors.list">
     <a ui-sref=".subvendor.details({subvendorId: subvendor.id})">{{subvendor.name || subvendor.parent_vendor_name}}, Subvendor ID is {{subvendor.id}}</a>
