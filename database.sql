@@ -214,11 +214,10 @@ AND (SELECT ST_Distance(
 	)) < (SELECT COALESCE(subvendors.travelDistance, vendors.travelDistance))
 LIMIT 10;
 
-SELECT * FROM subvendors 
-FULL OUTER JOIN vendors ON subvendors.parent_vendor_id=vendors.id 
-FULL OUTER JOIN users_vendors ON users_vendors.vendor_id=vendors.id 
-FULL OUTER JOIN users ON users.id=users_vendors.user_id 
-FULL OUTER JOIN subvendors_packages ON subvendors.id=subvendors_packages.subvendor_id 
-FULL OUTER JOIN packages ON packages.id=subvendors_packages.package_id 
-WHERE users.id=1
-ORDER BY subvendors.parent_vendor_id, subvendors_packages.subvendor_id, subvendors_packages.package_id;
+SELECT *
+FROM users_vendors
+JOIN vendors ON users_vendors.user_id=1 AND vendors.id=users_vendors.vendor_id -- Get all vendors for current user - This is to only give access to users who should have access
+JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=1 -- Return specific subvendor that is searched for - still based on earlier permission
+JOIN subvendors_packages ON subvendors_packages.subvendor_id=subvendors.id -- Create relation to packages
+RIGHT OUTER JOIN packages ON subvendors_packages.package_id=packages.id -- Add list of all packages
+WHERE packages.is_active=TRUE AND packages.vendortype_id=1; -- Limit to subvendor package types (eg photographers)
