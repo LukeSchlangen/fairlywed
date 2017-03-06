@@ -171,6 +171,10 @@ END LOOP;
 END
 $do$;
 
+-- INSERT INTO users_vendors (user_id, vendor_id)
+-- VALUES (1, 1),
+-- (1,2);
+
 -- SAMPLE QUERIES
 
 -- Vendors who service Eden Prairie, lat and long need to be passed in and the results are in meters

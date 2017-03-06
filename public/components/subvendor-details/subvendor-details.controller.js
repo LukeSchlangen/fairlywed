@@ -32,5 +32,9 @@ app.controller("SubvendorDetailsController", ["$http", "AuthFactory", "$statePar
                 console.log('Not logged in or not authorized.');
             }
         });
+
+        self.savePackage = function(packageToSave) {
+            console.log(packageToSave);
+        }
     }
 ]);
