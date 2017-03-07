@@ -24,6 +24,7 @@ CREATE TABLE vendors (
 );
 
 CREATE TABLE users_vendors (
+	id SERIAL,
 	user_id INT NOT NULL REFERENCES users,
 	vendor_id INT NOT NULL REFERENCES vendors,
 	PRIMARY KEY(user_id, vendor_id)
@@ -53,6 +54,7 @@ CREATE TABLE packages(
 );
 
 CREATE TABLE subvendors_packages (
+	id SERIAL,
 	subvendor_id INT NOT NULL REFERENCES subvendors,
 	package_id INT NOT NULL REFERENCES packages,
 	price INT CHECK (price > 100 AND price <100000),
@@ -66,6 +68,7 @@ CREATE TABLE clients (
 );
 
 CREATE TABLE users_clients (
+	id SERIAL,
 	user_id INT NOT NULL REFERENCES users,
 	client_id INT NOT NULL REFERENCES clients,
 	PRIMARY KEY(user_id, client_id)
@@ -77,6 +80,7 @@ CREATE TABLE availability (
 );
 
 CREATE TABLE subvendor_availability (
+	id SERIAL,
 	subvendor_id INT NOT NULL REFERENCES subvendors,
 	day DATE,
     availability_id INT NOT NULL REFERENCES subvendors,
@@ -225,3 +229,17 @@ JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=1 --
 JOIN subvendors_packages ON subvendors_packages.subvendor_id=subvendors.id -- Create relation to packages
 RIGHT OUTER JOIN packages ON subvendors_packages.package_id=packages.id -- Add list of all packages
 WHERE packages.is_active=TRUE AND packages.vendortype_id=1; -- Limit to subvendor package types (eg photographers)
+
+SELECT subvendors_packages.id AS id, 
+packages.id AS package_id,  
+subvendors.id AS subvendor_id,  
+packages.name AS name,  
+subvendors_packages.price AS price,  
+subvendors_packages.is_active AS is_active  
+FROM users_vendors  
+JOIN vendors ON users_vendors.user_id=1 AND vendors.id=users_vendors.vendor_id  
+JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=1  
+JOIN subvendors_packages ON subvendors_packages.subvendor_id=subvendors.id  
+RIGHT OUTER JOIN packages ON subvendors_packages.package_id=packages.id  
+WHERE packages.is_active=TRUE AND packages.vendortype_id=1 
+ORDER BY packages.id;
