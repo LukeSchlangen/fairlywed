@@ -37,7 +37,7 @@ CREATE TABLE subvendortypes (
 
 CREATE TABLE subvendors (
 	id SERIAL PRIMARY KEY,
-	name VARCHAR(500), -- if null, pull value from the parent
+	name VARCHAR(500) UNIQUE NOT NULL, -- if null, pull value from the parent
 	location geography, -- if null, pull value from the parent
 	travelDistance INT, -- if null, pull value from the parent
 	parent_vendor_id INT NOT NULL REFERENCES vendors,
@@ -106,9 +106,9 @@ INSERT INTO subvendors (name, parent_vendor_id, vendortype_id, url_slug, locatio
 VALUES ('Minnetonka Photography', 1, 1, 'minnetonka-photography', null),
 ('Minnetonka Videography', 1, 2, 'minnetonka-videography', null),
 ('Minnetonka DJ', 1, 3, 'minnetonka-dj', CAST(ST_SetSRID(ST_Point(-93.3687, 45.0212),4326) As geography)), -- the dj is stationed out of a different office and has a different location
-(null, 2, 1, 'edina-wedding-photography', null),
+('Edina Wedding Photography', 2, 1, 'edina-wedding-photography', null),
 ('Bloomington Wedding Photography', 3, 1, 'bloomington-wedding-photography', null),
-(null, 3, 2, 'bloomington-videography', null),
+('The Bloomington Wedding Vendor', 3, 2, 'bloomington-videography', null),
 ('Minneapolis Wedding Photographers', 4, 1, 'mineapolis-wedding-photographers', null);
 
 -- INSERTING PACKAGES

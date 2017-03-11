@@ -2,7 +2,7 @@ app.factory("VendorDetailsFactory", ["$http", "AuthFactory", "$stateParams", fun
 
     var self = this;
 
-    var subvendors = { list: [] };
+    var vendor = { subvendorList: [], details: {} };
 
     AuthFactory.$onAuthStateChanged(updateList);
 
@@ -15,6 +15,21 @@ app.factory("VendorDetailsFactory", ["$http", "AuthFactory", "$stateParams", fun
                 firebaseUser.getToken().then(function (idToken) {
                     $http({
                         method: 'GET',
+                        url: '/vendorDetailsData/subvendorsList',
+                        headers: {
+                            id_token: idToken,
+                            vendor_id: $stateParams.vendorId
+                        }
+                    }).then(function (response) {
+                        console.log('subvendors controller returned: ', response.data);
+                        vendor.subvendorList = response.data.subvendors;
+                    }).catch(function (err) {
+                        console.error('Error retreiving private user data: ', err);
+                        vendor.subvendorList = [];
+                    });
+
+                    $http({
+                        method: 'GET',
                         url: '/vendorDetailsData',
                         headers: {
                             id_token: idToken,
@@ -22,15 +37,16 @@ app.factory("VendorDetailsFactory", ["$http", "AuthFactory", "$stateParams", fun
                         }
                     }).then(function (response) {
                         console.log('subvendors controller returned: ', response.data);
-                        subvendors.list = response.data.subvendors;
+                        vendor.details = response.data;
                     }).catch(function (err) {
                         console.error('Error retreiving private user data: ', err);
-                        subvendors.list = [];
+                        vendor.details = {};
                     });
                 });
             } else {
                 console.log('Not logged in or not authorized.');
-                subvendors.list = [];
+                vendor.subvendorList = [];
+                vendor.details = {};
             }
         });
     }
@@ -65,8 +81,7 @@ app.factory("VendorDetailsFactory", ["$http", "AuthFactory", "$stateParams", fun
     // }
 
     return {
-        subvendors: subvendors,
-        updateList: updateList,
-        stateParams: $stateParams
+        vendor: vendor,
+        updateList: updateList
     };
 }]);

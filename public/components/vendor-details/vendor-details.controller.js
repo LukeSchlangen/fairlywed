@@ -4,6 +4,6 @@ app.controller("VendorDetailsController", ["VendorDetailsFactory", "AuthFactory"
 
         VendorDetailsFactory.updateList();
 
-        self.subvendors = VendorDetailsFactory.subvendors;
+        self.vendor = VendorDetailsFactory.vendor;
     }
 ]);

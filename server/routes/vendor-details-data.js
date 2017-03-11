@@ -6,9 +6,29 @@ router.get("/", function (req, res) {
     pool.connect(function (err, client, done) {
         var userId = req.decodedToken.userSQLId;
         var vendorId = req.headers.vendor_id;
-        client.query('SELECT vendors.name AS parent_vendor_name, ' +
-            'vendors.id AS parent_vendor_id, ' +
-            'subvendors.id AS id, ' +
+        client.query('SELECT * ' +
+            'FROM vendors ' +
+            'FULL OUTER JOIN users_vendors ON users_vendors.vendor_id=vendors.id ' +
+            'WHERE users_vendors.user_id=$1 ' + // This line validates that the user is authorized to view this data
+            'AND vendors.id=$2',
+            [userId, vendorId],
+            function (err, subvendorQueryResult) {
+                done();
+                if (err) {
+                    console.log('Error vendor data GET SQL query task', err);
+                    res.sendStatus(500);
+                } else {
+                    res.send(subvendorQueryResult.rows[0]);
+                }
+            });
+    });
+});
+
+router.get("/subvendorsList", function (req, res) {
+    pool.connect(function (err, client, done) {
+        var userId = req.decodedToken.userSQLId;
+        var vendorId = req.headers.vendor_id;
+        client.query('SELECT subvendors.id AS id, ' +
             'subvendors.name AS name ' +
             'FROM subvendors ' +
             'FULL OUTER JOIN vendors ON vendors.id=subvendors.parent_vendor_id ' + 
