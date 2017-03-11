@@ -175,9 +175,13 @@ END LOOP;
 END
 $do$;
 
--- INSERT INTO users_vendors (user_id, vendor_id)
--- VALUES (1, 1),
--- (1,2);
+-- INSERT INTO users
+INSERT INTO users (name, email, firebase_user_id) 
+VALUES ('Alice Fotografo', 'alicefotografo@gmail.com', 'HtSlvK5TTLern4NkqQyzQZ0KoYE2');
+
+INSERT INTO users_vendors (user_id, vendor_id)
+ VALUES (1, 1),
+ (1,2);
 
 -- SAMPLE QUERIES
 
@@ -230,6 +234,8 @@ JOIN subvendors_packages ON subvendors_packages.subvendor_id=subvendors.id -- Cr
 RIGHT OUTER JOIN packages ON subvendors_packages.package_id=packages.id -- Add list of all packages
 WHERE packages.is_active=TRUE AND packages.vendortype_id=1; -- Limit to subvendor package types (eg photographers)
 
+
+-- Select all packages for a specific subvender
 SELECT subvendors_packages.id AS id, 
 packages.id AS package_id,  
 subvendors.id AS subvendor_id,  
@@ -243,3 +249,66 @@ JOIN subvendors_packages ON subvendors_packages.subvendor_id=subvendors.id
 RIGHT OUTER JOIN packages ON subvendors_packages.package_id=packages.id  
 WHERE packages.is_active=TRUE AND packages.vendortype_id=1 
 ORDER BY packages.id;
+
+-- Add a new package for a specific subvendor (next several queries)
+SELECT subvendors_packages.id AS id, 
+packages.id AS package_id,  
+subvendors.id AS subvendor_id,  
+packages.name AS name,  
+subvendors_packages.price AS price,  
+subvendors_packages.is_active AS is_active  
+FROM users_vendors  
+JOIN vendors ON users_vendors.user_id=1 AND vendors.id=users_vendors.vendor_id  
+JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=1  
+JOIN subvendors_packages ON subvendors_packages.subvendor_id=subvendors.id  
+RIGHT OUTER JOIN packages ON subvendors_packages.package_id=packages.id  
+WHERE subvendors_packages.id=1;
+
+-- Select only the correct one to be updated
+SELECT subvendors_packages.id AS id, 
+packages.id AS package_id,  
+subvendors.id AS subvendor_id,  
+packages.name AS name,  
+subvendors_packages.price AS price,  
+subvendors_packages.is_active AS is_active  
+FROM users_vendors  
+JOIN vendors ON users_vendors.user_id=1 AND vendors.id=users_vendors.vendor_id  
+JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=1  
+JOIN subvendors_packages ON subvendors_packages.subvendor_id=subvendors.id  
+RIGHT OUTER JOIN packages ON subvendors_packages.package_id=packages.id  
+WHERE subvendors_packages.id=1;
+
+-- Select only the correct id of one to be updated
+UPDATE subvendors_packages
+SET price=1200, is_active=TRUE 
+WHERE id = (
+SELECT subvendors_packages.id  
+FROM users_vendors  
+JOIN vendors ON users_vendors.user_id=1 AND vendors.id=users_vendors.vendor_id -- Validating user has access 
+JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=1 -- Validating vendor is linked with subvendor
+JOIN subvendors_packages ON subvendors_packages.subvendor_id=subvendors.id -- Validating subvendor is correct subvendor for this package
+WHERE subvendors_packages.id=1);
+
+-- DETERMINE IF USER SHOULD HAVE ACCESS TO SUBVENDOR DATA
+SELECT subvendors.id  
+FROM users_vendors  
+JOIN vendors ON users_vendors.user_id=1 AND vendors.id=users_vendors.vendor_id -- Validating user has access 
+JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=1; -- Validating vendor is linked with subvendor
+
+-- DETERMINE IF SUBVENDOR SHOULD BE ALLOWED TO ADD THIS PACKAGE ID
+SELECT id
+FROM packages
+WHERE id=1 AND vendortype_id=1;
+
+-- ADD NEW SUBVENDOR PACKAGE
+INSERT INTO subvendors_packages (subvendor_id, package_id, price, is_active)
+VALUES (
+(SELECT subvendors.id  
+FROM users_vendors  
+JOIN vendors ON users_vendors.user_id=1 AND vendors.id=users_vendors.vendor_id -- Validating user has access 
+JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=1), 
+(SELECT id
+FROM packages
+WHERE id=7 AND vendortype_id=1), 
+2000,
+FALSE);

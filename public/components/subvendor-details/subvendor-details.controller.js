@@ -8,6 +8,9 @@ app.controller("SubvendorDetailsController", ["$http", "AuthFactory", "$statePar
         self.params = $stateParams;
         self.packages = { list: [] };
 
+        getAllPackages();
+
+        function getAllPackages() {
         AuthFactory.$onAuthStateChanged(function (firebaseUser) {
             // firebaseUser will be null if not logged in
             console.log('AuthFactory check inside of VendorDetails Controller Triggered');
@@ -32,9 +35,35 @@ app.controller("SubvendorDetailsController", ["$http", "AuthFactory", "$statePar
                 console.log('Not logged in or not authorized.');
             }
         });
+        }
 
         self.savePackage = function(packageToSave) {
             console.log(packageToSave);
+            AuthFactory.$onAuthStateChanged(function (firebaseUser) {
+            // firebaseUser will be null if not logged in
+            console.log('AuthFactory check inside of VendorDetails Controller Triggered');
+            if (firebaseUser) {
+                // This is where we make our call to our server
+                firebaseUser.getToken().then(function (idToken) {
+                    $http({
+                        method: 'POST',
+                        url: '/subvendorDetailsData',
+                        headers: {
+                            id_token: idToken,
+                            subvendor_id: $stateParams.subvendorId
+                        },
+                        data: packageToSave
+                    }).then(function (response) {
+                        console.log('subvendor details controller returned: ', response.data);
+                        getAllPackages();
+                    }).catch(function (err) {
+                        console.error('Error retreiving private user data: ', err);
+                    });
+                });
+            } else {
+                console.log('Not logged in or not authorized.');
+            }
+        });
         }
     }
 ]);
