@@ -49,4 +49,29 @@ router.get("/subvendorsList", function (req, res) {
     });
 });
 
+router.post("/", function (req, res) {
+        var userId = req.decodedToken.userSQLId;
+        var vendorId = req.headers.vendor_id;
+        var vendorDetails = req.body;
+    pool.connect(function (err, client, done) {
+                client.query('UPDATE vendors ' +
+                    'SET name=$3, traveldistance=$4 ' +
+                    'WHERE id = ( ' +
+                    'SELECT vendors.id ' +
+                    'FROM users_vendors ' +
+                    'JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id ' +
+                    'WHERE vendors.id=$2);',
+                    [userId, vendorId, vendorDetails.name, vendorDetails.traveldistance],
+                    function (err, subvendorQueryResult) {
+                        done();
+                        if (err) {
+                            console.log('Error subvendor data UPDATE SQL query task', err);
+                            res.sendStatus(500);
+                        } else {
+                            res.sendStatus(200);
+                        }
+                    });
+    });
+});
+
 module.exports = router;

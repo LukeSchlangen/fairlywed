@@ -1,6 +1,9 @@
 <h2>Vendor Details Directive</h2>
 <p>What is the legal name of your business?</p>
 <h3>{{vm.vendor.details.name}}</h3>
+<input type="text" ng-model="vm.vendor.details.name">
+<input type="number" ng-model="vm.vendor.details.traveldistance">
+<button ng-click="vm.updateDetails(vm.vendor.details)">Update Details</button>
 <p>In order for you to accept payment, you will need a Stripe Account</p>
 <button>Some way to set up a Stripe Account</button>
 <a ui-sref=".subvendor">Subvendor clicker</a>

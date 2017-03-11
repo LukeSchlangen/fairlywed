@@ -5,5 +5,9 @@ app.controller("VendorDetailsController", ["VendorDetailsFactory", "AuthFactory"
         VendorDetailsFactory.updateList();
 
         self.vendor = VendorDetailsFactory.vendor;
+
+        self.updateDetails = function(vendorDetailsToSave) {
+            VendorDetailsFactory.updateDetails(vendorDetailsToSave);
+        }
     }
 ]);
