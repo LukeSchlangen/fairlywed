@@ -2,9 +2,11 @@ app.factory("VendorAccountFactory", ["$http", "AuthFactory", function ($http, Au
 
     var self = this;
 
-    self.vendors = { list: [] };
+    var vendors = { list: [] };
 
-    function updateVendorList() {
+    AuthFactory.$onAuthStateChanged(updateList);
+
+    function updateList() {
         AuthFactory.$onAuthStateChanged(function (firebaseUser) {
             // firebaseUser will be null if not logged in
             if (firebaseUser) {
@@ -18,19 +20,21 @@ app.factory("VendorAccountFactory", ["$http", "AuthFactory", function ($http, Au
                         }
                     }).then(function (response) {
                         console.log('Vendors factory returned: ', response.data.vendors);
-                        self.vendors.list = response.data.vendors;
+                        vendors.list = response.data.vendors;
                     }).catch(function (err) {
                         console.error('Error retreiving private user data: ', err);
+                        vendors.list = [];
                     });
                 });
             } else {
                 console.log('Not logged in or not authorized.');
+                vendors.list = [];
             }
         });
     }
 
     return {
-        vendors: self.vendors,
-        updateList: updateVendorList
+        vendors: vendors,
+        updateList: updateList
     };
 }]);
