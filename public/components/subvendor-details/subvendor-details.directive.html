@@ -1,7 +1,3 @@
-<ul>
-    <li ng-repeat="package in vm.packages.list">{{package.name}}, id {{package.id}}, price {{package.price}}, active {{package.is_active}}</li>
-    <span class='col-xs-3'></span>
-</ul>
 <div ng-repeat="package in vm.packages.list">
     <span>{{package.name}}</span>
     <span><input type="number" ng-model="package.price"></span>
