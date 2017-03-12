@@ -45,7 +45,8 @@ app.factory("SubvendorFactory", ["$http", "AuthFactory", "$stateParams", functio
                 });
             } else {
                 console.log('Not logged in or not authorized.');
-                subvendors.list = [];
+                subvendors.packageList = [];
+                subvendor.details = {};
             }
         });
     }
