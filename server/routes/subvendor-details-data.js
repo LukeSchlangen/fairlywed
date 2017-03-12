@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var pool = require('../modules/pg-pool');
 
-router.get("/", function (req, res) {
+router.get('/', function (req, res) {
     var userId = req.decodedToken.userSQLId;
     var subvendorId = req.headers.subvendor_id;
     pool.connect(function (err, client, done) {
@@ -38,7 +38,7 @@ router.get("/", function (req, res) {
     });
 });
 
-router.post("/", function (req, res) {
+router.post('/', function (req, res) {
     var userId = req.decodedToken.userSQLId;
     var subvendorId = req.headers.subvendor_id;
     var package = req.body;
