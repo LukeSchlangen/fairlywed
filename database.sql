@@ -316,10 +316,20 @@ FALSE);
 -- ADD NEW VENDOR
 WITH new_vendor_id AS (
 	INSERT INTO vendors (name, location, traveldistance) 
-	VALUES (1, 
+	VALUES ('Bob Studios', 
 			CAST(ST_SetSRID(ST_Point(COALESCE(NULL, -93.4687), COALESCE(NULL, 44.9212)),4326) AS geography), 
 			100000) 
 	RETURNING id
 ) 
 INSERT INTO users_vendors (user_id, vendor_id) 
 VALUES (1, (SELECT id FROM new_vendor_id));
+
+-- ADDING NEW SUBVENDOR
+INSERT INTO subvendors (name, parent_vendor_id, vendortype_id, url_slug) 
+VALUES ('Bob The Photographer', 
+(SELECT vendors.id  
+FROM users_vendors  
+JOIN vendors ON users_vendors.user_id=1 AND vendors.id=users_vendors.vendor_id
+WHERE vendors.id=1), -- making sure user has access to vendor
+1, -- hard coded for photographers
+'bob-the-photo-guy');

@@ -9,5 +9,9 @@ app.controller("VendorDetailsController", ["VendorDetailsFactory", "AuthFactory"
         self.updateDetails = function(vendorDetailsToSave) {
             VendorDetailsFactory.updateDetails(vendorDetailsToSave);
         }
+
+        self.addSubvendor = function(newSubvendor) {
+            VendorDetailsFactory.addSubvendor(newSubvendor);
+        }
     }
 ]);

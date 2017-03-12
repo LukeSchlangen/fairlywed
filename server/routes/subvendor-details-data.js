@@ -10,6 +10,36 @@ router.get('/', function (req, res) {
             console.log('Error connecting to database', err);
             res.sendStatus(500);
         } else {
+            client.query('SELECT subvendors.id AS subvendor_id, ' +
+                'subvendors.name AS name, ' +
+                'subvendors.url_slug AS "urlSlug", ' +
+                'subvendors.is_active AS is_active ' +
+                'FROM users_vendors ' +
+                'JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id ' +
+                'JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=$2;',
+                [userId, subvendorId],
+                function (err, subvendorQueryResult) {
+                    done();
+                    if (err) {
+                        console.log('Error subvendor data GET SQL query task', err);
+                        res.sendStatus(500);
+                    } else {
+                        res.send(subvendorQueryResult.rows[0]);
+                    }
+                });
+
+        }
+    });
+});
+
+router.get('/packages', function (req, res) {
+    var userId = req.decodedToken.userSQLId;
+    var subvendorId = req.headers.subvendor_id;
+    pool.connect(function (err, client, done) {
+        if (err) {
+            console.log('Error connecting to database', err);
+            res.sendStatus(500);
+        } else {
             client.query('SELECT subvendors_packages.id AS id, ' +
                 'packages.id AS package_id, ' +
                 'subvendors.id AS subvendor_id, ' +
@@ -39,6 +69,62 @@ router.get('/', function (req, res) {
 });
 
 router.post('/', function (req, res) {
+    var userId = req.decodedToken.userSQLId;
+    var vendorId = req.headers.vendor_id;
+    var subvendor = req.body;
+    pool.connect(function (err, client, done) {
+        if (err) {
+            console.log('Error connecting to database', err);
+            res.sendStatus(500);
+        } else {
+            client.query('INSERT INTO subvendors (name, parent_vendor_id, vendortype_id, url_slug) ' +
+                'VALUES ($3, ' +
+                '(SELECT vendors.id ' +
+                'FROM users_vendors ' +
+                'JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id ' +
+                'WHERE vendors.id=$2), ' +
+                '1, ' + // -- hard coded for photographers
+                '$4);',
+                [userId, vendorId, subvendor.name, subvendor.urlSlug],
+                function (err, subvendorQueryResult) {
+                    done();
+                    if (err) {
+                        console.log('Error vendor data INSERT SQL query task', err);
+                        res.sendStatus(500);
+                    } else {
+                        res.sendStatus(200);
+                    }
+                });
+        }
+    });
+});
+
+router.put('/', function (req, res) {
+    var userId = req.decodedToken.userSQLId;
+    var subvendorId = req.headers.subvendor_id;
+    var subvendorDetails = req.body;
+    pool.connect(function (err, client, done) {
+        client.query('UPDATE subvendors ' +
+            'SET name=$3, traveldistance=$4, url_slug=$5 ' +
+            'WHERE id = ( ' +
+            'SELECT subvendors.id ' +
+            'FROM users_vendors ' +
+            'JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id ' +
+            'JOIN subvendors ON subvendors.parent_vendor_id=vendors.id AND subvendors.id=$2);',
+            [userId, subvendorId, subvendorDetails.name, subvendorDetails.traveldistance, subvendorDetails.urlSlug],
+            function (err, subvendorQueryResult) {
+                done();
+                if (err) {
+                    console.log('Error subvendor data UPDATE SQL query task', err);
+                    res.sendStatus(500);
+                } else {
+                    res.sendStatus(200);
+                }
+            });
+    });
+});
+
+router.post('/upsertPackage', function (req, res) {
     var userId = req.decodedToken.userSQLId;
     var subvendorId = req.headers.subvendor_id;
     var package = req.body;

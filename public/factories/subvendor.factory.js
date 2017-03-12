@@ -2,7 +2,7 @@ app.factory("SubvendorFactory", ["$http", "AuthFactory", "$stateParams", functio
 
     var self = this;
 
-    var subvendors = { list: [] };
+    var subvendor = { packageList: [], details: {} };
 
     AuthFactory.$onAuthStateChanged(updateList);
 
@@ -15,17 +15,32 @@ app.factory("SubvendorFactory", ["$http", "AuthFactory", "$stateParams", functio
                 firebaseUser.getToken().then(function (idToken) {
                     $http({
                         method: 'GET',
-                        url: '/subvendorDetailsData',
+                        url: '/subvendorDetailsData/packages',
                         headers: {
                             id_token: idToken,
                             subvendor_id: $stateParams.subvendorId
                         }
                     }).then(function (response) {
                         console.log('subvendor details factory returned: ', response.data);
-                        subvendors.list = response.data.packages;
+                        subvendor.packageList = response.data.packages;
                     }).catch(function (err) {
                         console.error('Error retreiving private user data: ', err);
-                        subvendors.list = [];
+                        subvendor.packageList = [];
+                    });
+
+                    $http({
+                        method: 'GET',
+                        url: '/subvendorDetailsData',
+                        headers: {
+                            id_token: idToken,
+                            subvendor_id: $stateParams.subvendorId
+                        }
+                    }).then(function (response) {
+                        console.log('subvendors controller returned: ', response.data);
+                        subvendor.details = response.data;
+                    }).catch(function (err) {
+                        console.error('Error retreiving private user data: ', err);
+                        subvendor.details = {};
                     });
                 });
             } else {
@@ -45,7 +60,7 @@ app.factory("SubvendorFactory", ["$http", "AuthFactory", "$stateParams", functio
                 firebaseUser.getToken().then(function (idToken) {
                     $http({
                         method: 'POST',
-                        url: '/subvendorDetailsData',
+                        url: '/subvendorDetailsData/upsertPackage',
                         headers: {
                             id_token: idToken,
                             subvendor_id: $stateParams.subvendorId
@@ -64,8 +79,38 @@ app.factory("SubvendorFactory", ["$http", "AuthFactory", "$stateParams", functio
         });
     }
 
+    function updateDetails(subvendorToSave) {
+        console.log(subvendorToSave);
+        AuthFactory.$onAuthStateChanged(function (firebaseUser) {
+            // firebaseUser will be null if not logged in
+            console.log('AuthFactory check inside of VendorDetails Controller Triggered');
+            if (firebaseUser) {
+                // This is where we make our call to our server
+                firebaseUser.getToken().then(function (idToken) {
+                    $http({
+                        method: 'PUT',
+                        url: '/subvendorDetailsData',
+                        headers: {
+                            id_token: idToken,
+                            subvendor_id: $stateParams.subvendorId
+                        },
+                        data: subvendorToSave
+                    }).then(function (response) {
+                        console.log('subvendor factory returned: ', response.data);
+                        updateList();
+                    }).catch(function (err) {
+                        console.error('Error retreiving private user data: ', err);
+                    });
+                });
+            } else {
+                console.log('Not logged in or not authorized.');
+            }
+        });
+    }
+
     return {
-        subvendors: subvendors,
+        subvendor: subvendor,
+        updateDetails: updateDetails,
         updateList: updateList,
         updatePackage: updatePackage
     };

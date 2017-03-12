@@ -2,12 +2,16 @@ app.controller("SubvendorDetailsController", ["AuthFactory", "SubvendorFactory",
     function (AuthFactory, SubvendorFactory) {
         var self = this;
 
-        self.packages = SubvendorFactory.subvendors;
+        self.subvendor = SubvendorFactory.subvendor;
 
         getAllPackages();
 
         function getAllPackages() {
             SubvendorFactory.updateList();
+        }
+
+        self.updateDetails = function(vendorDetailsToSave) {
+            SubvendorFactory.updateDetails(vendorDetailsToSave);
         }
 
         self.savePackage = function (packageToSave) {
