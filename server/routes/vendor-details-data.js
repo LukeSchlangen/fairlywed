@@ -31,8 +31,8 @@ router.get("/subvendorsList", function (req, res) {
         client.query('SELECT subvendors.id AS id, ' +
             'subvendors.name AS name ' +
             'FROM subvendors ' +
-            'FULL OUTER JOIN vendors ON vendors.id=subvendors.parent_vendor_id ' + 
-            'FULL OUTER JOIN users_vendors ON users_vendors.vendor_id=vendors.id ' +
+            'JOIN vendors ON vendors.id=subvendors.parent_vendor_id ' + 
+            'JOIN users_vendors ON users_vendors.vendor_id=vendors.id ' +
             'WHERE users_vendors.user_id=$1 ' + // This line validates that the user is authorized to view this data
             'AND vendors.id=$2 ' +
             'ORDER BY subvendors.id;',
@@ -49,7 +49,7 @@ router.get("/subvendorsList", function (req, res) {
     });
 });
 
-router.post("/", function (req, res) {
+router.put("/", function (req, res) {
         var userId = req.decodedToken.userSQLId;
         var vendorId = req.headers.vendor_id;
         var vendorDetails = req.body;

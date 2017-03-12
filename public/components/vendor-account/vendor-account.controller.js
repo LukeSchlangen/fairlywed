@@ -20,8 +20,9 @@ app.controller("VendorAccountController", ["PackagesFactory", "VendorAccountFact
         self.updatePrice = function(package) {
             console.log('Package price update: ', package)
         };
-        self.reloadState = function() {
-            $state.reload();
+        
+        self.addVendor = function(newVendor) {
+            VendorAccountFactory.addVendor(newVendor);
         }
     }
 ]);

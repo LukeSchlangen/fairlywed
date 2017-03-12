@@ -60,7 +60,7 @@ app.factory("VendorDetailsFactory", ["$http", "AuthFactory", "$stateParams", fun
                 // This is where we make our call to our server
                 firebaseUser.getToken().then(function (idToken) {
                     $http({
-                        method: 'POST',
+                        method: 'PUT',
                         url: '/vendorDetailsData',
                         headers: {
                             id_token: idToken,

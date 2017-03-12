@@ -312,3 +312,14 @@ FROM packages
 WHERE id=7 AND vendortype_id=1), 
 2000,
 FALSE);
+
+-- ADD NEW VENDOR
+WITH new_vendor_id AS (
+	INSERT INTO vendors (name, location, traveldistance) 
+	VALUES (1, 
+			CAST(ST_SetSRID(ST_Point(COALESCE(NULL, -93.4687), COALESCE(NULL, 44.9212)),4326) AS geography), 
+			100000) 
+	RETURNING id
+) 
+INSERT INTO users_vendors (user_id, vendor_id) 
+VALUES (1, (SELECT id FROM new_vendor_id));
