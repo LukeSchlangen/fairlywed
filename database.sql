@@ -83,7 +83,7 @@ CREATE TABLE subvendor_availability (
 	id SERIAL,
 	subvendor_id INT NOT NULL REFERENCES subvendors,
 	day DATE,
-    availability_id INT NOT NULL REFERENCES subvendors,
+    availability_id INT NOT NULL REFERENCES availability,
 	PRIMARY KEY(subvendor_id, day)
 );
 
@@ -156,7 +156,7 @@ VALUES (1, 1, 2000),
 
 -- CREATING AVAILABILITY STATUSES
 INSERT INTO availability (status)
-VALUES ('available'), ('booked');
+VALUES ('unavailable'), ('available'), ('booked');
 
 -- INSERTING SAMPLE AVAILABILITY - All photographer subvendors available for next 100 days
 DO
