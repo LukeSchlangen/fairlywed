@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var pool = require('../modules/pg-pool');
 
-router.get("/", function(req, res){
+router.get('/', function(req, res){
   pool.connect(function(err, client, done){
     var userId = req.decodedToken.userSQLId;
     client.query('SELECT * FROM users WHERE id=$1', [userId], function(err, userDataQueryResult){

@@ -1,4 +1,4 @@
-app.factory("PhotographerFactory", ["$http", "$stateParams", "$state", function ($http, $stateParams, $state) {
+app.factory("PhotographerSearchFactory", ["PackagesFactory", "$http", "$stateParams", "$state", function (PackagesFactory, $http, $stateParams, $state) {
 
     console.log('photographer factory logging $stateParams: ', $stateParams);
 
@@ -8,12 +8,12 @@ app.factory("PhotographerFactory", ["$http", "$stateParams", "$state", function 
     if (!self.search) { self.search = {}; };
     if (!self.search.parameters) { self.search.parameters = {}; }
     if (!self.search.parameters.package) { self.search.parameters.package = {}; }
-    self.search.parameters.location = $stateParams.location;
-    self.search.parameters.longitude = $stateParams.longitude;
-    self.search.parameters.latitude = $stateParams.latitude;
+    self.search.parameters.location = $stateParams.location || "Minneapolis, MN, USA";
+    self.search.parameters.longitude = $stateParams.longitude || -93.26501080000003;
+    self.search.parameters.latitude = $stateParams.latitude || 44.977753;
     self.search.parameters.package.id = $stateParams.package ? $stateParams.package : 2;
-    self.search.parameters.date = $stateParams.date || new Date(new Date().setFullYear(new Date().getFullYear() + 1));
-    self.packages = { list: [] };
+    self.search.parameters.date = $stateParams.date ? new Date($stateParams.date) : new Date(new Date().setFullYear(new Date().getFullYear() + 1));
+    self.packages = PackagesFactory.packages;
     self.photographers = { list: [] };
     // ------------------------------------------------------------------------------------ //
 
@@ -26,7 +26,7 @@ app.factory("PhotographerFactory", ["$http", "$stateParams", "$state", function 
             self.search.parameters.vendorType = 'photographer';
             $http({
                 method: 'GET',
-                url: '/vendorData',
+                url: '/vendorSearchData',
                 params: { search: self.search.parameters }
             }).then(function (response) {
                 console.log('Photographer factory received photographer data from the server: ', response.data);
@@ -41,6 +41,7 @@ app.factory("PhotographerFactory", ["$http", "$stateParams", "$state", function 
         // update route parameters based on search
         var newStateParameters = angular.copy(self.search.parameters);
         newStateParameters.package = self.search.parameters.package.id;
+        newStateParameters.date = self.search.parameters.date.toDateString();
         console.log('newStateParameters:', newStateParameters)
         $state.transitionTo('home.photographers', newStateParameters);
     }
@@ -48,20 +49,12 @@ app.factory("PhotographerFactory", ["$http", "$stateParams", "$state", function 
 
     function updatePackagesList() {
         if (self.search.parameters.package.id) {
-            $http({
-                method: 'GET',
-                url: '/packageData',
-                params: { vendorType: 'photographer' }
-            }).then(function (response) {
-                console.log('Photographer factory received packages data from the server: ', response.data);
+            PackagesFactory.updateList().then(function (response) {
                 var currentPackageArray = response.data.packages.filter(function (photoPackage) {
                     return photoPackage.id == $stateParams.package;
                 });
                 self.search.parameters.package = currentPackageArray[0];
-                self.packages.list = response.data.packages;
-            }).catch(function (err) {
-                console.error('Error retreiving photographer packages data: ', err);
-            });
+            }); // Loading packages list for the first time
         } else {
             console.log("All package searches must have a package id");
         }

@@ -1,7 +1,7 @@
-app.controller("PhotographerListController", ["PhotographerFactory",
-    function (PhotographerFactory) {
+app.controller("PhotographerListController", ["PhotographerSearchFactory",
+    function (PhotographerSearchFactory) {
         var self = this;
 
-        self.photographers = PhotographerFactory.photographers;
+        self.photographers = PhotographerSearchFactory.photographers;
     }
 ]);
