@@ -79,12 +79,17 @@ CREATE TABLE availability (
 	status VARCHAR(500) NOT NULL
 );
 
+CREATE TABLE calendar_dates (
+	id SERIAL PRIMARY KEY,
+	day DATE
+);
+
 CREATE TABLE subvendor_availability (
 	id SERIAL,
 	subvendor_id INT NOT NULL REFERENCES subvendors,
-	day DATE,
+	date_id INT NOT NULL REFERENCES calendar_dates,
     availability_id INT NOT NULL REFERENCES availability,
-	PRIMARY KEY(subvendor_id, day)
+	PRIMARY KEY(subvendor_id, date_id)
 );
 
 
@@ -162,15 +167,17 @@ VALUES ('unavailable'), ('available'), ('booked');
 DO
 $do$
 BEGIN 
-FOR i IN 1..800 LOOP
-   INSERT INTO subvendor_availability (subvendor_id, day, availability_id)
-   VALUES (1, (CURRENT_DATE) + i, 1);
-   INSERT INTO subvendor_availability (subvendor_id, day, availability_id)
-   VALUES (4, (CURRENT_DATE) + i, 1);
-   INSERT INTO subvendor_availability (subvendor_id, day, availability_id)
-   VALUES (5, (CURRENT_DATE) + i, 1);
-   INSERT INTO subvendor_availability (subvendor_id, day, availability_id)
-   VALUES (6, (CURRENT_DATE) + i, 1);
+FOR i IN -1000..800 LOOP
+	WITH new_calendar_date_id AS (
+		INSERT INTO calendar_dates (day) 
+		VALUES ((CURRENT_DATE) + i) 
+		RETURNING id
+	) 
+   INSERT INTO subvendor_availability (subvendor_id, date_id, availability_id)
+   VALUES (1, (SELECT id FROM new_calendar_date_id), 2),
+   (4, (SELECT id FROM new_calendar_date_id), 2),
+   (5, (SELECT id FROM new_calendar_date_id), 2),
+   (6, (SELECT id FROM new_calendar_date_id), 2);
 END LOOP;
 END
 $do$;
@@ -234,6 +241,26 @@ JOIN subvendors_packages ON subvendors_packages.subvendor_id=subvendors.id -- Cr
 RIGHT OUTER JOIN packages ON subvendors_packages.package_id=packages.id -- Add list of all packages
 WHERE packages.is_active=TRUE AND packages.vendortype_id=1; -- Limit to subvendor package types (eg photographers)
 
+
+-- Only Returning photographers that service a given area on a given day
+SELECT COALESCE(subvendors.name, vendors.name) AS name, 
+packages.name AS package, 
+subvendors_packages.price, 
+subvendors.url_slug AS url, 
+ST_Distance((SELECT COALESCE(subvendors.location, vendors.location)), CAST(ST_SetSRID(ST_Point(-93.26501080000003, 44.977753),4326) As geography)) AS distance 
+FROM subvendors JOIN subvendortypes ON subvendors.vendortype_id = subvendortypes.id 
+JOIN vendors ON vendors.id = subvendors.parent_vendor_id 
+JOIN subvendors_packages ON subvendors.id = subvendors_packages.subvendor_id 
+JOIN packages ON subvendors_packages.package_id = packages.id 
+JOIN subvendor_availability ON subvendor_availability.subvendor_id = subvendors.id 
+WHERE subvendortypes.name='photographer' 
+AND packages.name='Two Photographers: 8 Hours' 
+AND (SELECT ST_Distance(
+		(SELECT COALESCE(subvendors.location, vendors.location)),
+		(CAST(ST_SetSRID(ST_Point(-93.26501080000003, 44.977753),4326) As geography))
+	)) < (SELECT COALESCE(subvendors.travelDistance, vendors.travelDistance)) 
+AND subvendor_availability.date_id = (SELECT id FROM calendar_dates WHERE day='2017-12-12') 
+LIMIT 10;
 
 -- Select all packages for a specific subvender
 SELECT subvendors_packages.id AS id, 
@@ -333,3 +360,28 @@ JOIN vendors ON users_vendors.user_id=1 AND vendors.id=users_vendors.vendor_id
 WHERE vendors.id=1), -- making sure user has access to vendor
 1, -- hard coded for photographers
 'bob-the-photo-guy');
+
+-- SELECT ALL DATES FOR SUBVENDOR THAT CAN BE MADE AVAILABLE
+SELECT subvendor_availability.id, day, status 
+FROM subvendor_availability 
+JOIN availability ON availability.id=subvendor_availability.availability_id AND subvendor_id =(
+	SELECT subvendors.id  
+	FROM users_vendors  
+	JOIN vendors ON users_vendors.user_id=1 AND vendors.id=users_vendors.vendor_id
+	JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=4) -- MAKING SURE USER HAS ACCESS
+RIGHT OUTER JOIN calendar_dates ON calendar_dates.id=subvendor_availability.date_id 
+WHERE day >= (SELECT current_date - cast(extract(dow from current_date) as int)) AND day < (SELECT current_date - cast(extract(dow from current_date) as int)) + 365 
+ORDER BY day;
+
+-- ADDING NEW AVAILABILITY
+INSERT INTO subvendor_availability (subvendor_id, date_id, availability_id)
+VALUES (
+	(
+	SELECT subvendors.id  
+	FROM users_vendors  
+	JOIN vendors ON users_vendors.user_id=1 AND vendors.id=users_vendors.vendor_id
+	JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=6
+	), 
+	(SELECT id FROM calendar_dates WHERE day='2018-03-03'), 
+	(SELECT id FROM availability WHERE status='available')
+);

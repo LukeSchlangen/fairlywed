@@ -8,3 +8,17 @@
     <span><input type="checkbox" ng-model="package.is_active"></span>
     <span><button ng-click="vm.savePackage(package)">Save</button></span>
 </div>
+<span ng-repeat="availability in vm.subvendor.availabilityList">
+    <button ng-attr-title="{{availability.status || 'unavailable'}}" 
+            ng-click="vm.toggleAvailability(availability)">
+        {{availability.day | date:'EEE'}}
+        <br>
+        {{availability.day | date:'dd'}}
+        <br>
+        {{(availability.status || 'unavailable') | limitTo: 1}}
+    </button>
+    <span ng-if="vm.isSaturday(availability.day)">
+        {{availability.day | date:'MMMM'}}
+        <br>
+    </span>
+</span>
