@@ -10,7 +10,6 @@ router.get('/', function (req, res) {
       'packages.name AS package, ' +
       'subvendors_packages.price, ' +
       'subvendors.url_slug AS url, ' +
-      'subvendor_availability.day AS day, ' +
       'ST_Distance((SELECT COALESCE(subvendors.location, vendors.location)), CAST(ST_SetSRID(ST_Point($3, $4),4326) As geography)) AS distance ' +
       'FROM subvendors JOIN subvendortypes ON subvendors.vendortype_id = subvendortypes.id ' +
       'JOIN vendors ON vendors.id = subvendors.parent_vendor_id ' +
@@ -23,7 +22,7 @@ router.get('/', function (req, res) {
       '		(SELECT COALESCE(subvendors.location, vendors.location)),' +
       '		(CAST(ST_SetSRID(ST_Point($3, $4),4326) As geography))' +
       '	)) < (SELECT COALESCE(subvendors.travelDistance, vendors.travelDistance)) ' +
-      'AND subvendor_availability.day = $5 ' +
+      'AND subvendor_availability.date_id = (SELECT id FROM calendar_dates WHERE day=$5) ' +
       'LIMIT 10;',
       [ searchObject.vendorType, searchObject.package.id, searchObject.longitude, searchObject.latitude, searchObject.date ],
       function (err, vendorQueryResult) {

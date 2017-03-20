@@ -68,6 +68,38 @@ router.get('/packages', function (req, res) {
     });
 });
 
+router.get('/availability', function (req, res) {
+    var userId = req.decodedToken.userSQLId;
+    var subvendorId = req.headers.subvendor_id;
+    pool.connect(function (err, client, done) {
+        if (err) {
+            console.log('Error connecting to database', err);
+            res.sendStatus(500);
+        } else {
+            client.query('SELECT subvendor_availability.id, day, status ' +
+                'FROM subvendor_availability ' +
+                'JOIN availability ON availability.id=subvendor_availability.availability_id AND subvendor_id =( ' +
+                '	SELECT subvendors.id ' +
+                '	FROM users_vendors  ' +
+                '	JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id ' +
+                '	JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=$2) ' +
+                'RIGHT OUTER JOIN calendar_dates ON calendar_dates.id=subvendor_availability.date_id ' +
+                'WHERE day >= (SELECT current_date - cast(extract(dow from current_date) as int)) AND day < (SELECT current_date - cast(extract(dow from current_date) as int)) + 371 ' +
+                'ORDER BY day;',
+                [userId, subvendorId],
+                function (err, subvendorQueryResult) {
+                    done();
+                    if (err) {
+                        console.log('Error subvendor data GET SQL query task', err);
+                        res.sendStatus(500);
+                    } else {
+                        res.send(subvendorQueryResult.rows);
+                    }
+                });
+        }
+    });
+});
+
 router.post('/', function (req, res) {
     var userId = req.decodedToken.userSQLId;
     var vendorId = req.headers.vendor_id;
@@ -168,6 +200,64 @@ router.post('/upsertPackage', function (req, res) {
                     '    $5' +
                     ');',
                     [userId, subvendorId, package.package_id, package.price, !!package.is_active],
+                    function (err, subvendorQueryResult) {
+                        done();
+                        if (err) {
+                            console.log('Error vendor data INSERT SQL query task', err);
+                            res.sendStatus(500);
+                        } else {
+                            res.sendStatus(200);
+                        }
+                    });
+            }
+
+        }
+    });
+});
+
+router.post('/upsertAvailability', function (req, res) {
+    var userId = req.decodedToken.userSQLId;
+    var subvendorId = req.headers.subvendor_id;
+    var availability = req.body;
+    pool.connect(function (err, client, done) {
+        if (err) {
+            console.log('Error connecting to database', err);
+            res.sendStatus(500);
+        } else {
+            // if the availability already exists, update the availability
+            if (availability.id) {
+                client.query('UPDATE subvendor_availability ' +
+                    'SET availability_id=(SELECT id FROM availability WHERE status=$4) ' +
+                    'WHERE id = ( ' +
+                    'SELECT subvendor_availability.id ' +
+                    'FROM users_vendors ' +
+                    'JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id ' +
+                    'JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=$2 ' +
+                    'JOIN subvendor_availability ON subvendor_availability.subvendor_id=subvendors.id ' +
+                    'WHERE subvendor_availability.id=$3);',
+                    [userId, subvendorId, availability.id, availability.status],
+                    function (err, subvendorQueryResult) {
+                        done();
+                        if (err) {
+                            console.log('Error subvendor data UPDATE SQL query task', err);
+                            res.sendStatus(500);
+                        } else {
+                            res.sendStatus(200);
+                        }
+                    });
+            } else {
+                client.query('INSERT INTO subvendor_availability (subvendor_id, date_id, availability_id) ' +
+                    'VALUES (' +
+                    '	(' +
+                    '	SELECT subvendors.id  ' +
+                    '	FROM users_vendors  ' +
+                    '	JOIN vendors ON users_vendors.user_id=1 AND vendors.id=users_vendors.vendor_id ' +
+                    '	JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=1 ' +
+                    '	), ' +
+                    '	(SELECT id FROM calendar_dates WHERE day=$3), ' +
+                    '	(SELECT id FROM availability WHERE status=$4) ' +
+                    ');',
+                    [userId, subvendorId, availability.date, availability.status],
                     function (err, subvendorQueryResult) {
                         done();
                         if (err) {
