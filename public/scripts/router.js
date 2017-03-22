@@ -11,6 +11,22 @@ app.config(function ($stateProvider, $urlRouterProvider) {
             url: '/photographers?package&location&longitude&latitude&date',
             templateUrl: 'views/home/photographers.html'
         })
+        .state('photographers', {
+            url: '/photographers/:subvendorId',
+            templateUrl: 'views/photographers/home.html'
+        })
+        .state('photographers.about', {
+            url: '/about',
+            templateUrl: 'views/photographers/about.html'
+        })
+        .state('photographers.gallery', {
+            url: '/gallery',
+            templateUrl: 'views/photographers/gallery.html'
+        })
+        .state('photographers.book', {
+            url: '/book',
+            templateUrl: 'views/photographers/book.html'
+        })
         .state('home.videographers', {
             url: '/videographers',
             templateUrl: 'views/home/videographers.html'
