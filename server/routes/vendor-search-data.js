@@ -7,6 +7,7 @@ router.get('/', function (req, res) {
   pool.connect(function (err, client, done) {
     client.query(
       'SELECT COALESCE(subvendors.name, vendors.name) AS name, ' +
+      'subvendors.id AS id, ' +
       'packages.name AS package, ' +
       'subvendors_packages.price, ' +
       'subvendors.url_slug AS url, ' +

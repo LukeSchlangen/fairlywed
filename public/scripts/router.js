@@ -23,7 +23,7 @@ app.config(function ($stateProvider, $urlRouterProvider) {
             templateUrl: 'views/home/photographers.html'
         })
         .state('photographers', {
-            url: '/photographers/:subvendorId',
+            url: '/photographers/:subvendorId?package&location&longitude&latitude&date',
             templateUrl: 'views/photographers/home.html',
             abstract: true
         })
