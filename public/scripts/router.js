@@ -1,6 +1,17 @@
 app.config(function ($stateProvider, $urlRouterProvider) {
 
-    $urlRouterProvider.otherwise('/home/photographers');
+    $urlRouterProvider.otherwise(function ($injector) {
+
+        var $state = $injector.get('$state');
+
+        $state.go('404', null, {
+            location: false
+        });
+
+    });
+
+    $urlRouterProvider.when('', '/home/photographers');
+    $urlRouterProvider.when('/photographers/:subvendorId', '/photographers/:subvendorId/about');
 
     $stateProvider
         .state('home', {
@@ -13,7 +24,8 @@ app.config(function ($stateProvider, $urlRouterProvider) {
         })
         .state('photographers', {
             url: '/photographers/:subvendorId',
-            templateUrl: 'views/photographers/home.html'
+            templateUrl: 'views/photographers/home.html',
+            abstract: true
         })
         .state('photographers.about', {
             url: '/about',
@@ -58,5 +70,8 @@ app.config(function ($stateProvider, $urlRouterProvider) {
         .state('account.vendor.details.subvendor.details', {
             url: '/details/:subvendorId',
             templateUrl: 'views/account/subvendor-details.html'
+        })
+        .state('404', {
+            template: 'That is a 404'
         })
 });
