@@ -3,5 +3,6 @@ app.controller("PhotographerListController", ["PhotographerSearchFactory", "$sta
         var self = this;
 
         self.params = $stateParams;
+        self.photographers = PhotographerSearchFactory.photographers;
     }
 ]);
