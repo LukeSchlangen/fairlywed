@@ -2,7 +2,6 @@ app.controller("PhotographerListController", ["PhotographerSearchFactory", "$sta
     function (PhotographerSearchFactory, $stateParams) {
         var self = this;
 
-        self.photographers = PhotographerSearchFactory.photographers;
         self.params = $stateParams;
     }
 ]);

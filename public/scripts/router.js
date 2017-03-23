@@ -35,9 +35,9 @@ app.config(function ($stateProvider, $urlRouterProvider) {
             url: '/gallery',
             templateUrl: 'views/photographers/gallery.html'
         })
-        .state('photographers.book', {
-            url: '/book',
-            templateUrl: 'views/photographers/book.html'
+        .state('photographers.booking', {
+            url: '/booking',
+            templateUrl: 'views/photographers/booking.html'
         })
         .state('home.videographers', {
             url: '/videographers',
