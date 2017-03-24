@@ -3,7 +3,7 @@ app.factory("PhotographerSearchFactory", ["PackagesFactory", "$http", "$statePar
     console.log('photographer factory logging $stateParams: ', $stateParams);
 
     // -- SETTING DEFAULT VALUES FOR SEARCH OR GETTING THEM FROM STATE PARAMETERS ROUTING -- //
-    search = {};
+    var search = {};
     search.parameters = {};
     search.parameters.package = {};
     search.parameters.location = $stateParams.location || "Minneapolis, MN, USA";
@@ -13,6 +13,8 @@ app.factory("PhotographerSearchFactory", ["PackagesFactory", "$http", "$statePar
     search.parameters.date = $stateParams.date ? new Date($stateParams.date) : new Date(new Date().setFullYear(new Date().getFullYear() + 1));
     packages = PackagesFactory.packages;
     photographers = { list: [] };
+
+    search.parameters.subvendorId = $stateParams.subvendorId;
     // ------------------------------------------------------------------------------------ //
 
     // -- RETURNING LIST OF PHOTOGRAPHERS BASED ON SEARCH PARAMETERS -- //
@@ -30,7 +32,7 @@ app.factory("PhotographerSearchFactory", ["PackagesFactory", "$http", "$statePar
                 console.error('Error retreiving photographer data: ', err);
             });
         } else {
-            console.log("All photographer searches must have a package id, longitude, and latitude");
+            console.error("All photographer searches must have a package id, longitude, and latitude");
         }
 
         // update route parameters based on search
@@ -51,15 +53,51 @@ app.factory("PhotographerSearchFactory", ["PackagesFactory", "$http", "$statePar
                 search.parameters.package = currentPackageArray[0];
             }); // Loading packages list for the first time
         } else {
-            console.log("All package searches must have a package id");
+            console.error("All package searches must have a package id");
         }
     }
+
+    // -- PROFILE VIEW CURRENT PHOTOGRAPHER INFROMATION RETREIVAL - MORE DETAILS ABOUT ONE PHOTOGRAPHER -- //
+    var currentSubvendor = {};
+    
+    function updateSubvendorProfileDetails() {
+        // Description
+        if (search.parameters.package.id && search.parameters.longitude && search.parameters.latitude && search.parameters.subvendorId) {
+            search.parameters.vendorType = 'photographer';
+            $http({
+                method: 'GET',
+                url: '/vendorSearchData/subvendorProfile',
+                params: { search: search.parameters }
+            }).then(function (response) {
+                console.log('Photographer factory received photographer profile data from the server: ', response.data);
+                currentSubvendor.details = response.data;
+            }).catch(function (err) {
+                console.error('Error retreiving photographer profile data: ', err);
+            });
+        } else {
+            console.error("All photographer searches must have a package id, longitude, latitude, and subvendorId");
+        }
+
+        // update route parameters based on search
+        var newStateParameters = angular.copy(search.parameters);
+        newStateParameters.package = search.parameters.package.id;
+        newStateParameters.date = search.parameters.date.toDateString();
+        console.log('newStateParameters:', newStateParameters)
+        $state.transitionTo('photographers.booking', newStateParameters);
+        // Package prices
+
+        // Public images
+
+    }
+    // ------------------------------------------------------------------------------------ //
 
     return {
         packages: packages,
         photographers: photographers,
         updatePhotographersList: updatePhotographersList,
         updatePackagesList: updatePackagesList,
+        currentSubvendor: currentSubvendor,
+        updateSubvendorProfileDetails: updateSubvendorProfileDetails,
         search: search
     };
 }]);
