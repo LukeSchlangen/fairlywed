@@ -5,6 +5,8 @@ app.controller("PhotographerSearchController", ["PhotographerSearchFactory", "$s
         self.packages = PhotographerSearchFactory.packages;
         self.updatePhotographersList = PhotographerSearchFactory.updatePhotographersList;
         self.updatePhotographersList(); // adds the parameters back to url on return to view
+        self.updatePackagesList = PhotographerSearchFactory.updatePackagesList;
+        self.updatePackagesList(); // adds the packages to the page
         self.initialize = function() {
             var input = document.getElementById('searchTextField');
             var autocomplete = new google.maps.places.Autocomplete(input, {

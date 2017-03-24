@@ -4,8 +4,8 @@ app.factory("PhotographerSearchFactory", ["PackagesFactory", "$http", "$statePar
 
     // -- SETTING DEFAULT VALUES FOR SEARCH OR GETTING THEM FROM STATE PARAMETERS ROUTING -- //
     search = {};
-    if (!search.parameters) { search.parameters = {}; }
-    if (!search.parameters.package) { search.parameters.package = {}; }
+    search.parameters = {};
+    search.parameters.package = {};
     search.parameters.location = $stateParams.location || "Minneapolis, MN, USA";
     search.parameters.longitude = $stateParams.longitude || -93.26501080000003;
     search.parameters.latitude = $stateParams.latitude || 44.977753;
@@ -14,9 +14,6 @@ app.factory("PhotographerSearchFactory", ["PackagesFactory", "$http", "$statePar
     packages = PackagesFactory.packages;
     photographers = { list: [] };
     // ------------------------------------------------------------------------------------ //
-
-    updatePhotographersList(); // Loading photographers list for the first time
-    updatePackagesList(); // Loading packages list for the first time
 
     // -- RETURNING LIST OF PHOTOGRAPHERS BASED ON SEARCH PARAMETERS -- //
     function updatePhotographersList() {
@@ -62,6 +59,7 @@ app.factory("PhotographerSearchFactory", ["PackagesFactory", "$http", "$statePar
         packages: packages,
         photographers: photographers,
         updatePhotographersList: updatePhotographersList,
+        updatePackagesList: updatePackagesList,
         search: search
     };
 }]);
