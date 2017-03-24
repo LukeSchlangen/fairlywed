@@ -1,8 +1,6 @@
 app.factory("PackagesFactory", ["$http", function ($http) {
 
-    var self = this;
-
-    self.packages = { list: [] };
+    packages = { list: [] };
 
     function updatePackagesList() {
         return $http({
@@ -10,7 +8,7 @@ app.factory("PackagesFactory", ["$http", function ($http) {
             url: '/packageData',
             params: { vendorType: 'photographer' }
         }).then(function (response) {
-            self.packages.list = response.data.packages;
+            packages.list = response.data.packages;
             console.log('Packages factory returned: ', response.data.packages);
             return response;
         }).catch(function (err) {
@@ -19,7 +17,7 @@ app.factory("PackagesFactory", ["$http", function ($http) {
     }
 
     return {
-        packages: self.packages,
+        packages: packages,
         updateList: updatePackagesList
     };
 }]);

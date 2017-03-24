@@ -1,7 +1,5 @@
 app.factory("SubvendorFactory", ["$http", "AuthFactory", "$stateParams", function ($http, AuthFactory, $stateParams) {
 
-    var self = this;
-
     var subvendor = { packageList: [], details: {} };
 
     AuthFactory.$onAuthStateChanged(updateList);
