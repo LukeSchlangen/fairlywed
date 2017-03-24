@@ -3,18 +3,20 @@ app.factory("PhotographerSearchFactory", ["PackagesFactory", "$http", "$statePar
     console.log('photographer factory logging $stateParams: ', $stateParams);
 
     // -- SETTING DEFAULT VALUES FOR SEARCH OR GETTING THEM FROM STATE PARAMETERS ROUTING -- //
-    var search = {};
-    search.parameters = {};
-    search.parameters.package = {};
-    search.parameters.location = $stateParams.location || "Minneapolis, MN, USA";
-    search.parameters.longitude = $stateParams.longitude || -93.26501080000003;
-    search.parameters.latitude = $stateParams.latitude || 44.977753;
-    search.parameters.package.id = $stateParams.package ? $stateParams.package : 2;
-    search.parameters.date = $stateParams.date ? new Date($stateParams.date) : new Date(new Date().setFullYear(new Date().getFullYear() + 1));
-    packages = PackagesFactory.packages;
-    photographers = { list: [] };
-
-    search.parameters.subvendorId = $stateParams.subvendorId;
+     var search = {};
+    updateSearchParameters();
+    function updateSearchParameters() {
+        search.parameters = {};
+        search.parameters.package = {};
+        search.parameters.location = $stateParams.location || "Minneapolis, MN, USA";
+        search.parameters.longitude = $stateParams.longitude || -93.26501080000003;
+        search.parameters.latitude = $stateParams.latitude || 44.977753;
+        search.parameters.package.id = $stateParams.package ? $stateParams.package : 2;
+        search.parameters.date = $stateParams.date ? new Date($stateParams.date) : new Date(new Date().setFullYear(new Date().getFullYear() + 1));
+        packages = PackagesFactory.packages;
+        photographers = { list: [] };
+        search.parameters.subvendorId = $stateParams.subvendorId;
+    }    
     // ------------------------------------------------------------------------------------ //
 
     // -- RETURNING LIST OF PHOTOGRAPHERS BASED ON SEARCH PARAMETERS -- //
@@ -61,6 +63,7 @@ app.factory("PhotographerSearchFactory", ["PackagesFactory", "$http", "$statePar
     var currentSubvendor = {};
     
     function updateSubvendorProfileDetails() {
+        updateSearchParameters();
         // Description
         if (search.parameters.package.id && search.parameters.longitude && search.parameters.latitude && search.parameters.subvendorId) {
             search.parameters.vendorType = 'photographer';
@@ -75,7 +78,7 @@ app.factory("PhotographerSearchFactory", ["PackagesFactory", "$http", "$statePar
                 console.error('Error retreiving photographer profile data: ', err);
             });
         } else {
-            console.error("All photographer searches must have a package id, longitude, latitude, and subvendorId");
+            console.error("All photographer searches must have a package id, longitude, latitude, and subvendorId. Current object is:", search.parameters);
         }
 
         // update route parameters based on search
