@@ -3,5 +3,7 @@ app.controller("PhotographerProfileBookingController", ["PhotographerSearchFacto
         var self = this;
 
         PhotographerSearchFactory.updateSubvendorProfileDetails();
+
+        self.currentSubvendor = PhotographerSearchFactory.currentSubvendor;
     }
 ]);
