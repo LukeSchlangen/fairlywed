@@ -37,7 +37,7 @@ var tokenDecoder = function (req, res, next) {
             res.sendStatus(500);
           } else {
             pool.connect(function (err, client, done) {
-              if (userSQLIdResult.rowCount === 0) {
+              if (userSQLIdResult.rows.length === 0) {
                 // If the user is not in the database, this adds them to the database
                 var userEmail = req.decodedToken.email;
                 var userName = req.decodedToken.name;
@@ -52,7 +52,7 @@ var tokenDecoder = function (req, res, next) {
                     next();
                   }
                 });
-              } else if (userSQLIdResult.rowCount > 1) {
+              } else if (userSQLIdResult.rows.length > 1) {
                 // If there is more than one user with the unique firebase id assigned, there is a major problem
                 console.error("More than one user with firebase_user_id: ", firebaseUserId);
                 res.sendStatus(500);
@@ -72,7 +72,7 @@ var tokenDecoder = function (req, res, next) {
       .catch(function (error) {
         // If the id_token isn't right, you end up in this callback function
         // Here we are returning a forbidden error
-        console.log('User token could not be verified');
+        console.error('User token could not be verified:', error);
         res.sendStatus(403);
       });
   } else {

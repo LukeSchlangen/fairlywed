@@ -50,12 +50,23 @@
   <script src="components/vendor-details/vendor-details.directive.js"></script>
   <script src="components/subvendor-details/subvendor-details.directive.js"></script>
 
+  <!-- Photographer Profile Angular Directives - Should be paired with matching controllers -->
+  <script src="components/photographer-profile/photographer-profile-about/photographer-profile-about.controller.js"></script>
+  <script src="components/photographer-profile/photographer-profile-about/photographer-profile-about.directive.js"></script>
+  <script src="components/photographer-profile/photographer-profile-booking/photographer-profile-booking.controller.js"></script>
+  <script src="components/photographer-profile/photographer-profile-booking/photographer-profile-booking.directive.js"></script>
+  <script src="components/photographer-profile/photographer-profile-gallery/photographer-profile-gallery.controller.js"></script>
+  <script src="components/photographer-profile/photographer-profile-gallery/photographer-profile-gallery.directive.js"></script>
+  <script src="components/photographer-profile/photographer-profile-home/photographer-profile-home.controller.js"></script>
+  <script src="components/photographer-profile/photographer-profile-home/photographer-profile-home.directive.js"></script>
+
+
 </head>
 <div ng-app="sampleApp">
 
   <auth></auth>
   <a ui-sref="home.photographers">home</a>
-<a ui-sref="account">account</a>
+  <a ui-sref="account">account</a>
   <div ui-view></div>
 
 </div>

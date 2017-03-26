@@ -40,6 +40,7 @@ CREATE TABLE subvendors (
 	name VARCHAR(500) UNIQUE NOT NULL, -- if null, pull value from the parent
 	location geography, -- if null, pull value from the parent
 	travelDistance INT, -- if null, pull value from the parent
+	description VARCHAR(2000),
 	parent_vendor_id INT NOT NULL REFERENCES vendors,
 	vendortype_id INT NOT NULL REFERENCES subvendortypes,
 	url_slug VARCHAR(200) UNIQUE NOT NULL,
@@ -107,14 +108,14 @@ VALUES ('Big Time Minnetonka Wedding Vendor', CAST(ST_SetSRID(ST_Point(-93.4687,
 ('Minneapolis Wedding Vendor', CAST(ST_SetSRID(ST_Point(-93.2650, 44.9777),4326) As geography));
     
 -- INSERTING SUBVENDORS
-INSERT INTO subvendors (name, parent_vendor_id, vendortype_id, url_slug, location)
-VALUES ('Minnetonka Photography', 1, 1, 'minnetonka-photography', null),
-('Minnetonka Videography', 1, 2, 'minnetonka-videography', null),
-('Minnetonka DJ', 1, 3, 'minnetonka-dj', CAST(ST_SetSRID(ST_Point(-93.3687, 45.0212),4326) As geography)), -- the dj is stationed out of a different office and has a different location
-('Edina Wedding Photography', 2, 1, 'edina-wedding-photography', null),
-('Bloomington Wedding Photography', 3, 1, 'bloomington-wedding-photography', null),
-('The Bloomington Wedding Vendor', 3, 2, 'bloomington-videography', null),
-('Minneapolis Wedding Photographers', 4, 1, 'mineapolis-wedding-photographers', null);
+INSERT INTO subvendors (name, parent_vendor_id, vendortype_id, url_slug, location, description)
+VALUES ('Minnetonka Photography', 1, 1, 'minnetonka-photography', null, 'Minnetonka Photography does a really great job doing things and stuff. I mean, wow, just really great. This one time we did this thing and people were all like, wow, that was really great. What are the great things we do? Could you list them? Well, in fact, when it comes to listing things, it is one of the great things we do, and we do a really great job of it.'),
+('Minnetonka Videography', 1, 2, 'minnetonka-videography', null, 'Minnetonka Videography does a really great job doing things and stuff. I mean, wow, just really great. This one time we did this thing and people were all like, wow, that was really great. What are the great things we do? Could you list them? Well, in fact, when it comes to listing things, it is one of the great things we do, and we do a really great job of it.'),
+('Minnetonka DJ', 1, 3, 'minnetonka-dj', CAST(ST_SetSRID(ST_Point(-93.3687, 45.0212),4326) As geography), 'Minnetonka DJ does a really great job doing things and stuff. I mean, wow, just really great. This one time we did this thing and people were all like, wow, that was really great. What are the great things we do? Could you list them? Well, in fact, when it comes to listing things, it is one of the great things we do, and we do a really great job of it.'), -- the dj is stationed out of a different office and has a different location
+('Edina Wedding Photography', 2, 1, 'edina-wedding-photography', null, null),
+('Bloomington Wedding Photography', 3, 1, 'bloomington-wedding-photography', null, null),
+('The Bloomington Wedding Vendor', 3, 2, 'bloomington-videography', null, null),
+('Minneapolis Wedding Photographers', 4, 1, 'mineapolis-wedding-photographers', null, null);
 
 -- INSERTING PACKAGES
 INSERT INTO packages (name, vendortype_id)

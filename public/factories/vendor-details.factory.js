@@ -1,7 +1,5 @@
 app.factory("VendorDetailsFactory", ["$http", "AuthFactory", "$stateParams", function ($http, AuthFactory, $stateParams) {
 
-    var self = this;
-
     var vendor = { subvendorList: [], details: {} };
 
     AuthFactory.$onAuthStateChanged(updateList);

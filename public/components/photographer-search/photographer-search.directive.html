@@ -5,7 +5,9 @@
 <label for="location">Where is the wedding?</label>
 <input id="searchTextField" type="text" size="50" placeholder="City" autocomplete="on" runat="server" ng-init="vm.initialize()" name="location" ng-model="vm.search.parameters.location"/>
 <label for="date">When is the wedding?</label>
+   <!--<input type="date" id="date" name="date" ng-model="vm.search.parameters.date"
+       placeholder="yyyy-MM-dd" min="2013-01-01" max="2018-12-31" ng-change="vm.updatePhotographersList()" required />-->
    <input type="date" id="date" name="date" ng-model="vm.search.parameters.date"
-       placeholder="yyyy-MM-dd" min="2013-01-01" max="2018-12-31" ng-change="vm.updatePhotographersList()" required />
+       placeholder="yyyy-MM-dd" ng-change="vm.updatePhotographersList()" required />
 <br>
 vm.search: {{vm.search}}
