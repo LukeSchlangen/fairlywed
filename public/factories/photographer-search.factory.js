@@ -41,8 +41,9 @@ app.factory("PhotographerSearchFactory", ["PackagesFactory", "$http", "$statePar
         var newStateParameters = angular.copy(search.parameters);
         newStateParameters.package = search.parameters.package.id;
         newStateParameters.date = search.parameters.date.toDateString();
+        console.log('$state is currently:', $state);
         console.log('newStateParameters:', newStateParameters)
-        $state.transitionTo('home.photographers', newStateParameters);
+        $state.transitionTo($state.current.name, newStateParameters);
     }
     // --------------------------------------------------------------- //
 
@@ -85,8 +86,9 @@ app.factory("PhotographerSearchFactory", ["PackagesFactory", "$http", "$statePar
         var newStateParameters = angular.copy(search.parameters);
         newStateParameters.package = search.parameters.package.id;
         newStateParameters.date = search.parameters.date.toDateString();
+        console.log('$state is currently:', $state);
         console.log('newStateParameters:', newStateParameters)
-        $state.transitionTo('photographers.booking', newStateParameters);
+        $state.transitionTo($state.current.name, newStateParameters);
         // Package prices
 
         // Public images
