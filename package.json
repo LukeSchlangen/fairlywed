@@ -4,16 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node server/app.js",
+    "start": "gulp; node server/app.js",
     "test": "nodemon server/app.js"
   },
   "author": "Luke Schlangen",
   "license": "UNLICENSED",
   "dependencies": {
     "body-parser": "^1.15.2",
-    "dotenv": "^2.0.0",
+    "dotenv": "^4.0.0",
     "express": "^4.14.0",
     "firebase-admin": "^4.0.3",
+    "gulp": "^3.9.1",
     "pg": "^6.1.0"
   }
 }
