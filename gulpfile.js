@@ -1,11 +1,6 @@
 // Include gulp
 var gulp = require('gulp');
-var sourcemaps = require('gulp-sourcemaps');
-var babel = require('gulp-babel');
-var webpack = require('webpack-stream');
 var fs = require('fs');
-var concat = require('gulp-concat');
-
 
 // for environment variables
 var m = {};
@@ -31,13 +26,11 @@ gulp.task('dotenvToJson', () => {
 });
 
 gulp.task('moveHTML', () => {
-    gulp.src(['public/**/**', 'node_modules/**/*.*'], { base: '.' })
+    gulp.src(['public/**/*.*'], { base: '.' })
         .pipe(gulp.dest('dist'))
 });
 
 gulp.task('default', ['moveHTML', 'dotenvToJson']);
-
-
 
 // ----------- START CODE TO CREATE FIREBASE CONFIG VARIABLES FROM ENVIRONMENT VARIABLES -------------- //
 function validateParams(params) {
@@ -91,6 +84,19 @@ function copy(params) {
         '  };' +
         'firebase.initializeApp(firebaseConfig);'
 
-    fs.writeFile('dist/public/scripts/firebase.config.js', firebaseConfigText);
+    writeFile('dist/public/scripts/firebase.config.js', firebaseConfigText);
 };
 // ----------- END CODE TO CREATE FIREBASE CONFIG VARIABLES FROM ENVIRONMENT VARIABLES -------------- //
+
+// --- start make the folder for the file we are inserting into --- //
+var mkdirp = require('mkdirp');
+var getDirName = require('path').dirname;
+
+function writeFile(path, contents, cb) {
+  mkdirp(getDirName(path), function (err) {
+    if (err) return cb(err);
+
+    fs.writeFile(path, contents, cb);
+  });
+}
+// --- end make the folder for the file we are inserting into --- //
