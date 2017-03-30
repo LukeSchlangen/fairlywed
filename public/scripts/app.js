@@ -1,1 +1,1 @@
-var app = angular.module("sampleApp", ["firebase", "ui.router"]);
+var app = angular.module("sampleApp", ["firebase", "ui.router", 'ngFileUpload']);

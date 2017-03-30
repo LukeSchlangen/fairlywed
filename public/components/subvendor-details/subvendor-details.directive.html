@@ -22,3 +22,22 @@
         <br>
     </span>
 </span>
+
+<form ng-submit="vm.submit()">
+    <legend>Upload a new file here:</legend>
+    <label for="name">Name:</label>
+    <input type="text" name="name" id="name" ng-model="vm.upload.name" required/>
+    <br/>
+    <label for="file">File:</label>
+    <input type="file" name="file" id="file" ng-model="vm.upload.file" ngf-select ngf-max-size="25MB" required/>
+    <br/>
+    <input type="submit" value="Submit" />
+</form>
+
+<!--<h2>All uploads are here:</h2>
+<ul>
+    <li ng-repeat="upload in vm.uploads">
+        <p>{{upload.name}}</p>
+        <a ng-href='{{upload.file.path + "/" + upload.file.originalname}}'>{{upload.file.originalname}}</a>
+    </li>
+</ul>-->

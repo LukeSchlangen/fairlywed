@@ -1,5 +1,5 @@
-app.controller("SubvendorDetailsController", ["AuthFactory", "SubvendorFactory",
-    function (AuthFactory, SubvendorFactory) {
+app.controller("SubvendorDetailsController", ["AuthFactory", "SubvendorFactory",'$http', 'Upload', 
+    function (AuthFactory, SubvendorFactory, $http, Upload) {
         var self = this;
 
         self.subvendor = SubvendorFactory.subvendor;
@@ -10,7 +10,7 @@ app.controller("SubvendorDetailsController", ["AuthFactory", "SubvendorFactory",
             SubvendorFactory.updateList();
         }
 
-        self.updateDetails = function(vendorDetailsToSave) {
+        self.updateDetails = function (vendorDetailsToSave) {
             SubvendorFactory.updateDetails(vendorDetailsToSave);
         }
 
@@ -23,7 +23,7 @@ app.controller("SubvendorDetailsController", ["AuthFactory", "SubvendorFactory",
             return dayToCheck.getDay() == 6;
         }
 
-        self.toggleAvailability = function(availability) {
+        self.toggleAvailability = function (availability) {
             if (availability.status == 'booked') {
                 alert('This date has already been booked and cannot be made unavailable.')
             } else if (availability.status == 'available') {
@@ -32,6 +32,24 @@ app.controller("SubvendorDetailsController", ["AuthFactory", "SubvendorFactory",
                 availability.status = 'available';
             }
             SubvendorFactory.updateAvailability(availability);
+        }
+
+
+        // $http.get('/uploads').then(function (response) {
+        //     console.log(response.data);
+        //     self.uploads = response.data;
+        // });
+
+        self.submit = function () {
+            Upload.upload({
+                url: '/uploads',
+                method: 'post',
+                data: self.upload
+            }).then(function (response) {
+                console.log(response.data);
+                self.uploads.push(response.data);
+                self.upload = {};
+            })
         }
     }
 ]);

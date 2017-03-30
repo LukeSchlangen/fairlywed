@@ -11,6 +11,8 @@ var vendorAccountData = require('./routes/vendor-account-data');
 var vendorDetailsData = require('./routes/vendor-details-data');
 var subvendorDetailsData = require('./routes/subvendor-details-data');
 var packageData = require('./routes/package-data');
+
+var uploads = require('./routes/uploads');
 var portDecision = process.env.PORT || 5000;
 
 app.get('/', function(req, res){
@@ -22,6 +24,8 @@ app.use(bodyParser.json());
 
 app.use("/vendorSearchData", vendorSearchData);
 app.use("/packageData", packageData);
+
+app.use('/uploads', uploads);
 
 // Decodes the token in the request header and attaches the decoded token to req.decodedToken on the request.
 app.use(auth.tokenDecoder);
