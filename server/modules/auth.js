@@ -1,8 +1,6 @@
 var admin = require("firebase-admin");
 var pool = require('../modules/pg-pool');
 var logger = require('./logger');
-var dotenv = require('dotenv')
-dotenv.config();
 
 admin.initializeApp({
   credential: admin.credential.cert({
