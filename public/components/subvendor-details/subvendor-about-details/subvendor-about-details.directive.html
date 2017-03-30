@@ -1,0 +1,43 @@
+<h2>Subvendor About Details Directive</h2>
+<input type="text" ng-model="vm.subvendor.details.name">
+<input type="text" ng-model="vm.subvendor.details.urlSlug">
+<button ng-click="vm.updateDetails(vm.subvendor.details)">Update Details</button>
+<div ng-repeat="package in vm.subvendor.packageList">
+    <span>{{package.name}}</span>
+    <span><input type="number" ng-model="package.price"></span>
+    <span><input type="checkbox" ng-model="package.is_active"></span>
+    <span><button ng-click="vm.savePackage(package)">Save</button></span>
+</div>
+<span ng-repeat="availability in vm.subvendor.availabilityList">
+    <button ng-attr-title="{{availability.status || 'unavailable'}}" 
+            ng-click="vm.toggleAvailability(availability)">
+        {{availability.day | date:'EEE'}}
+        <br>
+        {{availability.day | date:'dd'}}
+        <br>
+        {{(availability.status || 'unavailable') | limitTo: 1}}
+    </button>
+    <span ng-if="vm.isSaturday(availability.day)">
+        {{availability.day | date:'MMMM'}}
+        <br>
+    </span>
+</span>
+
+<form ng-submit="vm.submit()">
+    <legend>Upload a new file here:</legend>
+    <label for="name">Name:</label>
+    <input type="text" name="name" id="name" ng-model="vm.upload.name" required/>
+    <br/>
+    <label for="file">File:</label>
+    <input type="file" name="file" id="file" ng-model="vm.upload.file" ngf-select ngf-max-size="25MB" required/>
+    <br/>
+    <input type="submit" value="Submit" />
+</form>
+
+<!--<h2>All uploads are here:</h2>
+<ul>
+    <li ng-repeat="upload in vm.uploads">
+        <p>{{upload.name}}</p>
+        <a ng-href='{{upload.file.path + "/" + upload.file.originalname}}'>{{upload.file.originalname}}</a>
+    </li>
+</ul>-->

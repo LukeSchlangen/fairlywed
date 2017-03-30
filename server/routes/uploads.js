@@ -41,8 +41,8 @@ var upload = multer({dest: 'uploads/'});
  * Create's the file in the database
  */
 router.post('/', upload.single('file'), function (req, res, next) {
-  console.log(req.body);
-  console.log(req.file);
+  console.log('req.body', req.body);
+  console.log('req.file', req.file);
 //   var newUpload = {
 //     name: req.body.name,
 //     created: Date.now(),

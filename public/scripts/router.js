@@ -69,7 +69,23 @@ app.config(function ($stateProvider, $urlRouterProvider) {
         })
         .state('account.vendor.details.subvendor.details', {
             url: '/details/:subvendorId',
-            templateUrl: 'views/account/subvendor-details.html'
+            templateUrl: 'views/account/subvendor-details/subvendor-details.html'
+        })
+        .state('account.vendor.details.subvendor.details.about', {
+            url: '/about',
+            templateUrl: 'views/account/subvendor-details/about.html'
+        })
+        .state('account.vendor.details.subvendor.details.availability', {
+            url: '/availability',
+            templateUrl: 'views/account/subvendor-details/availability.html'
+        })
+        .state('account.vendor.details.subvendor.details.images', {
+            url: '/images',
+            templateUrl: 'views/account/subvendor-details/images.html'
+        })
+        .state('account.vendor.details.subvendor.details.packages', {
+            url: '/packages',
+            templateUrl: 'views/account/subvendor-details/packages.html'
         })
         .state('404', {
             template: 'That is a 404'
