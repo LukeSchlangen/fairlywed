@@ -1,4 +1,6 @@
-const express = require('express');
+var dotenv = require('dotenv');
+dotenv.config();
+var express = require('express');
 var app = express();
 var path = require('path');
 var bodyParser = require('body-parser');
@@ -10,8 +12,6 @@ var vendorDetailsData = require('./routes/vendor-details-data');
 var subvendorDetailsData = require('./routes/subvendor-details-data');
 var packageData = require('./routes/package-data');
 var portDecision = process.env.PORT || 5000;
-var dotenv = require('dotenv');
-dotenv.config();
 
 app.get('/', function(req, res){
   res.sendFile(path.resolve('./dist/public/views/index.html'));
