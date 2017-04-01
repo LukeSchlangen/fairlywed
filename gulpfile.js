@@ -8,6 +8,11 @@ gulp.task('remove-dist-folder', function () {
         .pipe(clean());
 });
 
+gulp.task('remove-firebase-service-account', function () {
+    return gulp.src('server/firebase-service-account.json', { read: false })
+        .pipe(clean());
+});
+
 // for environment variables
 var m = {};
 
@@ -16,6 +21,28 @@ var m = {};
 //         .pipe(concat('all.js'))
 //         .pipe(gulp.dest('./dist/'));
 // });
+
+gulp.task('createFirebaseServiceAccount', ['remove-firebase-service-account'], () => {
+
+    copy({
+        keys: [
+            { newKey: "type", environmentVariable: 'FIREBASE_SERVICE_ACCOUNT_TYPE' },
+            { newKey: "project_id", environmentVariable: 'FIREBASE_SERVICE_ACCOUNT_PROJECT_ID' },
+            { newKey: "private_key_id", environmentVariable: 'FIREBASE_SERVICE_ACCOUNT_PRIVATE_KEY_ID' },
+            { newKey: "private_key", environmentVariable: 'FIREBASE_SERVICE_ACCOUNT_PRIVATE_KEY' },
+            { newKey: "client_email", environmentVariable: 'FIREBASE_SERVICE_ACCOUNT_CLIENT_EMAIL' },
+            { newKey: "client_id", environmentVariable: 'FIREBASE_SERVICE_ACCOUNT_CLIENT_ID' },
+            { newKey: "auth_uri", environmentVariable: 'FIREBASE_SERVICE_ACCOUNT_AUTH_URI' },
+            { newKey: "token_uri", environmentVariable: 'FIREBASE_SERVICE_ACCOUNT_TOKEN_URI' },
+            { newKey: "auth_provider_x509_cert_url", environmentVariable: 'FIREBASE_SERVICE_ACCOUNT_AUTH_PROVIDER_X509_CERT_URL' },
+            { newKey: "client_x509_cert_url", environmentVariable: 'FIREBASE_SERVICE_ACCOUNT_CLIENT_X509_CERT_URL' }
+        ],
+        paths: {
+            env: '.env',
+            destination: 'server/firebase-service-account.json'
+        }
+    });
+});
 
 gulp.task('createDist', ['remove-dist-folder'], () => {
     gulp.src(['public/**/*.*'], { base: '.' })
@@ -40,7 +67,7 @@ gulp.task('createDist', ['remove-dist-folder'], () => {
     });
 });
 
-gulp.task('default', ['createDist']);
+gulp.task('default', ['createDist', 'createFirebaseServiceAccount']);
 
 // ----------- START CODE TO CREATE FIREBASE CONFIG VARIABLES FROM ENVIRONMENT VARIABLES -------------- //
 function validateParams(params) {
@@ -72,9 +99,9 @@ function copy(params) {
                 continue;
             }
             var content = lines[i].split('='); // something like [ENVIRONMENT_VARIABLE, "some string value"]
-            keys.forEach(function(key){
+            keys.forEach(function (key) {
                 // check to see if this key should be added to the new object
-                if(key.environmentVariable === content[0]) {
+                if (key.environmentVariable === content[0]) {
                     // if the environment variable matches the name, then create the new property based on that
                     newObject[key.newKey] = content[1];
                 }
@@ -90,8 +117,13 @@ function copy(params) {
         });
     }
 
-    var stringBefore = params.stringBuilder.before || '';
-    var stringAfter = params.stringBuilder.after || '';
+    var stringBefore = '';
+    var stringAfter = '';
+
+    if (params.stringBuilder) {
+        stringBefore = params.stringBuilder.before || '';
+        stringAfter = params.stringBuilder.after || '';
+    }
     var firebaseConfigText = stringBefore + JSON.stringify(newObject) + stringAfter;
 
     writeFile(params.paths.destination, firebaseConfigText);
