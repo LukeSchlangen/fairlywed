@@ -31,7 +31,7 @@ gulp.task('createDist', ['remove-dist-folder'], () => {
         ],
         paths: {
             env: '.env',
-            jenv: 'env.json'
+            destination: 'dist/public/scripts/firebase.config.js'
         },
         stringBuilder: {
             before: 'var config =  ',
@@ -51,7 +51,7 @@ function validateParams(params) {
         }
     }
 
-    if (!params.paths.env || !params.paths.jenv) {
+    if (!params.paths.env || !params.paths.destination) {
         throw "one of the paths is missing. The params.env object must include the env and jenv attribute";
     }
 
@@ -94,7 +94,7 @@ function copy(params) {
     var stringAfter = params.stringBuilder.after || '';
     var firebaseConfigText = stringBefore + JSON.stringify(newObject) + stringAfter;
 
-    writeFile('dist/public/scripts/firebase.config.js', firebaseConfigText);
+    writeFile(params.paths.destination, firebaseConfigText);
 };
 // ----------- END CODE TO CREATE FIREBASE CONFIG VARIABLES FROM ENVIRONMENT VARIABLES -------------- //
 
