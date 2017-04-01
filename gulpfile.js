@@ -2,9 +2,9 @@
 var gulp = require('gulp');
 var fs = require('fs');
 var clean = require('gulp-clean');
- 
+
 gulp.task('remove-dist-folder', function () {
-    return gulp.src('dist', {read: false})
+    return gulp.src('dist', { read: false })
         .pipe(clean());
 });
 
@@ -17,19 +17,25 @@ var m = {};
 //         .pipe(gulp.dest('./dist/'));
 // });
 
-gulp.task('createDist',['remove-dist-folder'], () => {
+gulp.task('createDist', ['remove-dist-folder'], () => {
     gulp.src(['public/**/*.*'], { base: '.' })
         .pipe(gulp.dest('dist'));
-    
+
     copy({
-        keys: ['FIREBASE_API_KEY',
-            'FIREBASE_AUTH_DOMAIN',
-            'FIREBASE_DATABASE_URL',
-            'FIREBASE_STORAGE_BUCKET',
-            'FIREBASE_MESSAGING_SENDER_ID'],
+        keys: [
+            { newKey: 'apiKey', environmentVariable: 'FIREBASE_API_KEY' },
+            { newKey: 'authDomain', environmentVariable: 'FIREBASE_AUTH_DOMAIN' },
+            { newKey: 'databaseURL', environmentVariable: 'FIREBASE_DATABASE_URL' },
+            { newKey: 'storageBucket', environmentVariable: 'FIREBASE_STORAGE_BUCKET' },
+            { newKey: 'messagingSenderId', environmentVariable: 'FIREBASE_MESSAGING_SENDER_ID' }
+        ],
         paths: {
             env: '.env',
             jenv: 'env.json'
+        },
+        stringBuilder: {
+            before: 'var config =  ',
+            after: '; firebase.initializeApp(config);'
         }
     });
 });
@@ -56,37 +62,37 @@ function copy(params) {
     validateParams(params);
     var keys = params.keys;
     var paths = params.paths;
-    var o = {};
+    var newObject = {};
     if (fs.existsSync(paths.env)) {
         // If .env file exists, create .env.json from the .env file
         var fileContent = fs.readFileSync(paths.env, 'utf8');
-        var lines = fileContent.split('\n');
+        var lines = fileContent.split('\n'); // break each enviroment variable line into it's own row
         for (var i in lines) {
             if (lines[i] === '') {
                 continue;
             }
-            var content = lines[i].split('=');
+            var content = lines[i].split('='); // something like [ENVIRONMENT_VARIABLE, "some string value"]
+            keys.forEach(function(key){
+                // check to see if this key should be added to the new object
+                if(key.environmentVariable === content[0]) {
+                    // if the environment variable matches the name, then create the new property based on that
+                    newObject[key.newKey] = content[1];
+                }
+            })
             if (keys.indexOf(content[0]) != -1 || keys.indexOf('*') != -1) {
-                o[content[0]] = content[1];
+                newObject[content[0]] = content[1];
             }
         }
     } else {
         // If .env file does not exist, create .env.json from environment variables
         keys.forEach(function (key) {
-            o[key] = process.env[key];
+            newObject[key.newKey] = process.env[key.environmentVariable];
         });
     }
 
-
-    var firebaseConfigText = 'var config =  ' + JSON.stringify(o) + ';' +
-        '  const firebaseConfig = {' +
-        '    apiKey: config.FIREBASE_API_KEY,' +
-        '    authDomain: config.FIREBASE_AUTH_DOMAIN,' +
-        '    databaseURL: config.FIREBASE_DATABASE_URL,' +
-        '    storageBucket: config.FIREBASE_STORAGE_BUCKET,' +
-        '    messagingSenderId: config.FIREBASE_MESSAGING_SENDER_ID' +
-        '  };' +
-        'firebase.initializeApp(firebaseConfig);'
+    var stringBefore = params.stringBuilder.before || '';
+    var stringAfter = params.stringBuilder.after || '';
+    var firebaseConfigText = stringBefore + JSON.stringify(newObject) + stringAfter;
 
     writeFile('dist/public/scripts/firebase.config.js', firebaseConfigText);
 };
@@ -97,10 +103,10 @@ var mkdirp = require('mkdirp');
 var getDirName = require('path').dirname;
 
 function writeFile(path, contents, cb) {
-  mkdirp(getDirName(path), function (err) {
-    if (err) return cb(err);
+    mkdirp(getDirName(path), function (err) {
+        if (err) return cb(err);
 
-    fs.writeFile(path, contents, cb);
-  });
+        fs.writeFile(path, contents, cb);
+    });
 }
 // --- end make the folder for the file we are inserting into --- //
