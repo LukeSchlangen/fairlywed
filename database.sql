@@ -168,7 +168,7 @@ VALUES ('unavailable'), ('available'), ('booked');
 DO
 $do$
 BEGIN 
-FOR i IN -1000..800 LOOP
+FOR i IN -100..400 LOOP
 	WITH new_calendar_date_id AS (
 		INSERT INTO calendar_dates (day) 
 		VALUES ((CURRENT_DATE) + i) 
@@ -176,9 +176,7 @@ FOR i IN -1000..800 LOOP
 	) 
    INSERT INTO subvendor_availability (subvendor_id, date_id, availability_id)
    VALUES (1, (SELECT id FROM new_calendar_date_id), 2),
-   (4, (SELECT id FROM new_calendar_date_id), 2),
-   (5, (SELECT id FROM new_calendar_date_id), 2),
-   (6, (SELECT id FROM new_calendar_date_id), 2);
+   (4, (SELECT id FROM new_calendar_date_id), 2);
 END LOOP;
 END
 $do$;

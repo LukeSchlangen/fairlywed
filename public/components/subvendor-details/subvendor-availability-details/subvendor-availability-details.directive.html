@@ -1,0 +1,16 @@
+<h2>Subvendor Availability Details Directive</h2>
+
+<span ng-repeat="availability in vm.subvendor.availabilityList">
+    <button ng-attr-title="{{availability.status || 'unavailable'}}" 
+            ng-click="vm.toggleAvailability(availability)">
+        {{availability.day | date:'EEE'}}
+        <br>
+        {{availability.day | date:'dd'}}
+        <br>
+        {{(availability.status || 'unavailable') | limitTo: 1}}
+    </button>
+    <span ng-if="vm.isSaturday(availability.day)">
+        {{availability.day | date:'MMMM'}}
+        <br>
+    </span>
+</span>

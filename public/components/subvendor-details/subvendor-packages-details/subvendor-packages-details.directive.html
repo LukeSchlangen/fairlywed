@@ -1,0 +1,8 @@
+<h2>Subvendor Packages Details Directive</h2>
+
+<div ng-repeat="package in vm.subvendor.packageList">
+    <span>{{package.name}}</span>
+    <span><input type="number" ng-model="package.price"></span>
+    <span><input type="checkbox" ng-model="package.is_active"></span>
+    <span><button ng-click="vm.savePackage(package)">Save</button></span>
+</div>
