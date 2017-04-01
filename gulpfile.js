@@ -1,17 +1,26 @@
 // Include gulp
 var gulp = require('gulp');
 var fs = require('fs');
+var clean = require('gulp-clean');
+ 
+gulp.task('remove-built-files', function () {
+    return gulp.src('dist', {read: false})
+        .pipe(clean());
+});
 
 // for environment variables
 var m = {};
 
-gulp.task('scripts', function () {
-    return gulp.src(['./lib/file3.js', './lib/file1.js', './lib/file2.js'])
-        .pipe(concat('all.js'))
-        .pipe(gulp.dest('./dist/'));
-});
+// gulp.task('scripts', function () {
+//     return gulp.src(['./lib/file3.js', './lib/file1.js', './lib/file2.js'])
+//         .pipe(concat('all.js'))
+//         .pipe(gulp.dest('./dist/'));
+// });
 
-gulp.task('dotenvToJson', () => {
+gulp.task('createDist',['remove-built-files'], () => {
+    gulp.src(['public/**/*.*'], { base: '.' })
+        .pipe(gulp.dest('dist'));
+    
     copy({
         keys: ['FIREBASE_API_KEY',
             'FIREBASE_AUTH_DOMAIN',
@@ -25,12 +34,7 @@ gulp.task('dotenvToJson', () => {
     });
 });
 
-gulp.task('moveHTML', () => {
-    gulp.src(['public/**/*.*'], { base: '.' })
-        .pipe(gulp.dest('dist'))
-});
-
-gulp.task('default', ['moveHTML', 'dotenvToJson']);
+gulp.task('default', ['createDist']);
 
 // ----------- START CODE TO CREATE FIREBASE CONFIG VARIABLES FROM ENVIRONMENT VARIABLES -------------- //
 function validateParams(params) {
