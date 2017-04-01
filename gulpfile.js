@@ -3,7 +3,7 @@ var gulp = require('gulp');
 var fs = require('fs');
 var clean = require('gulp-clean');
  
-gulp.task('remove-built-files', function () {
+gulp.task('remove-dist-folder', function () {
     return gulp.src('dist', {read: false})
         .pipe(clean());
 });
@@ -17,7 +17,7 @@ var m = {};
 //         .pipe(gulp.dest('./dist/'));
 // });
 
-gulp.task('createDist',['remove-built-files'], () => {
+gulp.task('createDist',['remove-dist-folder'], () => {
     gulp.src(['public/**/*.*'], { base: '.' })
         .pipe(gulp.dest('dist'));
     
