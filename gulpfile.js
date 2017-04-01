@@ -105,10 +105,7 @@ function copy(params) {
                     // if the environment variable matches the name, then create the new property based on that
                     newObject[key.newKey] = content[1];
                 }
-            })
-            if (keys.indexOf(content[0]) != -1 || keys.indexOf('*') != -1) {
-                newObject[content[0]] = content[1];
-            }
+            });
         }
     } else {
         // If .env file does not exist, create .env.json from environment variables
@@ -124,9 +121,12 @@ function copy(params) {
         stringBefore = params.stringBuilder.before || '';
         stringAfter = params.stringBuilder.after || '';
     }
-    var firebaseConfigText = stringBefore + JSON.stringify(newObject) + stringAfter;
 
-    writeFile(params.paths.destination, firebaseConfigText);
+    var configText = stringBefore + JSON.stringify(newObject) + stringAfter;
+
+    configText = configText.replace(/(?:\\\\n)+/g, "\\n");
+
+    writeFile(params.paths.destination, configText);
 };
 // ----------- END CODE TO CREATE FIREBASE CONFIG VARIABLES FROM ENVIRONMENT VARIABLES -------------- //
 

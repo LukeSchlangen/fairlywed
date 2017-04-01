@@ -47,8 +47,6 @@ app.controller("SubvendorImagesDetailsController", ["AuthFactory", "SubvendorFac
                 data: self.upload
             }).then(function (response) {
                 console.log(response.data);
-                self.uploads.push(response.data);
-                self.upload = {};
             })
         }
     }
