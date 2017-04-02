@@ -19,13 +19,13 @@ app.get('/', function(req, res){
   res.sendFile(path.resolve('./dist/public/views/index.html'));
 });
 
+app.use('/uploads', uploads);
+
 app.use(express.static('dist/public'));
 app.use(bodyParser.json());
 
 app.use("/vendorSearchData", vendorSearchData);
 app.use("/packageData", packageData);
-
-app.use('/uploads', uploads);
 
 // Decodes the token in the request header and attaches the decoded token to req.decodedToken on the request.
 app.use(auth.tokenDecoder);

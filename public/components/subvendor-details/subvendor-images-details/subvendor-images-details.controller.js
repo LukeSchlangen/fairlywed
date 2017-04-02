@@ -1,4 +1,4 @@
-app.controller("SubvendorImagesDetailsController", ["AuthFactory", "SubvendorFactory",'$http', 'Upload', 
+app.controller("SubvendorImagesDetailsController", ["AuthFactory", "SubvendorFactory", '$http', 'Upload',
     function (AuthFactory, SubvendorFactory, $http, Upload) {
         var self = this;
 
