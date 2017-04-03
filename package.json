@@ -19,5 +19,9 @@
     "gulp-clean": "^0.3.2",
     "multer": "^1.3.0",
     "pg": "^6.1.0"
+  },
+  "devDependencies": {
+    "eslint": "^3.19.0",
+    "eslint-plugin-angular": "^2.2.1"
   }
 }
