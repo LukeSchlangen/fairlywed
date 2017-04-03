@@ -1,5 +1,5 @@
-app.controller("SubvendorImagesDetailsController", ["AuthFactory", "SubvendorFactory", '$http', 'Upload',
-    function (AuthFactory, SubvendorFactory, $http, Upload) {
+app.controller("SubvendorImagesDetailsController", ["SubvendorFactory", 'Upload',
+    function (SubvendorFactory, Upload) {
         var self = this;
 
         self.subvendor = SubvendorFactory.subvendor;
@@ -33,12 +33,6 @@ app.controller("SubvendorImagesDetailsController", ["AuthFactory", "SubvendorFac
             }
             SubvendorFactory.updateAvailability(availability);
         }
-
-
-        // $http.get('/uploads').then(function (response) {
-        //     console.log(response.data);
-        //     self.uploads = response.data;
-        // });
 
         self.submit = function () {
             Upload.upload({
