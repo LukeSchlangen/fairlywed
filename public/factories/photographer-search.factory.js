@@ -2,8 +2,12 @@ app.factory("PhotographerSearchFactory", ["PackagesFactory", "$http", "$statePar
 
     console.log('photographer factory logging $stateParams: ', $stateParams);
 
+    var packages = { list: [] };
+    var photographers = { list: [] };
+    var packages = { list: [] };
+
     // -- SETTING DEFAULT VALUES FOR SEARCH OR GETTING THEM FROM STATE PARAMETERS ROUTING -- //
-     var search = {};
+    var search = {};
     updateSearchParameters();
     function updateSearchParameters() {
         search.parameters = {};
@@ -16,7 +20,7 @@ app.factory("PhotographerSearchFactory", ["PackagesFactory", "$http", "$statePar
         packages = PackagesFactory.packages;
         photographers = { list: [] };
         search.parameters.subvendorId = $stateParams.subvendorId;
-    }    
+    }
     // ------------------------------------------------------------------------------------ //
 
     // -- RETURNING LIST OF PHOTOGRAPHERS BASED ON SEARCH PARAMETERS -- //
@@ -62,7 +66,7 @@ app.factory("PhotographerSearchFactory", ["PackagesFactory", "$http", "$statePar
 
     // -- PROFILE VIEW CURRENT PHOTOGRAPHER INFROMATION RETREIVAL - MORE DETAILS ABOUT ONE PHOTOGRAPHER -- //
     var currentSubvendor = {};
-    
+
     function updateSubvendorProfileDetails() {
         updateSearchParameters();
         // Description

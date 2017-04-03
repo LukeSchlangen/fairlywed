@@ -159,14 +159,14 @@ router.put('/', function (req, res) {
 router.post('/upsertPackage', function (req, res) {
     var userId = req.decodedToken.userSQLId;
     var subvendorId = req.headers.subvendor_id;
-    var package = req.body;
+    var packageObject = req.body;
     pool.connect(function (err, client, done) {
         if (err) {
             console.log('Error connecting to database', err);
             res.sendStatus(500);
         } else {
             // if the package already exists, update the package
-            if (package.id) {
+            if (packageObject.id) {
                 client.query('UPDATE subvendors_packages ' +
                     'SET price=$4, is_active=$5 ' +
                     'WHERE id = ( ' +
@@ -176,7 +176,7 @@ router.post('/upsertPackage', function (req, res) {
                     'JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=$2 ' +
                     'JOIN subvendors_packages ON subvendors_packages.subvendor_id=subvendors.id ' +
                     'WHERE subvendors_packages.id=$3);',
-                    [userId, subvendorId, package.id, package.price, !!package.is_active],
+                    [userId, subvendorId, packageObject.id, packageObject.price, !!packageObject.is_active],
                     function (err, subvendorQueryResult) {
                         done();
                         if (err) {
@@ -199,7 +199,7 @@ router.post('/upsertPackage', function (req, res) {
                     '    $4, ' +
                     '    $5' +
                     ');',
-                    [userId, subvendorId, package.package_id, package.price, !!package.is_active],
+                    [userId, subvendorId, packageObject.package_id, packageObject.price, !!packageObject.is_active],
                     function (err, subvendorQueryResult) {
                         done();
                         if (err) {

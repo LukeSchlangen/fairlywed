@@ -17,8 +17,8 @@ app.controller("VendorAccountController", ["PackagesFactory", "VendorAccountFact
         };
 
 
-        self.updatePrice = function(package) {
-            console.log('Package price update: ', package)
+        self.updatePrice = function(packageObject) {
+            console.log('Package price update: ', packageObject)
         };
         
         self.addVendor = function(newVendor) {
