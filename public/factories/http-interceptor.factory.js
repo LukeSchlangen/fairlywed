@@ -3,9 +3,9 @@ app.config(function ($httpProvider) {
         return {
             'request': function (config) {
                 var firebaseUser = AuthFactory.$getAuth();
-                console.log('Http Interceptor running');
                 if (firebaseUser && config) {
                     return firebaseUser.getToken().then(function (idToken) {
+                        if (!config.headers) {config.headers = {}}
                         config.headers.id_token = idToken;
                         return config;
                     });
