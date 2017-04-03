@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "gulp; node server/app.js",
+    "start": "./node_modules/.bin/eslint .; gulp; node server/app.js",
     "test": "nodemon server/app.js"
   },
   "author": "Luke Schlangen",

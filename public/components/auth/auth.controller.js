@@ -1,11 +1,8 @@
-app.controller("AuthController", ["AuthFactory",
-    function (AuthFactory) {
+app.controller("AuthController", ["UserDataFactory",
+    function (UserDataFactory) {
         var self = this;
-        self.auth = AuthFactory;
-
-        // any time auth state changes, add the user data to scope
-        self.auth.$onAuthStateChanged(function (firebaseUser) {
-            self.firebaseUser = firebaseUser;
-        });
+        self.userData = UserDataFactory.userData;
+        self.signIn = UserDataFactory.signIn;
+        self.signOut = UserDataFactory.signOut;
     }
 ]);
