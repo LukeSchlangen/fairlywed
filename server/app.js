@@ -19,8 +19,6 @@ app.get('/', function(req, res){
   res.sendFile(path.resolve('./dist/public/views/index.html'));
 });
 
-app.use('/uploads', uploads);
-
 app.use(express.static('dist/public'));
 app.use(bodyParser.json());
 
@@ -35,6 +33,8 @@ app.use("/userData", userData);
 app.use("/vendorAccountData", vendorAccountData);
 app.use("/vendorDetailsData", vendorDetailsData);
 app.use("/subvendorDetailsData", subvendorDetailsData);
+
+app.use('/uploads', uploads);
 
 app.listen(portDecision, function(){
   console.log("Listening on port: ", portDecision);
