@@ -1,5 +1,5 @@
-app.controller("SubvendorImagesDetailsController", ["SubvendorFactory", 'Upload',
-    function (SubvendorFactory, Upload) {
+app.controller("SubvendorImagesDetailsController", ["SubvendorFactory",
+    function (SubvendorFactory) {
         var self = this;
 
         self.subvendor = SubvendorFactory.subvendor;
@@ -34,14 +34,8 @@ app.controller("SubvendorImagesDetailsController", ["SubvendorFactory", 'Upload'
             SubvendorFactory.updateAvailability(availability);
         }
 
-        self.submit = function () {
-            Upload.upload({
-                url: '/uploads',
-                method: 'post',
-                data: self.upload
-            }).then(function (response) {
-                console.log(response.data);
-            })
+        self.uploadImage = function () {
+            SubvendorFactory.addNewImage(self.upload);
         }
     }
 ]);

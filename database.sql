@@ -1,3 +1,9 @@
+-----------------------------------------------------------------------------------
+
+------------------ DATABASE SET UP TO CREATE DATABASE FROM SCRATCH ----------------
+
+-----------------------------------------------------------------------------------
+
 CREATE EXTENSION postgis;
 
 CREATE TABLE users (
@@ -93,6 +99,14 @@ CREATE TABLE subvendor_availability (
 	PRIMARY KEY(subvendor_id, date_id)
 );
 
+CREATE TABLE subvendor_images (
+	id SERIAL PRIMARY KEY,
+	original_name VARCHAR(500) NOT NULL,
+	encoding VARCHAR(500) NOT NULL,
+	mime_type VARCHAR(500) NOT NULL,
+    subvendor_id INT NOT NULL REFERENCES subvendors
+);
+
 
 -- INSERTING SAMPLE VENDOR DATA
 
@@ -181,6 +195,12 @@ END LOOP;
 END
 $do$;
 
+-----------------------------------------------------------------------------------
+
+------------- SET UP THAT VARIES FOR EACH ENVIRONMENT AND DEVELOPER ---------------
+
+-----------------------------------------------------------------------------------
+
 -- INSERT INTO users
 INSERT INTO users (name, email, firebase_user_id) 
 VALUES ('Alice Fotografo', 'alicefotografo@gmail.com', 'HtSlvK5TTLern4NkqQyzQZ0KoYE2');
@@ -189,7 +209,12 @@ INSERT INTO users_vendors (user_id, vendor_id)
  VALUES (1, 1),
  (1,2);
 
--- SAMPLE QUERIES
+
+-----------------------------------------------------------------------------------
+
+-------------------------------- SAMPLE QUERIES -----------------------------------
+
+-----------------------------------------------------------------------------------
 
 -- Vendors who service Eden Prairie, lat and long need to be passed in and the results are in meters
 -- The Latitude and longitude of the client's current location need to be passed in to this query

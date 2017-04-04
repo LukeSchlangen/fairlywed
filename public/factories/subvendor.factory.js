@@ -1,4 +1,4 @@
-app.factory("SubvendorFactory", ["$http", "AuthFactory", "$stateParams", function ($http, AuthFactory, $stateParams) {
+app.factory("SubvendorFactory", ["$http", "AuthFactory", "$stateParams", 'Upload', function ($http, AuthFactory, $stateParams, Upload) {
 
     var subvendor = { packageList: [], details: {} };
 
@@ -97,7 +97,21 @@ app.factory("SubvendorFactory", ["$http", "AuthFactory", "$stateParams", functio
         });
     }
 
+    function addNewImage(newImage) {
+        Upload.upload({
+            url: '/uploads',
+            method: 'POST',
+            headers: {
+                subvendor_id: $stateParams.subvendorId
+            },
+            data: newImage
+        }).then(function (response) {
+            console.log(response.data);
+        })
+    }
+
     return {
+        addNewImage: addNewImage,
         subvendor: subvendor,
         updateDetails: updateDetails,
         updateList: updateList,
