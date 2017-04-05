@@ -111,6 +111,22 @@ app.factory("SubvendorFactory", ["$http", "AuthFactory", "$stateParams", 'Upload
         });
     }
 
+    function saveImage(imageToSave) {
+        $http({
+            method: 'PUT',
+            url: '/subvendorDetailsData/updateImage',
+            headers: {
+                subvendor_id: $stateParams.subvendorId
+            },
+            data: imageToSave
+        }).then(function (response) {
+            console.log('subvendor factory returned: ', response.data);
+            updateList();
+        }).catch(function (err) {
+            console.error('Error retreiving private user data: ', err);
+        });
+    }
+
     function addNewImage(newImage) {
         Upload.upload({
             url: '/uploads',
@@ -131,6 +147,7 @@ app.factory("SubvendorFactory", ["$http", "AuthFactory", "$stateParams", 'Upload
         updateDetails: updateDetails,
         updateList: updateList,
         updatePackage: updatePackage,
-        updateAvailability: updateAvailability
+        updateAvailability: updateAvailability,
+        saveImage: saveImage
     };
 }]);

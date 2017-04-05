@@ -104,7 +104,10 @@ CREATE TABLE subvendor_images (
 	original_name VARCHAR(500) NOT NULL,
 	encoding VARCHAR(500) NOT NULL,
 	mime_type VARCHAR(500) NOT NULL,
-    subvendor_id INT NOT NULL REFERENCES subvendors
+    subvendor_id INT NOT NULL REFERENCES subvendors,
+	is_public BOOLEAN DEFAULT FALSE NOT NULL,
+	is_in_gallery BOOLEAN DEFAULT FALSE NOT NULL,
+	is_active BOOLEAN DEFAULT TRUE NOT NULL
 );
 
 

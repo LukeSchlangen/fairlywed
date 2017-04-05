@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var pool = require('../modules/pg-pool');
+var bucket = require('../modules/google-storage-bucket');
 const Multer = require('multer');
 const multer = Multer({
   storage: Multer.memoryStorage(),
@@ -9,17 +10,8 @@ const multer = Multer({
   }
 });
 
-const Storage = require('@google-cloud/storage');
-
-const storage = Storage({
-  keyFilename: 'server/firebase-service-account.json',
-  projectId: process.env.FIREBASE_PROJECT_ID
-});
-
-const bucket = storage.bucket(process.env.FIREBASE_STORAGE_BUCKET);
-
 // Process the file upload and upload to Google Cloud Storage.
-router.post('/', multer.single('file'), (req, res, next) => {
+router.post('/', multer.single('file'), (req, res) => {
   // console.log('req.body', req.body);
   // console.log('req.file', req.file);
   if (!req.file) {

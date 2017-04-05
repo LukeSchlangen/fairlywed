@@ -10,6 +10,7 @@ var vendorSearchData = require('./routes/vendor-search-data');
 var vendorAccountData = require('./routes/vendor-account-data');
 var vendorDetailsData = require('./routes/vendor-details-data');
 var subvendorDetailsData = require('./routes/subvendor-details-data');
+var galleryImages = require('./routes/gallery-images');
 var packageData = require('./routes/package-data');
 
 var uploads = require('./routes/uploads');
@@ -24,6 +25,7 @@ app.use(bodyParser.json());
 
 app.use("/vendorSearchData", vendorSearchData);
 app.use("/packageData", packageData);
+app.use('/galleryImages', galleryImages);
 
 // Decodes the token in the request header and attaches the decoded token to req.decodedToken on the request.
 app.use(auth.tokenDecoder);

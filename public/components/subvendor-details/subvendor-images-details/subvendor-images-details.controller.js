@@ -3,6 +3,7 @@ app.controller("SubvendorImagesDetailsController", ["SubvendorFactory",
         var self = this;
 
         self.subvendor = SubvendorFactory.subvendor;
+        self.saveImage = SubvendorFactory.saveImage;
 
         getAllPackages();
 
