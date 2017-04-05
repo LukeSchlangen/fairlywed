@@ -94,7 +94,6 @@ router.get('/:imageId', function (req, res, next) {
 
             stream.on('error', function (err) {
               console.log('error reading stream', err);
-              res.sendStatus(500);
             });
 
             stream.on('end', function () {

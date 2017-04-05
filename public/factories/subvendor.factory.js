@@ -1,6 +1,6 @@
 app.factory("SubvendorFactory", ["$http", "AuthFactory", "$stateParams", 'Upload', function ($http, AuthFactory, $stateParams, Upload) {
 
-    var subvendor = { packageList: [], details: {} };
+    var subvendor = { packageList: [], details: {}, imagesList: [] };
 
     AuthFactory.$onAuthStateChanged(updateList);
 
@@ -32,6 +32,20 @@ app.factory("SubvendorFactory", ["$http", "AuthFactory", "$stateParams", 'Upload
         }).catch(function (err) {
             console.error('Error retreiving private user data: ', err);
             subvendor.availabilityList = [];
+        });
+
+        $http({
+            method: 'GET',
+            url: '/subvendorDetailsData/images',
+            headers: {
+                subvendor_id: $stateParams.subvendorId
+            }
+        }).then(function (response) {
+            console.log('subvendors controller returned: ', response.data);
+            subvendor.imagesList = response.data;
+        }).catch(function (err) {
+            console.error('Error retreiving private user data: ', err);
+            subvendor.imagesList = [];
         });
 
         $http({
@@ -107,6 +121,7 @@ app.factory("SubvendorFactory", ["$http", "AuthFactory", "$stateParams", 'Upload
             data: newImage
         }).then(function (response) {
             console.log(response.data);
+            updateList();
         })
     }
 

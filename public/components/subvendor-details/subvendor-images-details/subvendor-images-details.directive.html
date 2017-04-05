@@ -12,12 +12,8 @@
 </form>
 
 <h2>All uploads are here:</h2>
-
-<!--<img ng-src="/uploads/1234">-->
-<img http-src="/uploads/9">
-<!--<ul>
-    <li ng-repeat="upload in vm.uploads">
-        <p>{{upload.name}}</p>
-        <a ng-href='{{upload.file.path + "/" + upload.file.originalname}}'>{{upload.file.originalname}}</a>
-    </li>
-</ul>-->
+<div ng-repeat="image in vm.subvendor.imagesList">
+    <p>{{image}}</p>
+    <img http-src="/uploads/{{image.id}}">
+    <!--<a ng-href='/uploads/{{image.id}}'>download {{image.id}}</a>-->
+</div>
