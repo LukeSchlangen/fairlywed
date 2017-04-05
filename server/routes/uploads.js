@@ -57,34 +57,57 @@ router.post('/', multer.single('file'), (req, res, next) => {
           blobStream.on('finish', () => {
             console.log('The image has been successfully uploaded to google cloud storage');
             res.end();
-
           });
 
           blobStream.end(req.file.buffer);
         }
       });
   });
-
-
-
 });
 
 router.get('/:imageId', function (req, res, next) {
-  var stream = bucket.file('Toast.jpg').createReadStream();
+  var userId = req.decodedToken.userSQLId;
+  var imageIdToRetrieve = req.params.imageId;
 
-  res.writeHead(200, { 'Content-Type': 'image/jpg' });
+  // Select all images with that id where subvendor is one that user has access to
+  pool.connect(function (err, client, done) {
+    client.query('SELECT subvendor_images.* ' +
+      'FROM users_vendors ' +
+      'JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id ' +
+      'JOIN subvendors ON vendors.id=subvendors.parent_vendor_id ' +
+      'JOIN subvendor_images ON subvendor_images.id = $2 AND subvendor_images.subvendor_id=subvendors.id;',
+      [userId, imageIdToRetrieve], function (err, imageInfoResults) {
+        done();
+        if (imageInfoResults.rows.length === 1) {
+          var imageInfo = imageInfoResults.rows[0];
+          if (err) {
+            console.log('Error user data root GET SQL query task', err);
+            res.sendStatus(500);
+          } else {
+            var stream = bucket.file(imageInfo.id.toString()).createReadStream();
 
-  stream.on('data', function (data) {
-    res.write(data);
+            res.writeHead(200, { 'Content-Type': imageInfo.mime_type });
+
+            stream.on('data', function (data) {
+              res.write(data);
+            });
+
+            stream.on('error', function (err) {
+              console.log('error reading stream', err);
+              res.sendStatus(500);
+            });
+
+            stream.on('end', function () {
+              res.end();
+            });
+          }
+        } else {
+          res.status(404).send('image not found');
+        }
+      });
   });
 
-  stream.on('error', function (err) {
-    console.log('error reading stream', err);
-  });
 
-  stream.on('end', function () {
-    res.end();
-  });
 });
 
 module.exports = router;

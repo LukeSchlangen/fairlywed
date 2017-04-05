@@ -409,3 +409,10 @@ VALUES (
 	(SELECT id FROM calendar_dates WHERE day='2018-03-03'), 
 	(SELECT id FROM availability WHERE status='available')
 );
+
+-- SELECT SUBVENDOR IMAGE IF USER HAS OWNERSHIP OF THAT SUBVENDOR
+SELECT subvendor_images.*
+FROM users_vendors 
+JOIN vendors ON users_vendors.user_id=1 AND vendors.id=users_vendors.vendor_id  
+JOIN subvendors ON vendors.id=subvendors.parent_vendor_id
+JOIN subvendor_images ON subvendor_images.id = 4 AND subvendor_images.subvendor_id=subvendors.id;
