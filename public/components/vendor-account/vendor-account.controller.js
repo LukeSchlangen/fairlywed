@@ -1,9 +1,8 @@
-app.controller("VendorAccountController", ["PackagesFactory", "VendorAccountFactory", "$state",
-    function (PackagesFactory, VendorAccountFactory, $state) {
+app.controller("VendorAccountController", ["PackagesFactory", "VendorAccountFactory",
+    function (PackagesFactory, VendorAccountFactory) {
         var self = this;
         self.packages = PackagesFactory.packages;
         self.vendors = VendorAccountFactory.vendors;
-        PackagesFactory.updateList();
         VendorAccountFactory.updateList();
         self.initialize = function() {
             var input = document.getElementById('searchTextField');

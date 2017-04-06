@@ -25,14 +25,14 @@ router.get('/', function (req, res) {
       '	)) < (SELECT COALESCE(subvendors.travelDistance, vendors.travelDistance)) ' +
       'AND subvendor_availability.date_id = (SELECT id FROM calendar_dates WHERE day=$5) ' +
       'LIMIT 10;',
-      [ searchObject.vendorType, searchObject.package.id, searchObject.longitude, searchObject.latitude, searchObject.date ],
+      [ searchObject.vendorType, searchObject.package, searchObject.longitude, searchObject.latitude, searchObject.date ],
       function (err, vendorQueryResult) {
         done();
         if (err) {
           console.log('Error user data root GET SQL query task', err);
           res.sendStatus(500);
         } else {
-          res.send({ vendors: vendorQueryResult.rows });
+          res.send(vendorQueryResult.rows);
         }
       });
   });

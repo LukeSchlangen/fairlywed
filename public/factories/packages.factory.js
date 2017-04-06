@@ -1,6 +1,8 @@
 app.factory("PackagesFactory", ["$http", function ($http) {
 
-    packages = { list: [] };
+    var packages = { list: [] };
+
+    updatePackagesList();
 
     function updatePackagesList() {
         return $http({
@@ -17,7 +19,6 @@ app.factory("PackagesFactory", ["$http", function ($http) {
     }
 
     return {
-        packages: packages,
-        updateList: updatePackagesList
+        packages: packages
     };
 }]);
