@@ -1,7 +1,7 @@
-app.controller("PhotographerProfileGalleryController", ["$stateParams",
-    function ($stateParams) {
+app.controller("PhotographerProfileGalleryController", ["PublicImagesFactory",
+    function (PublicImagesFactory) {
         var self = this;
 
-        self.params = $stateParams;
+        self.images = PublicImagesFactory.images;
     }
 ]);

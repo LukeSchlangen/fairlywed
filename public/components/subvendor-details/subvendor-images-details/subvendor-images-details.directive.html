@@ -1,6 +1,6 @@
 <h2>Subvendor Images Details Directive</h2>
 
-<form ng-submit="vm.submit()">
+<form ng-submit="vm.uploadImage()">
     <legend>Upload a new file here:</legend>
     <label for="name">Name:</label>
     <input type="text" name="name" id="name" ng-model="vm.upload.name" required/>
@@ -12,12 +12,13 @@
 </form>
 
 <h2>All uploads are here:</h2>
-
-<!--<img ng-src="/uploads/1234">-->
-<img http-src="/uploads/1234">
-<!--<ul>
-    <li ng-repeat="upload in vm.uploads">
-        <p>{{upload.name}}</p>
-        <a ng-href='{{upload.file.path + "/" + upload.file.originalname}}'>{{upload.file.originalname}}</a>
-    </li>
-</ul>-->
+<div ng-repeat="image in vm.subvendor.imagesList">
+    <p>{{image}}</p>
+    <ul>
+        <li>is_public: <input type="checkbox" ng-model="image.is_public" ng-change="vm.saveImage(image)"></li>
+        <li>is_in_gallery: <input type="checkbox" ng-model="image.is_in_gallery" ng-change="vm.saveImage(image)"></li>
+        <li>is_active: <input type="checkbox" ng-model="image.is_active" ng-change="vm.saveImage(image)"></li>
+    </ul>
+    <img http-src="/uploads/{{image.id}}">
+    <!--<a ng-href='/uploads/{{image.id}}'>download {{image.id}}</a>-->
+</div>
