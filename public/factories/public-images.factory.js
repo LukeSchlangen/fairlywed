@@ -2,8 +2,6 @@ app.factory("PublicImagesFactory", ["$http", "$stateParams", function ($http, $s
 
     var images = { list: [] };
 
-    updateImagesList()
-
     function updateImagesList() {
         $http({
             method: 'GET',
@@ -20,6 +18,7 @@ app.factory("PublicImagesFactory", ["$http", "$stateParams", function ($http, $s
     }
 
     return {
-        images: images
+        images: images,
+        updateImagesList: updateImagesList
     };
 }]);
