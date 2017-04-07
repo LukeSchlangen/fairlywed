@@ -1,4 +1,4 @@
-app.config(function ($stateProvider, $urlRouterProvider) {
+app.config(function ($stateProvider, $urlRouterProvider, $mdThemingProvider) {
 
     $urlRouterProvider.otherwise(function ($injector) {
 
@@ -89,5 +89,47 @@ app.config(function ($stateProvider, $urlRouterProvider) {
         })
         .state('404', {
             template: 'That is a 404'
-        })
+        });
+
+
+    // Configuring color theme
+    $mdThemingProvider.definePalette('black', {
+        '50': '000000',
+        '100': '000000',
+        '200': '000000',
+        '300': '000000',
+        '400': '000000',
+        '500': '000000',
+        '600': '000000',
+        '700': '000000',
+        '800': '000000',
+        '900': '000000',
+        'A100': '000000',
+        'A200': '000000',
+        'A400': '000000',
+        'A700': '000000',
+        'contrastDefaultColor': 'light'
+    });
+    $mdThemingProvider.definePalette('white', {
+        '50': 'ffffff', // main background for everything
+        '100': 'ffffff',
+        '200': 'eeeeee', // dropdown highlighted option background
+        '300': 'eeeeee', // calendar header (days of week) background and calendar date hover color
+        '400': 'ffffff',
+        '500': 'aaaaaa', // button hover background
+        '600': 'ffffff',
+        '700': 'ffffff',
+        '800': 'ffffff', 
+        '900': '000000', // Text in the dropdown list
+        'A100': 'ffffff', // No clue
+        'A200': '000000', // Non selected day text in the calendar toggle
+        'A400': 'ffffff', // No clue
+        'A700': 'ffffff', // No clue
+        'contrastDefaultColor': 'dark'
+    });
+
+    $mdThemingProvider.theme('default')
+        .primaryPalette('black')
+        .accentPalette('black')
+        .backgroundPalette('white');
 });

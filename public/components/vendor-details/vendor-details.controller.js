@@ -1,5 +1,5 @@
-app.controller("VendorDetailsController", ["VendorDetailsFactory", "AuthFactory",
-    function (VendorDetailsFactory, AuthFactory) {
+app.controller("VendorDetailsController", ["VendorDetailsFactory", "AuthFactory", "$stateParams",
+    function (VendorDetailsFactory, AuthFactory, $stateParams) {
         var self = this;
 
         VendorDetailsFactory.updateList();
@@ -13,5 +13,10 @@ app.controller("VendorDetailsController", ["VendorDetailsFactory", "AuthFactory"
         self.addSubvendor = function(newSubvendor) {
             VendorDetailsFactory.addSubvendor(newSubvendor);
         }
+
+        self.isCurrentSubvendor = function(subvendorToCheck){
+            return subvendorToCheck == $stateParams.subvendorId;
+        }
+        
     }
 ]);
