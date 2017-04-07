@@ -1,6 +1,9 @@
 <h2>Photographer Home Page Directive</h2>
-<a ui-sref=".about">about</a>
-<a ui-sref=".availability">availability</a>
-<a ui-sref=".images">images</a>
-<a ui-sref=".packages">packages</a>
-<div ui-view></div>
+<md-tabs md-selected="vm.currentTab" class="main-toolbar">
+    <md-tab label="About" ui-sref=".about" md-active="vm.isCurrentState('account.vendor.details.subvendor.details.about')"></md-tab>
+    <md-tab label="Availability" ui-sref=".availability" md-active="vm.isCurrentState('account.vendor.details.subvendor.details.availability')"></md-tab>
+    <md-tab label="Images" ui-sref=".images" md-active="vm.isCurrentState('account.vendor.details.subvendor.details.images')"></md-tab>
+    <md-tab label="Packages" ui-sref=".packages" md-active="vm.isCurrentState('account.vendor.details.subvendor.details.packages')"></md-tab>
+</md-tabs>
+
+ <div ui-view></div>

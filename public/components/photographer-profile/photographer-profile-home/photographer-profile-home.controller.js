@@ -1,7 +1,7 @@
-app.controller("PhotographerProfileHomeController", ["$stateParams",
-    function ($stateParams) {
-        var self = this;
+app.controller("PhotographerProfileHomeController", function ($state) {
+    var self = this;
 
-        self.params = $stateParams;
+    self.isCurrentState = function(stateToCheck){
+        return $state.is(stateToCheck);
     }
-]);
+});

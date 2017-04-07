@@ -1,12 +1,10 @@
-vm.photographers: {{vm.photographers}}
-
 <div ng-repeat="photographer in vm.photographers.list">
-    <a ui-sref="photographers.about(
+    <md-button ui-sref="photographers.about(
         {subvendorId: photographer.id, 
         package: vm.params.package, 
         location: vm.params.location, 
         longitude: vm.params.longitude, 
         latitude: vm.params.latitude, 
         date: vm.params.date
-        })">{{photographer.name}}</a>
+        })">{{photographer.name}}</md-button>
 </div>
