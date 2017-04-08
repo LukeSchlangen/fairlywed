@@ -40,15 +40,15 @@ router.post('/', function (req, res) {
                 'RETURNING id' +
                 ') ' +
                 'INSERT INTO users_vendors (user_id, vendor_id) ' +
-                'VALUES ($1, (SELECT id FROM new_vendor_id));',
+                'VALUES ($1, (SELECT id FROM new_vendor_id)) RETURNING vendor_id;',
                 [userId, vendor.name, vendor.longitude, vendor.latitude, vendor.traveldistance],
-                function (err, subvendorQueryResult) {
+                function (err, newVendorQueryResult) {
                     done();
                     if (err) {
                         console.log('Error vendor data INSERT SQL query task', err);
                         res.sendStatus(500);
                     } else {
-                        res.sendStatus(200);
+                        res.send({newVendorId: newVendorQueryResult.rows[0].vendor_id});
                     }
                 });
         }

@@ -1,17 +1,16 @@
-app.controller("VendorDetailsController", ["VendorDetailsFactory", "AuthFactory",
-    function (VendorDetailsFactory, AuthFactory) {
-        var self = this;
+app.controller("VendorDetailsController", function (VendorDetailsFactory) {
+    var self = this;
 
-        VendorDetailsFactory.updateList();
+    VendorDetailsFactory.getDetails();
+    VendorDetailsFactory.getSubvendorList();
 
-        self.vendor = VendorDetailsFactory.vendor;
+    self.vendor = VendorDetailsFactory.vendor;
 
-        self.updateDetails = function(vendorDetailsToSave) {
-            VendorDetailsFactory.updateDetails(vendorDetailsToSave);
-        }
-
-        self.addSubvendor = function(newSubvendor) {
-            VendorDetailsFactory.addSubvendor(newSubvendor);
-        }
+    self.updateDetails = function (vendorDetailsToSave) {
+        VendorDetailsFactory.updateDetails(vendorDetailsToSave);
     }
-]);
+
+    self.addSubvendor = function (newSubvendor) {
+        VendorDetailsFactory.addSubvendor(newSubvendor);
+    }
+});

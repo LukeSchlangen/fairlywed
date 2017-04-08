@@ -1,2 +1,7 @@
-<span ng-show="vm.userData.details">{{ vm.firebaseUser.details.email }} <button ng-click="vm.signOut()">Sign Out</button></span>
-<span ng-hide="vm.userData.details"><button ng-click="vm.signIn('google')">Sign In With Google</button></span>
+<span ng-show="vm.userData.details">
+    {{ vm.firebaseUser.details.email }}
+    <button ng-click="vm.signOut()">Sign Out</button>
+</span>
+<span ng-hide="vm.userData.details">
+    <button ng-click="vm.signIn('google')">Sign In With Google</button>
+</span>
