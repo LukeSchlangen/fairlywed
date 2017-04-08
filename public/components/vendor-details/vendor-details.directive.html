@@ -10,7 +10,6 @@
 <button>Some way to set up a Stripe Account</button>
 <a ui-sref=".subvendor">Subvendor clicker</a>
 <input type="text" ng-model="vm.newSubvendor.name">
-<input type="text" ng-model="vm.newSubvendor.urlSlug">
 <button ng-click="vm.addSubvendor(vm.newSubvendor)">Add New Subvendor</button>
 <section ng-repeat="subvendor in vm.vendor.subvendorList">
     <a ui-sref=".subvendor.details({subvendorId: subvendor.id})">{{subvendor.name}}, Subvendor ID is {{subvendor.id}}</a>
