@@ -1,12 +1,22 @@
-<!--<label for="package">Packages</label>-->
-<!--<select ng-options="item as item.label for item in items track by item.id" ng-model="selected"></select>-->
-<select ng-options="package as package.name for package in vm.packages.list" ng-model="vm.search.parameters.package" ng-change="vm.updatePhotographersList()"></select>
-<br>
-<label for="location">Where is the wedding?</label>
-<input id="searchTextField" type="text" size="50" placeholder="City" autocomplete="on" runat="server" ng-init="vm.initialize()" name="location" ng-model="vm.search.parameters.location"/>
-<label for="date">When is the wedding?</label>
-   <!--<input type="date" id="date" name="date" ng-model="vm.search.parameters.date"
-       placeholder="yyyy-MM-dd" min="2013-01-01" max="2018-12-31" ng-change="vm.updatePhotographersList()" required />-->
-   <input type="date" id="date" name="date" ng-model="vm.search.parameters.date"
-       placeholder="yyyy-MM-dd" ng-change="vm.updatePhotographersList()" required />
-<br>
+<md-input-container class="md-block" flex-gt-sm>
+    <label>Package</label>
+    <md-select ng-model="vm.search.parameters.package" ng-change="vm.updatePhotographersList()">
+        <md-option ng-repeat="package in vm.packages.list" ng-value="{{package.id}}">
+            {{package.name}}
+        </md-option>
+    </md-select>
+</md-input-container>
+
+<div layout-gt-xs="row">
+    <md-input-container class="md-block" flex-gt-xs>
+        <label>Where is the wedding?</label>
+        <input id="searchTextField" type="text" size="50" placeholder="Address" autocomplete="on" runat="server" ng-init="vm.initialize()"
+            name="location" ng-model="vm.search.parameters.location">
+    </md-input-container>
+
+    <md-input-container>
+        <label>Date</label>
+        <md-datepicker type="date" id="date" name="date" ng-model="vm.search.parameters.date" placeholder="yyyy-MM-dd" ng-change="vm.updatePhotographersList()"
+            required></md-datepicker>
+    </md-input-container>
+</div>
