@@ -145,15 +145,15 @@ router.post('/', function (req, res) {
                 'FROM users_vendors ' +
                 'JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id ' +
                 'WHERE vendors.id=$2), ' +
-                '1); ', // -- hard coded for photographers
+                '1) RETURNING id, parent_vendor_id; ', // -- hard coded for photographers
                 [userId, vendorId, subvendor.name],
-                function (err) {
+                function (err, newSubvendorResults) {
                     done();
                     if (err) {
                         console.log('Error vendor data INSERT SQL query task', err);
                         res.sendStatus(500);
                     } else {
-                        res.sendStatus(200);
+                        res.send({vendorId: newSubvendorResults.rows[0].parent_vendor_id, newSubvendorId: newSubvendorResults.rows[0].id});
                     }
                 });
         }
@@ -280,13 +280,13 @@ router.post('/upsertAvailability', function (req, res) {
                     '	(' +
                     '	SELECT subvendors.id  ' +
                     '	FROM users_vendors  ' +
-                    '	JOIN vendors ON users_vendors.user_id=1 AND vendors.id=users_vendors.vendor_id ' +
-                    '	JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=1 ' +
+                    '	JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id ' +
+                    '	JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=$2 ' +
                     '	), ' +
                     '	(SELECT id FROM calendar_dates WHERE day=$3), ' +
                     '	(SELECT id FROM availability WHERE status=$4) ' +
                     ');',
-                    [userId, subvendorId, availability.date, availability.status],
+                    [userId, subvendorId, availability.day, availability.status],
                     function (err) {
                         done();
                         if (err) {

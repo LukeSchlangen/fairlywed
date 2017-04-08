@@ -1,4 +1,4 @@
-app.factory("PhotographerSearchFactory", ["PackagesFactory", "$http", "$stateParams", "$state", function (PackagesFactory, $http, $stateParams, $state) {
+app.factory("PhotographerSearchFactory", function (PackagesFactory, $http, $stateParams, $state) {
 
     console.log('photographer factory logging $stateParams: ', $stateParams);
 
@@ -51,10 +51,23 @@ app.factory("PhotographerSearchFactory", ["PackagesFactory", "$http", "$statePar
     }
     // --------------------------------------------------------------- //
 
+    function updatePackagesList() {
+        if (search.parameters.package.id) {
+            PackagesFactory.getPackageList().then(function (response) {
+                var currentPackageArray = response.data.packages.filter(function (photoPackage) {
+                    return photoPackage.id == $stateParams.package;
+                });
+                search.parameters.package = currentPackageArray[0];
+            }); // Loading packages list for the first time
+        } else {
+            console.error("All package searches must have a package id");
+        }
+    }
+
     // -- PROFILE VIEW CURRENT PHOTOGRAPHER INFROMATION RETREIVAL - MORE DETAILS ABOUT ONE PHOTOGRAPHER -- //
     var currentSubvendor = {};
 
-    function updateSubvendorProfileDetails() {
+    function getSubvendorProfileDetails() {
         updateSearchParameters();
         // Description
         if (search.parameters.package && search.parameters.longitude && search.parameters.latitude && search.parameters.subvendorId) {
@@ -92,7 +105,7 @@ app.factory("PhotographerSearchFactory", ["PackagesFactory", "$http", "$statePar
         photographers: photographers,
         updatePhotographersList: updatePhotographersList,
         currentSubvendor: currentSubvendor,
-        updateSubvendorProfileDetails: updateSubvendorProfileDetails,
+        getSubvendorProfileDetails: getSubvendorProfileDetails,
         search: search
     };
-}]);
+});

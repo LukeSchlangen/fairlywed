@@ -1,4 +1,6 @@
-<form ng-submit="vm.uploadImage()">
+<h2>Subvendor Images Details Directive</h2>
+
+<form ng-submit="vm.uploadImage(vm.upload)">
     <legend>Upload a new file here:</legend>
     <label for="name">Name:</label>
     <input type="text" name="name" id="name" ng-model="vm.upload.name" required/>

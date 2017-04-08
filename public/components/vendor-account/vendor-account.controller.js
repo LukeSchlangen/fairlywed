@@ -1,31 +1,27 @@
-app.controller("VendorAccountController", ["PackagesFactory", "VendorAccountFactory", "$stateParams",
-    function (PackagesFactory, VendorAccountFactory, $stateParams) {
-        var self = this;
-        self.packages = PackagesFactory.packages;
-        self.vendors = VendorAccountFactory.vendors;
-        VendorAccountFactory.updateList();
-        self.initialize = function() {
-            var input = document.getElementById('searchTextField');
-            var autocomplete = new google.maps.places.Autocomplete(input, {
-              componentRestrictions: {'country': 'us'}
-            });
-            console.log("Initializing google maps");
-            google.maps.event.addListener(autocomplete, 'place_changed', function () {
-                var place = autocomplete.getPlace();
-            });
-        };
+app.controller("VendorAccountController", function (PackagesFactory, VendorAccountFactory) {
+    var self = this;
+    self.packages = PackagesFactory.packages;
+    self.vendors = VendorAccountFactory.vendors;
+    PackagesFactory.getPackageList();
+    VendorAccountFactory.getVendorList();
+    self.initialize = function () {
+        var input = document.getElementById('searchTextField');
+        var autocomplete = new google.maps.places.Autocomplete(input, {
+            componentRestrictions: { 'country': 'us' }
+        });
+        console.log("Initializing google maps");
+        google.maps.event.addListener(autocomplete, 'place_changed', function () {
+            var place = autocomplete.getPlace();
+        });
+    };
 
 
-        self.updatePrice = function(packageObject) {
-            console.log('Package price update: ', packageObject)
-        };
-        
-        self.addVendor = function(newVendor) {
-            VendorAccountFactory.addVendor(newVendor);
-        }
+    self.updatePrice = function (packageObject) {
+        console.log('Package price update: ', packageObject)
+    };
 
-        self.isCurrentVendor = function(vendorToCheck){
-            return vendorToCheck == $stateParams.vendorId;
-        }
+    self.addVendor = function () {
+        VendorAccountFactory.addVendor(self.newVendor);
+        self.newVendor = {};
     }
-]);
+});

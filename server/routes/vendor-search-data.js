@@ -52,7 +52,6 @@ router.get('/subvendorProfile', function (req, res) {
       'JOIN packages ON subvendors_packages.package_id = packages.id ' +
       'JOIN subvendor_availability ON subvendor_availability.subvendor_id = subvendors.id ' +
       'WHERE subvendors.id=$1 ' +
-      // 'AND packages.id=$2 ' +
       'AND (SELECT ST_Distance(' +
       '		(SELECT COALESCE(subvendors.location, vendors.location)),' +
       '		(CAST(ST_SetSRID(ST_Point($2, $3),4326) As geography))' +

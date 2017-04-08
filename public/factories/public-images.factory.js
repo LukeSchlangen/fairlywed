@@ -1,4 +1,4 @@
-app.factory("PublicImagesFactory", ["$http", "$stateParams", function ($http, $stateParams) {
+app.factory("PublicImagesFactory", function ($http, $stateParams) {
 
     var images = { list: [] };
 
@@ -21,4 +21,4 @@ app.factory("PublicImagesFactory", ["$http", "$stateParams", function ($http, $s
         images: images,
         updateImagesList: updateImagesList
     };
-}]);
+});

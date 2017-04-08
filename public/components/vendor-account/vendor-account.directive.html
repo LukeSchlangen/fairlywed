@@ -1,9 +1,8 @@
 <input type="text" ng-model="vm.newVendor.name">
 <input type="text" ng-model="vm.newVendor.traveldistance">
-<button ng-click="vm.addVendor(vm.newVendor)">Add New Vendor</button>
-
-<md-tabs class="main-toolbar">
-    <md-tab label="{{vendor.name}}" ui-sref=".details({vendorId: vendor.id})" md-active="vm.isCurrentVendor(vendor.id)" ng-repeat="vendor in vm.vendors.list"></md-tab>
-</md-tabs>
+<button ng-click="vm.addVendor()">Add New Vendor</button>
+<section ng-repeat="vendor in vm.vendors.list">
+    <a ui-sref=".details({vendorId: vendor.id})">{{vendor.name}}, ID is {{vendor.id}}</a>
+</section>
 
 <div ui-view></div>
