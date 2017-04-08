@@ -1,4 +1,4 @@
-app.factory("SubvendorFactory", ["$http", "AuthFactory", "$stateParams", 'Upload', 'VendorDetailsFactory', function ($http, AuthFactory, $stateParams, Upload, VendorDetailsFactory) {
+app.factory("SubvendorFactory", function ($http, AuthFactory, $stateParams, Upload, VendorDetailsFactory) {
 
     var subvendor = { packageList: [], details: {}, imagesList: [] };
 
@@ -166,4 +166,4 @@ app.factory("SubvendorFactory", ["$http", "AuthFactory", "$stateParams", 'Upload
         updateAvailability: updateAvailability,
         saveImage: saveImage
     };
-}]);
+});

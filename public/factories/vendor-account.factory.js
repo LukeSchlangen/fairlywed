@@ -1,4 +1,4 @@
-app.factory("VendorAccountFactory", ["$http", "AuthFactory", "$state", function ($http, AuthFactory, $state) {
+app.factory("VendorAccountFactory", function ($http, AuthFactory, $state) {
 
     var vendors = { list: [] };
 
@@ -36,4 +36,4 @@ app.factory("VendorAccountFactory", ["$http", "AuthFactory", "$state", function 
         getVendorList: getVendorList,
         addVendor: addVendor
     };
-}]);
+});

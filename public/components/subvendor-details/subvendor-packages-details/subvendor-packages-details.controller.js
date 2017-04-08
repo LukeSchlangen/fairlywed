@@ -1,11 +1,9 @@
-app.controller("SubvendorPackagesDetailsController", ["AuthFactory", "SubvendorFactory", 
-    function (AuthFactory, SubvendorFactory) {
-        var self = this;
+app.controller("SubvendorPackagesDetailsController", function (AuthFactory, SubvendorFactory) {
+    var self = this;
 
-        self.subvendor = SubvendorFactory.subvendor;
+    self.subvendor = SubvendorFactory.subvendor;
 
-        SubvendorFactory.getPackagesList();
+    SubvendorFactory.getPackagesList();
 
-        self.savePackage = SubvendorFactory.updatePackage;
-    }
-]);
+    self.savePackage = SubvendorFactory.updatePackage;
+});

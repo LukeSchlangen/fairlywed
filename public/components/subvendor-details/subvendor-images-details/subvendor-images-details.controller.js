@@ -1,12 +1,10 @@
-app.controller("SubvendorImagesDetailsController", ["SubvendorFactory",
-    function (SubvendorFactory) {
-        var self = this;
+app.controller("SubvendorImagesDetailsController", function (SubvendorFactory) {
+    var self = this;
 
-        self.subvendor = SubvendorFactory.subvendor;
-        
-        SubvendorFactory.getImagesList();
+    self.subvendor = SubvendorFactory.subvendor;
 
-        self.saveImage = SubvendorFactory.saveImage;
-        self.uploadImage = SubvendorFactory.addNewImage;
-    }
-]);
+    SubvendorFactory.getImagesList();
+
+    self.saveImage = SubvendorFactory.saveImage;
+    self.uploadImage = SubvendorFactory.addNewImage;
+});

@@ -1,8 +1,5 @@
 <h2>Photographer Gallery Page Directive</h2>
-{{vm}}
-
 <div ng-repeat="image in vm.images.list">
     <p>{{image}}</p>
     <img ng-src="/galleryImages/{{image.id}}">
-    <!--<a ng-href='/uploads/{{image.id}}'>download {{image.id}}</a>-->
 </div>

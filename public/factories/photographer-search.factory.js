@@ -1,4 +1,4 @@
-app.factory("PhotographerSearchFactory", ["PackagesFactory", "$http", "$stateParams", "$state", function (PackagesFactory, $http, $stateParams, $state) {
+app.factory("PhotographerSearchFactory", function (PackagesFactory, $http, $stateParams, $state) {
 
     console.log('photographer factory logging $stateParams: ', $stateParams);
 
@@ -109,4 +109,4 @@ app.factory("PhotographerSearchFactory", ["PackagesFactory", "$http", "$statePar
         getSubvendorProfileDetails: getSubvendorProfileDetails,
         search: search
     };
-}]);
+});

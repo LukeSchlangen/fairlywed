@@ -1,4 +1,4 @@
-app.factory("PackagesFactory", ["$http", function ($http) {
+app.factory("PackagesFactory", function ($http) {
 
     var packages = { list: [] };
 
@@ -20,4 +20,4 @@ app.factory("PackagesFactory", ["$http", function ($http) {
         packages: packages,
         getPackageList: getPackageList
     };
-}]);
+});

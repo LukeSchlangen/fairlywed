@@ -1,4 +1,4 @@
-app.factory("VendorDetailsFactory", ["$http", "AuthFactory", "$stateParams", "VendorAccountFactory", "$state", function ($http, AuthFactory, $stateParams, VendorAccountFactory, $state) {
+app.factory("VendorDetailsFactory", function ($http, AuthFactory, $stateParams, VendorAccountFactory, $state) {
 
     var vendor = { subvendorList: [], details: {} };
 
@@ -83,4 +83,4 @@ app.factory("VendorDetailsFactory", ["$http", "AuthFactory", "$stateParams", "Ve
         getDetails: getDetails,
         getSubvendorList: getSubvendorList
     };
-}]);
+});

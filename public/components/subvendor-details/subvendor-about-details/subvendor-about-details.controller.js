@@ -1,11 +1,9 @@
-app.controller("SubvendorAboutDetailsController", ["SubvendorFactory",
-    function (SubvendorFactory) {
-        var self = this;
+app.controller("SubvendorAboutDetailsController", function (SubvendorFactory) {
+    var self = this;
 
-        self.subvendor = SubvendorFactory.subvendor;
+    self.subvendor = SubvendorFactory.subvendor;
 
-        SubvendorFactory.getDetails();
+    SubvendorFactory.getDetails();
 
-        self.updateDetails = SubvendorFactory.updateDetails;
-    }
-]);
+    self.updateDetails = SubvendorFactory.updateDetails;
+});

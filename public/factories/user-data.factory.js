@@ -1,4 +1,4 @@
-app.factory("UserDataFactory", ["AuthFactory", '$http', function (AuthFactory, $http) {
+app.factory("UserDataFactory", function (AuthFactory, $http) {
     var userData = {details: {}};
     var signIn = AuthFactory.$signInWithPopup;
     var signOut = AuthFactory.$signOut;
@@ -20,4 +20,4 @@ app.factory("UserDataFactory", ["AuthFactory", '$http', function (AuthFactory, $
         signOut: signOut,
         signIn: signIn
     }
-}]);
+});
