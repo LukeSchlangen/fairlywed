@@ -49,7 +49,6 @@ CREATE TABLE subvendors (
 	description VARCHAR(2000),
 	parent_vendor_id INT NOT NULL REFERENCES vendors,
 	vendortype_id INT NOT NULL REFERENCES subvendortypes,
-	url_slug VARCHAR(200) UNIQUE NOT NULL,
 	is_active BOOLEAN DEFAULT TRUE NOT NULL
 );
 
@@ -125,14 +124,14 @@ VALUES ('Big Time Minnetonka Wedding Vendor', CAST(ST_SetSRID(ST_Point(-93.4687,
 ('Minneapolis Wedding Vendor', CAST(ST_SetSRID(ST_Point(-93.2650, 44.9777),4326) As geography));
     
 -- INSERTING SUBVENDORS
-INSERT INTO subvendors (name, parent_vendor_id, vendortype_id, url_slug, location, description)
-VALUES ('Minnetonka Photography', 1, 1, 'minnetonka-photography', null, 'Minnetonka Photography does a really great job doing things and stuff. I mean, wow, just really great. This one time we did this thing and people were all like, wow, that was really great. What are the great things we do? Could you list them? Well, in fact, when it comes to listing things, it is one of the great things we do, and we do a really great job of it.'),
-('Minnetonka Videography', 1, 2, 'minnetonka-videography', null, 'Minnetonka Videography does a really great job doing things and stuff. I mean, wow, just really great. This one time we did this thing and people were all like, wow, that was really great. What are the great things we do? Could you list them? Well, in fact, when it comes to listing things, it is one of the great things we do, and we do a really great job of it.'),
-('Minnetonka DJ', 1, 3, 'minnetonka-dj', CAST(ST_SetSRID(ST_Point(-93.3687, 45.0212),4326) As geography), 'Minnetonka DJ does a really great job doing things and stuff. I mean, wow, just really great. This one time we did this thing and people were all like, wow, that was really great. What are the great things we do? Could you list them? Well, in fact, when it comes to listing things, it is one of the great things we do, and we do a really great job of it.'), -- the dj is stationed out of a different office and has a different location
-('Edina Wedding Photography', 2, 1, 'edina-wedding-photography', null, null),
-('Bloomington Wedding Photography', 3, 1, 'bloomington-wedding-photography', null, null),
-('The Bloomington Wedding Vendor', 3, 2, 'bloomington-videography', null, null),
-('Minneapolis Wedding Photographers', 4, 1, 'mineapolis-wedding-photographers', null, null);
+INSERT INTO subvendors (name, parent_vendor_id, vendortype_id, location, description)
+VALUES ('Minnetonka Photography', 1, 1, null, 'Minnetonka Photography does a really great job doing things and stuff. I mean, wow, just really great. This one time we did this thing and people were all like, wow, that was really great. What are the great things we do? Could you list them? Well, in fact, when it comes to listing things, it is one of the great things we do, and we do a really great job of it.'),
+('Minnetonka Videography', 1, 2, null, 'Minnetonka Videography does a really great job doing things and stuff. I mean, wow, just really great. This one time we did this thing and people were all like, wow, that was really great. What are the great things we do? Could you list them? Well, in fact, when it comes to listing things, it is one of the great things we do, and we do a really great job of it.'),
+('Minnetonka DJ', 1, 3, CAST(ST_SetSRID(ST_Point(-93.3687, 45.0212),4326) As geography), 'Minnetonka DJ does a really great job doing things and stuff. I mean, wow, just really great. This one time we did this thing and people were all like, wow, that was really great. What are the great things we do? Could you list them? Well, in fact, when it comes to listing things, it is one of the great things we do, and we do a really great job of it.'), -- the dj is stationed out of a different office and has a different location
+('Edina Wedding Photography', 2, 1, null, null),
+('Bloomington Wedding Photography', 3, 1, null, null),
+('The Bloomington Wedding Vendor', 3, 2, null, null),
+('Minneapolis Wedding Photographers', 4, 1, null, null);
 
 -- INSERTING PACKAGES
 INSERT INTO packages (name, vendortype_id)
@@ -232,8 +231,7 @@ WHERE (SELECT ST_Distance(
 -- Only Returning photographers (regardless of location)
 SELECT COALESCE(subvendors.name, vendors.name) AS name, 
 packages.name AS package, 
-subvendors_packages.price, 
-subvendors.url_slug AS url 
+subvendors_packages.price
 FROM subvendors JOIN subvendortypes ON subvendors.vendortype_id = subvendortypes.id 
 JOIN vendors ON vendors.id = subvendors.parent_vendor_id 
 JOIN subvendors_packages ON subvendors.id = subvendors_packages.subvendor_id 
@@ -246,7 +244,6 @@ LIMIT 10;
 SELECT COALESCE(subvendors.name, vendors.name) AS name, 
 packages.name AS package, 
 subvendors_packages.price, 
-subvendors.url_slug AS url, 
 ST_Distance((SELECT COALESCE(subvendors.location, vendors.location)), CAST(ST_SetSRID(ST_Point(-93.26501080000003, 44.977753),4326) As geography)) AS distance 
 FROM subvendors JOIN subvendortypes ON subvendors.vendortype_id = subvendortypes.id 
 JOIN vendors ON vendors.id = subvendors.parent_vendor_id 
@@ -273,7 +270,6 @@ WHERE packages.is_active=TRUE AND packages.vendortype_id=1; -- Limit to subvendo
 SELECT COALESCE(subvendors.name, vendors.name) AS name, 
 packages.name AS package, 
 subvendors_packages.price, 
-subvendors.url_slug AS url, 
 ST_Distance((SELECT COALESCE(subvendors.location, vendors.location)), CAST(ST_SetSRID(ST_Point(-93.26501080000003, 44.977753),4326) As geography)) AS distance 
 FROM subvendors JOIN subvendortypes ON subvendors.vendortype_id = subvendortypes.id 
 JOIN vendors ON vendors.id = subvendors.parent_vendor_id 
@@ -379,14 +375,14 @@ INSERT INTO users_vendors (user_id, vendor_id)
 VALUES (1, (SELECT id FROM new_vendor_id));
 
 -- ADDING NEW SUBVENDOR
-INSERT INTO subvendors (name, parent_vendor_id, vendortype_id, url_slug) 
+INSERT INTO subvendors (name, parent_vendor_id, vendortype_id) 
 VALUES ('Bob The Photographer', 
 (SELECT vendors.id  
 FROM users_vendors  
 JOIN vendors ON users_vendors.user_id=1 AND vendors.id=users_vendors.vendor_id
 WHERE vendors.id=1), -- making sure user has access to vendor
-1, -- hard coded for photographers
-'bob-the-photo-guy');
+1); -- hard coded for photographers
+
 
 -- SELECT ALL DATES FOR SUBVENDOR THAT CAN BE MADE AVAILABLE
 SELECT subvendor_availability.id, day, status 

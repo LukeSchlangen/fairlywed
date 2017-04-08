@@ -10,7 +10,6 @@ router.get('/', function (req, res) {
       'subvendors.id AS id, ' +
       'packages.name AS package, ' +
       'subvendors_packages.price, ' +
-      'subvendors.url_slug AS url, ' +
       'ST_Distance((SELECT COALESCE(subvendors.location, vendors.location)), CAST(ST_SetSRID(ST_Point($3, $4),4326) As geography)) AS distance ' +
       'FROM subvendors JOIN subvendortypes ON subvendors.vendortype_id = subvendortypes.id ' +
       'JOIN vendors ON vendors.id = subvendors.parent_vendor_id ' +
@@ -46,7 +45,6 @@ router.get('/subvendorProfile', function (req, res) {
       'subvendors.id AS id, ' +
       'packages.name AS package, ' +
       'subvendors_packages.price, ' +
-      'subvendors.url_slug AS url, ' +
       'ST_Distance((SELECT COALESCE(subvendors.location, vendors.location)), CAST(ST_SetSRID(ST_Point($2, $3),4326) As geography)) AS distance ' +
       'FROM subvendors ' +
       'JOIN vendors ON vendors.id = subvendors.parent_vendor_id ' +
@@ -54,7 +52,6 @@ router.get('/subvendorProfile', function (req, res) {
       'JOIN packages ON subvendors_packages.package_id = packages.id ' +
       'JOIN subvendor_availability ON subvendor_availability.subvendor_id = subvendors.id ' +
       'WHERE subvendors.id=$1 ' +
-      // 'AND packages.id=$2 ' +
       'AND (SELECT ST_Distance(' +
       '		(SELECT COALESCE(subvendors.location, vendors.location)),' +
       '		(CAST(ST_SetSRID(ST_Point($2, $3),4326) As geography))' +

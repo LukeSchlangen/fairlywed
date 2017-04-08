@@ -12,7 +12,6 @@ router.get('/', function (req, res) {
         } else {
             client.query('SELECT subvendors.id AS subvendor_id, ' +
                 'subvendors.name AS name, ' +
-                'subvendors.url_slug AS "urlSlug", ' +
                 'subvendors.is_active AS is_active ' +
                 'FROM users_vendors ' +
                 'JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id ' +
@@ -140,15 +139,14 @@ router.post('/', function (req, res) {
             console.log('Error connecting to database', err);
             res.sendStatus(500);
         } else {
-            client.query('INSERT INTO subvendors (name, parent_vendor_id, vendortype_id, url_slug) ' +
+            client.query('INSERT INTO subvendors (name, parent_vendor_id, vendortype_id) ' +
                 'VALUES ($3, ' +
                 '(SELECT vendors.id ' +
                 'FROM users_vendors ' +
                 'JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id ' +
                 'WHERE vendors.id=$2), ' +
-                '1, ' + // -- hard coded for photographers
-                '$4);',
-                [userId, vendorId, subvendor.name, subvendor.urlSlug],
+                '1); ', // -- hard coded for photographers
+                [userId, vendorId, subvendor.name],
                 function (err) {
                     done();
                     if (err) {
@@ -168,13 +166,13 @@ router.put('/', function (req, res) {
     var subvendorDetails = req.body;
     pool.connect(function (err, client, done) {
         client.query('UPDATE subvendors ' +
-            'SET name=$3, traveldistance=$4, url_slug=$5 ' +
+            'SET name=$3, traveldistance=$4 ' +
             'WHERE id = ( ' +
             'SELECT subvendors.id ' +
             'FROM users_vendors ' +
             'JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id ' +
             'JOIN subvendors ON subvendors.parent_vendor_id=vendors.id AND subvendors.id=$2);',
-            [userId, subvendorId, subvendorDetails.name, subvendorDetails.traveldistance, subvendorDetails.urlSlug],
+            [userId, subvendorId, subvendorDetails.name, subvendorDetails.traveldistance],
             function (err) {
                 done();
                 if (err) {
