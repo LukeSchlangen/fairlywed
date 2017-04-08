@@ -1,8 +1,9 @@
-app.controller("VendorDetailsController", ["VendorDetailsFactory", "AuthFactory",
-    function (VendorDetailsFactory, AuthFactory) {
+app.controller("VendorDetailsController", ["VendorDetailsFactory",
+    function (VendorDetailsFactory) {
         var self = this;
 
-        VendorDetailsFactory.updateList();
+        VendorDetailsFactory.getDetails();
+        VendorDetailsFactory.getSubvendorList();
 
         self.vendor = VendorDetailsFactory.vendor;
 

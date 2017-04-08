@@ -12,6 +12,7 @@ app.config(function ($stateProvider, $urlRouterProvider) {
 
     $urlRouterProvider.when('', '/home/photographers');
     $urlRouterProvider.when('/photographers/:subvendorId', '/photographers/:subvendorId/about');
+    $urlRouterProvider.when('/account/vendor/details/:vendorId/subvendor/details/:subvendorId', '/account/vendor/details/:vendorId/subvendor/details/:subvendorId/about');
 
     $stateProvider
         .state('home', {

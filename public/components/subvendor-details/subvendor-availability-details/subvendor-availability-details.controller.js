@@ -1,22 +1,10 @@
-app.controller("SubvendorAvailabilityDetailsController", ["AuthFactory", "SubvendorFactory",'$http', 'Upload', 
-    function (AuthFactory, SubvendorFactory, $http, Upload) {
+app.controller("SubvendorAvailabilityDetailsController", ["SubvendorFactory", 
+    function (SubvendorFactory) {
         var self = this;
 
         self.subvendor = SubvendorFactory.subvendor;
 
-        getAllPackages();
-
-        function getAllPackages() {
-            SubvendorFactory.updateList();
-        }
-
-        self.updateDetails = function (vendorDetailsToSave) {
-            SubvendorFactory.updateDetails(vendorDetailsToSave);
-        }
-
-        self.savePackage = function (packageToSave) {
-            SubvendorFactory.updatePackage(packageToSave);
-        }
+        SubvendorFactory.getAvailabilityList();
 
         self.isSaturday = function (dayToCheck) {
             dayToCheck = new Date(dayToCheck);
@@ -32,24 +20,6 @@ app.controller("SubvendorAvailabilityDetailsController", ["AuthFactory", "Subven
                 availability.status = 'available';
             }
             SubvendorFactory.updateAvailability(availability);
-        }
-
-
-        // $http.get('/uploads').then(function (response) {
-        //     console.log(response.data);
-        //     self.uploads = response.data;
-        // });
-
-        self.submit = function () {
-            Upload.upload({
-                url: '/uploads',
-                method: 'post',
-                data: self.upload
-            }).then(function (response) {
-                console.log(response.data);
-                self.uploads.push(response.data);
-                self.upload = {};
-            })
         }
     }
 ]);

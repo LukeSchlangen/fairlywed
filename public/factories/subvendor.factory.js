@@ -1,11 +1,17 @@
-app.factory("SubvendorFactory", ["$http", "AuthFactory", "$stateParams", 'Upload', function ($http, AuthFactory, $stateParams, Upload) {
+app.factory("SubvendorFactory", ["$http", "AuthFactory", "$stateParams", 'Upload', 'VendorDetailsFactory', function ($http, AuthFactory, $stateParams, Upload, VendorDetailsFactory) {
 
     var subvendor = { packageList: [], details: {}, imagesList: [] };
 
-    AuthFactory.$onAuthStateChanged(updateList);
+    AuthFactory.$onAuthStateChanged(getAllLists);
 
-    function updateList() {
+    function getAllLists() {
+        getDetails();
+        getPackagesList();
+        getAvailabilityList();
+        getImagesList();
+    }
 
+    function getPackagesList() {
         $http({
             method: 'GET',
             url: '/subvendorDetailsData/packages',
@@ -19,7 +25,9 @@ app.factory("SubvendorFactory", ["$http", "AuthFactory", "$stateParams", 'Upload
             console.error('Error retreiving private user data: ', err);
             subvendor.packageList = [];
         });
+    }
 
+    function getAvailabilityList() {
         $http({
             method: 'GET',
             url: '/subvendorDetailsData/availability',
@@ -33,7 +41,9 @@ app.factory("SubvendorFactory", ["$http", "AuthFactory", "$stateParams", 'Upload
             console.error('Error retreiving private user data: ', err);
             subvendor.availabilityList = [];
         });
+    }
 
+    function getImagesList() {
         $http({
             method: 'GET',
             url: '/subvendorDetailsData/images',
@@ -47,7 +57,9 @@ app.factory("SubvendorFactory", ["$http", "AuthFactory", "$stateParams", 'Upload
             console.error('Error retreiving private user data: ', err);
             subvendor.imagesList = [];
         });
+    }
 
+    function getDetails() {
         $http({
             method: 'GET',
             url: '/subvendorDetailsData',
@@ -73,7 +85,7 @@ app.factory("SubvendorFactory", ["$http", "AuthFactory", "$stateParams", 'Upload
             data: packageToSave
         }).then(function (response) {
             console.log('subvendor details controller returned: ', response.data);
-            updateList();
+            getPackagesList();
         }).catch(function (err) {
             console.error('Error retreiving private user data: ', err);
         });
@@ -89,7 +101,7 @@ app.factory("SubvendorFactory", ["$http", "AuthFactory", "$stateParams", 'Upload
             data: availabilityToSave
         }).then(function (response) {
             console.log('subvendor details controller returned: ', response.data);
-            updateList();
+            getAvailabilityList();
         }).catch(function (err) {
             console.error('Error retreiving private user data: ', err);
         });
@@ -105,7 +117,8 @@ app.factory("SubvendorFactory", ["$http", "AuthFactory", "$stateParams", 'Upload
             data: subvendorToSave
         }).then(function (response) {
             console.log('subvendor factory returned: ', response.data);
-            updateList();
+            getDetails();
+            VendorDetailsFactory.getSubvendorList();
         }).catch(function (err) {
             console.error('Error retreiving private user data: ', err);
         });
@@ -121,7 +134,7 @@ app.factory("SubvendorFactory", ["$http", "AuthFactory", "$stateParams", 'Upload
             data: imageToSave
         }).then(function (response) {
             console.log('subvendor factory returned: ', response.data);
-            updateList();
+            getImagesList();
         }).catch(function (err) {
             console.error('Error retreiving private user data: ', err);
         });
@@ -137,15 +150,18 @@ app.factory("SubvendorFactory", ["$http", "AuthFactory", "$stateParams", 'Upload
             data: newImage
         }).then(function (response) {
             console.log(response.data);
-            updateList();
+            getImagesList();
         })
     }
 
     return {
+        getDetails: getDetails,
+        getPackagesList: getPackagesList,
+        getAvailabilityList: getAvailabilityList,
+        getImagesList: getImagesList,
         addNewImage: addNewImage,
         subvendor: subvendor,
         updateDetails: updateDetails,
-        updateList: updateList,
         updatePackage: updatePackage,
         updateAvailability: updateAvailability,
         saveImage: saveImage

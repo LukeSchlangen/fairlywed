@@ -53,7 +53,7 @@ app.factory("PhotographerSearchFactory", ["PackagesFactory", "$http", "$statePar
 
     function updatePackagesList() {
         if (search.parameters.package.id) {
-            PackagesFactory.updateList().then(function (response) {
+            PackagesFactory.getPackageList().then(function (response) {
                 var currentPackageArray = response.data.packages.filter(function (photoPackage) {
                     return photoPackage.id == $stateParams.package;
                 });
@@ -67,7 +67,7 @@ app.factory("PhotographerSearchFactory", ["PackagesFactory", "$http", "$statePar
     // -- PROFILE VIEW CURRENT PHOTOGRAPHER INFROMATION RETREIVAL - MORE DETAILS ABOUT ONE PHOTOGRAPHER -- //
     var currentSubvendor = {};
 
-    function updateSubvendorProfileDetails() {
+    function getSubvendorProfileDetails() {
         updateSearchParameters();
         // Description
         if (search.parameters.package.id && search.parameters.longitude && search.parameters.latitude && search.parameters.subvendorId) {
@@ -106,7 +106,7 @@ app.factory("PhotographerSearchFactory", ["PackagesFactory", "$http", "$statePar
         updatePhotographersList: updatePhotographersList,
         updatePackagesList: updatePackagesList,
         currentSubvendor: currentSubvendor,
-        updateSubvendorProfileDetails: updateSubvendorProfileDetails,
+        getSubvendorProfileDetails: getSubvendorProfileDetails,
         search: search
     };
 }]);

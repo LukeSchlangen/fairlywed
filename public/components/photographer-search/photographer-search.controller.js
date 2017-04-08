@@ -1,5 +1,5 @@
-app.controller("PhotographerSearchController", ["PhotographerSearchFactory", "$scope", 
-    function (PhotographerSearchFactory, $scope) {
+app.controller("PhotographerSearchController", ["PhotographerSearchFactory",
+    function (PhotographerSearchFactory) {
         var self = this;
         self.search = PhotographerSearchFactory.search;
         self.packages = PhotographerSearchFactory.packages;
