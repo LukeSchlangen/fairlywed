@@ -11,6 +11,7 @@ app.config(function ($stateProvider, $urlRouterProvider, $mdThemingProvider) {
     });
 
     $urlRouterProvider.when('', '/home/photographers');
+    $urlRouterProvider.when('/account', '/account/vendor');
     $urlRouterProvider.when('/photographers/:subvendorId', '/photographers/:subvendorId/about');
     $urlRouterProvider.when('/account/vendor/details/:vendorId/subvendor/details/:subvendorId', '/account/vendor/details/:vendorId/subvendor/details/:subvendorId/about');
 
@@ -62,7 +63,12 @@ app.config(function ($stateProvider, $urlRouterProvider, $mdThemingProvider) {
         })
         .state('account.vendor.details', {
             url: '/details/:vendorId',
-            templateUrl: 'views/account/vendor-details.html'
+            templateUrl: 'views/account/vendor-details.html',
+            onEnter: function ($state, $stateParams) {
+                if (!$stateParams.vendorId) {
+                    $state.transitionTo('account.vendor');
+                }
+            }
         })
         .state('account.vendor.details.subvendor', {
             url: '/subvendor',
@@ -70,7 +76,12 @@ app.config(function ($stateProvider, $urlRouterProvider, $mdThemingProvider) {
         })
         .state('account.vendor.details.subvendor.details', {
             url: '/details/:subvendorId',
-            templateUrl: 'views/account/subvendor-details/subvendor-details.html'
+            templateUrl: 'views/account/subvendor-details/subvendor-details.html',
+            onEnter: function ($state, $stateParams) {
+                if (!$stateParams.subvendorId) {
+                    $state.transitionTo('account.vendor.details', {vendorId: $stateParams.vendorId});
+                }
+            }
         })
         .state('account.vendor.details.subvendor.details.about', {
             url: '/about',
@@ -120,7 +131,7 @@ app.config(function ($stateProvider, $urlRouterProvider, $mdThemingProvider) {
         '500': 'aaaaaa', // button hover background
         '600': 'ffffff',
         '700': 'ffffff',
-        '800': 'ffffff', 
+        '800': 'ffffff',
         '900': '000000', // Text in the dropdown list
         'A100': 'ffffff', // No clue
         'A200': '000000', // Non selected day text in the calendar toggle

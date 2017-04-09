@@ -1,4 +1,4 @@
-app.controller("VendorAccountController", function (PackagesFactory, VendorAccountFactory) {
+app.controller("VendorAccountController", function (PackagesFactory, VendorAccountFactory, $stateParams) {
     var self = this;
     self.packages = PackagesFactory.packages;
     self.vendors = VendorAccountFactory.vendors;
@@ -23,5 +23,9 @@ app.controller("VendorAccountController", function (PackagesFactory, VendorAccou
     self.addVendor = function () {
         VendorAccountFactory.addVendor(self.newVendor);
         self.newVendor = {};
+    }
+
+    self.isCurrentVendor = function(vendorIdToCheck) {
+        return $stateParams.vendorId == vendorIdToCheck;
     }
 });
