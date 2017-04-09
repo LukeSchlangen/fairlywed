@@ -141,7 +141,7 @@ app.config(function ($stateProvider, $urlRouterProvider, $mdThemingProvider) {
     });
 
     $mdThemingProvider.theme('default')
-        .primaryPalette('black')
-        .accentPalette('black')
-        .backgroundPalette('white');
+        // .primaryPalette('black')
+        // .accentPalette('black')
+        // .backgroundPalette('white');
 });

@@ -25,7 +25,7 @@ CREATE TABLE vendors (
 	id SERIAL PRIMARY KEY,
 	name VARCHAR(500) NOT NULL,
 	location geography NOT NULL,
-	travelDistance INT NOT NULL DEFAULT 100000, -- Default to 100 kilometer radius
+	travelDistance INT DEFAULT 16093 NOT NULL, -- Default to 10 mile radius
 	is_active BOOLEAN DEFAULT TRUE NOT NULL
 );
 

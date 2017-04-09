@@ -90,7 +90,14 @@
 </head>
 
 <body ng-app="sampleApp" layout="column">
-  <auth></auth>
+  <md-toolbar>
+    <div class="md-toolbar-tools">
+      <h3>FairlyWed</h3>
+      <span flex></span>
+      <auth></auth>
+    </div>
+  </md-toolbar>
+
   <a ui-sref="home.photographers">home</a>
   <a ui-sref="account">account</a>
   <div ui-view></div>
