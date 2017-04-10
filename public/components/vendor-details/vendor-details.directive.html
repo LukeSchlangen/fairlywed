@@ -1,12 +1,39 @@
-<p>
-    <input type="text" ng-model="vm.vendor.details.name">
-    <input type="number" ng-model="vm.vendor.details.traveldistance">
-    <button ng-click="vm.updateDetails(vm.vendor.details)">Update Details</button>
-</p>
-<p>In order for you to accept payment, you will need a Stripe Account <button>Some way to set up a Stripe Account</button></p>
+<form layout layout-align="center" layout-padding>
+    <div layout="row" layout-xs="column" flex>
+        <md-input-container class="md-block" flex-gt-xs>
+            <label>Legal Name Of The Business</label>
+            <input ng-model="vm.vendor.details.name">
+        </md-input-container>
+        <md-input-container class="md-block" flex-gt-xs>
+            <label>Distance You Are Willing To Travel For Free</label>
+            <input type="number" ng-model="vm.vendor.details.traveldistance">
+        </md-input-container>
+        <div>
+            <md-button class="md-raised" ng-click="vm.updateDetails(vm.vendor.details)">
+                Update Business Details
+            </md-button>
+        </div>
+    </div>
+</form>
 
-<input type="text" ng-model="vm.newSubvendor.name">
-<button ng-click="vm.addSubvendor(vm.newSubvendor)">Add New Subvendor</button>
+<!--<p>In order for you to accept payment, you will need a Stripe Account <button>Some way to set up a Stripe Account</button></p>-->
+
+<!--<input type="text" ng-model="vm.newSubvendor.name">
+<button ng-click="vm.addSubvendor(vm.newSubvendor)">Add New Subvendor</button>-->
+
+<form layout layout-align="center" layout-padding>
+    <div layout="row" layout-xs="column" flex>
+        <md-input-container class="md-block" flex-gt-xs>
+            <label>Photographer Name As It Will Show On The Site (e.g. Luke and Lindsey Photography)</label>
+            <input ng-model="vm.newSubvendor.name">
+        </md-input-container>
+        <div>
+            <md-button class="md-raised" ng-click="vm.addSubvendor()">
+                Add New Photographer
+            </md-button>
+        </div>
+    </div>
+</form>
 
 <md-tabs class="main-toolbar">
     <md-tab label="{{subvendor.name}}" ui-sref=".subvendor.details({subvendorId: subvendor.id})" md-active="vm.isCurrentSubvendor(subvendor.id)" ng-repeat="subvendor in vm.vendor.subvendorList"></md-tab>

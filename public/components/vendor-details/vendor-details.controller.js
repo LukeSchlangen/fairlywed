@@ -10,8 +10,9 @@ app.controller("VendorDetailsController", function (VendorDetailsFactory, $state
         VendorDetailsFactory.updateDetails(vendorDetailsToSave);
     }
 
-    self.addSubvendor = function (newSubvendor) {
-        VendorDetailsFactory.addSubvendor(newSubvendor);
+    self.addSubvendor = function () {
+        VendorDetailsFactory.addSubvendor(self.newSubvendor);
+        self.newSubvendor = {};
     }
 
     self.isCurrentSubvendor = function(subvendorIdToCheck) {
