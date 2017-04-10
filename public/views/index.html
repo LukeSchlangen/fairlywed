@@ -89,8 +89,26 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.0/angular-aria.min.js"></script>
   <link href="https://fonts.googleapis.com/css?family=Tangerine" rel="stylesheet">
   <style>
-    h1 {
+    body {
+      min-width: 670px !important;
+    }
+    .brand-font {
       font-family: 'Tangerine', cursive;
+    }  
+    .nav-brand {
+      font-size: 300%;
+      cursor: pointer;
+    }
+    .availability-calendar {
+      min-width: 540px !important;
+    }
+    .calendar-day {
+      width: 10%;
+      min-width: 0px;
+    }
+    .calendar-month {
+      width: 10%;
+      min-width: 40px !important;
     }
   </style>
 </head>
@@ -103,6 +121,7 @@
       <auth></auth>
     </div>
   </md-toolbar>-->
+  <!--<auth></auth>-->
   <span ui-view></span>
 </body>
 

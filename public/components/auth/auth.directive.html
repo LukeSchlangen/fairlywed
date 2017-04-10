@@ -1,7 +1,7 @@
-<span ng-show="vm.userData.details">
+<span ng-show="vm.userData.details" flex>
     {{ vm.userData.details.email }} 
     <md-button class="md-raised" ng-click="vm.signOut()">Sign Out</md-button>
 </span>
-<span ng-hide="vm.userData.details">
+<span ng-hide="vm.userData.details" flex>
     <md-button class="md-raised" ng-click="vm.signIn('google')">Sign In With Google</md-button>
 </span>
