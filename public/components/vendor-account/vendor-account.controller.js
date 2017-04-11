@@ -30,6 +30,4 @@ app.controller("VendorAccountController", function (PackagesFactory, VendorAccou
     }
 
     self.userData = UserDataFactory.userData;
-    self.signIn = UserDataFactory.signIn;
-    self.signOut = UserDataFactory.signOut;
 });

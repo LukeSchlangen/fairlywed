@@ -1,7 +1,14 @@
-<span ng-show="vm.userData.details" flex>
-    {{ vm.userData.details.email }} 
-    <md-button class="md-raised" ng-click="vm.signOut()">Sign Out</md-button>
-</span>
-<span ng-hide="vm.userData.details" flex>
-    <md-button class="md-raised" ng-click="vm.signIn('google')">Sign In With Google</md-button>
-</span>
+<md-content class="md-padding" layout-xs="column" layout="row">
+    <div flex layout="column">
+        <md-card>
+            <md-card-content>
+                <div layout="row">
+                    <span class="brand-font nav-brand" ui-sref="home.photographers">FairlyWed</span>
+                    <span flex></span>
+                    <span ng-show="vm.userData.details"><md-button class="md-raised" ng-click="vm.signOut()">Sign Out</md-button></span>
+                    <span ng-hide="vm.userData.details"><md-button class="md-raised" ng-click="vm.signIn('google')">Sign In With Google</md-button></span>
+                </div>
+            </md-card-content>
+        </md-card>
+    </div>
+</md-content>
