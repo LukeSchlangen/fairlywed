@@ -1,7 +1,7 @@
-app.controller("PhotographerProfileAboutController", ["$stateParams",
-    function ($stateParams) {
-        var self = this;
+app.controller("PhotographerProfileAboutController", function ($stateParams, PhotographerSearchFactory) {
+    var self = this;
 
-        self.params = $stateParams;
-    }
-]);
+    PhotographerSearchFactory.getSubvendorProfileDetails();
+
+    self.params = $stateParams;
+});

@@ -3,9 +3,12 @@
 
 <head>
   <meta charset="utf-8">
-  <title>nodeFire with Authentication</title>
+  <title>FairlyWed | Book Your Perfect Wedding Photographer</title>
   <!-- AngularJS -->
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
+
+  <!-- Angular File Upload-->
+  <script src="/vendors/ng-file-upload-all.min.js"></script>
 
   <!--Angular ui-router-->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.3.2/angular-ui-router.js"></script>
@@ -21,15 +24,23 @@
 
   <!-- Main Angular Application File -->
   <script src="scripts/app.js"></script>
-  <script src="scripts/router.js"></script>
+  <script src="scripts/app.config.js"></script>
+
+  <!-- Image directive so http requests have security -->
+  <script src="scripts/http-src.directive.js"></script>
+
+  <!-- Images with security directive -->
+  <script src="factories/http-interceptor.factory.js"></script>
 
   <!-- Angular Factories -->
   <script src="factories/auth.factory.js"></script>
+  <script src="factories/user-data.factory.js"></script>
   <script src="factories/photographer-search.factory.js"></script>
   <script src="factories/packages.factory.js"></script>
   <script src="factories/vendor-account.factory.js"></script>
   <script src="factories/vendor-details.factory.js"></script>
   <script src="factories/subvendor.factory.js"></script>
+  <script src="factories/public-images.factory.js"></script>
   <!--<script src="factories/vendor-details.factory.js"></script>-->
 
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBnVkpgWUFimXA6igDvgMCKN1GFBkf1wFI&libraries=places" type="text/javascript"></script>
@@ -40,7 +51,6 @@
   <script src="components/photographer-list/photographer-list.controller.js"></script>
   <script src="components/vendor-account/vendor-account.controller.js"></script>
   <script src="components/vendor-details/vendor-details.controller.js"></script>
-  <script src="components/subvendor-details/subvendor-details.controller.js"></script>
 
   <!-- Angular Directives - Should have a matching controller -->
   <script src="components/auth/auth.directive.js"></script>
@@ -48,7 +58,18 @@
   <script src="components/photographer-list/photographer-list.directive.js"></script>
   <script src="components/vendor-account/vendor-account.directive.js"></script>
   <script src="components/vendor-details/vendor-details.directive.js"></script>
+
+  <!-- Photographer Subvendor Details Angular Directives - Should be paired with matching controllers -->
+  <script src="components/subvendor-details/subvendor-details.controller.js"></script>
   <script src="components/subvendor-details/subvendor-details.directive.js"></script>
+  <script src="components/subvendor-details/subvendor-about-details/subvendor-about-details.controller.js"></script>
+  <script src="components/subvendor-details/subvendor-about-details/subvendor-about-details.directive.js"></script>
+  <script src="components/subvendor-details/subvendor-availability-details/subvendor-availability-details.controller.js"></script>
+  <script src="components/subvendor-details/subvendor-availability-details/subvendor-availability-details.directive.js"></script>
+  <script src="components/subvendor-details/subvendor-images-details/subvendor-images-details.controller.js"></script>
+  <script src="components/subvendor-details/subvendor-images-details/subvendor-images-details.directive.js"></script>
+  <script src="components/subvendor-details/subvendor-packages-details/subvendor-packages-details.controller.js"></script>
+  <script src="components/subvendor-details/subvendor-packages-details/subvendor-packages-details.directive.js"></script>
 
   <!-- Photographer Profile Angular Directives - Should be paired with matching controllers -->
   <script src="components/photographer-profile/photographer-profile-about/photographer-profile-about.controller.js"></script>
@@ -60,15 +81,41 @@
   <script src="components/photographer-profile/photographer-profile-home/photographer-profile-home.controller.js"></script>
   <script src="components/photographer-profile/photographer-profile-home/photographer-profile-home.directive.js"></script>
 
-
+  <!--Angular Material To Make Things Look Nice-->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.1.3/angular-material.min.css" />
+  <!--<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.1.3/angular-material.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.0/angular-animate.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.0/angular-aria.min.js"></script>
+  <link href="https://fonts.googleapis.com/css?family=Tangerine" rel="stylesheet">
+  <style>
+    body {
+      min-width: 670px !important;
+    }
+    .brand-font {
+      font-family: 'Tangerine', cursive;
+    }  
+    .nav-brand {
+      font-size: 300%;
+      cursor: pointer;
+    }
+    .availability-calendar {
+      min-width: 540px !important;
+    }
+    .calendar-day {
+      width: 10%;
+      min-width: 0px;
+    }
+    .calendar-month {
+      width: 10%;
+      min-width: 40px !important;
+    }
+  </style>
 </head>
-<div ng-app="sampleApp">
 
+<body ng-app="sampleApp" layout="column">
   <auth></auth>
-  <a ui-sref="home.photographers">home</a>
-  <a ui-sref="account">account</a>
-  <div ui-view></div>
-
-</div>
+  <span ui-view></span>
+</body>
 
 </html>

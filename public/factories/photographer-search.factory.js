@@ -1,9 +1,13 @@
-app.factory("PhotographerSearchFactory", ["PackagesFactory", "$http", "$stateParams", "$state", function (PackagesFactory, $http, $stateParams, $state) {
+app.factory("PhotographerSearchFactory", function (PackagesFactory, $http, $stateParams, $state) {
 
     console.log('photographer factory logging $stateParams: ', $stateParams);
 
+    var packages = { list: [] };
+    var photographers = { list: [] };
+    var packages = { list: [] };
+
     // -- SETTING DEFAULT VALUES FOR SEARCH OR GETTING THEM FROM STATE PARAMETERS ROUTING -- //
-     var search = {};
+    var search = {};
     updateSearchParameters();
     function updateSearchParameters() {
         search.parameters = {};
@@ -11,17 +15,17 @@ app.factory("PhotographerSearchFactory", ["PackagesFactory", "$http", "$statePar
         search.parameters.location = $stateParams.location || "Minneapolis, MN, USA";
         search.parameters.longitude = $stateParams.longitude || -93.26501080000003;
         search.parameters.latitude = $stateParams.latitude || 44.977753;
-        search.parameters.package.id = $stateParams.package ? $stateParams.package : 2;
+        search.parameters.package = $stateParams.package ? $stateParams.package : 2;
         search.parameters.date = $stateParams.date ? new Date($stateParams.date) : new Date(new Date().setFullYear(new Date().getFullYear() + 1));
         packages = PackagesFactory.packages;
         photographers = { list: [] };
         search.parameters.subvendorId = $stateParams.subvendorId;
-    }    
+    }
     // ------------------------------------------------------------------------------------ //
 
     // -- RETURNING LIST OF PHOTOGRAPHERS BASED ON SEARCH PARAMETERS -- //
     function updatePhotographersList() {
-        if (search.parameters.package.id && search.parameters.longitude && search.parameters.latitude) {
+        if (search.parameters.package && search.parameters.longitude && search.parameters.latitude) {
             search.parameters.vendorType = 'photographer';
             $http({
                 method: 'GET',
@@ -29,7 +33,7 @@ app.factory("PhotographerSearchFactory", ["PackagesFactory", "$http", "$statePar
                 params: { search: search.parameters }
             }).then(function (response) {
                 console.log('Photographer factory received photographer data from the server: ', response.data);
-                photographers.list = response.data.vendors;
+                photographers.list = response.data;
             }).catch(function (err) {
                 console.error('Error retreiving photographer data: ', err);
             });
@@ -39,17 +43,17 @@ app.factory("PhotographerSearchFactory", ["PackagesFactory", "$http", "$statePar
 
         // update route parameters based on search
         var newStateParameters = angular.copy(search.parameters);
-        newStateParameters.package = search.parameters.package.id;
+        newStateParameters.package = search.parameters.package;
         newStateParameters.date = search.parameters.date.toDateString();
         console.log('$state is currently:', $state);
         console.log('newStateParameters:', newStateParameters)
-        $state.transitionTo($state.current.name, newStateParameters);
+        $state.transitionTo($state.current.name, newStateParameters, {notify: false});
     }
     // --------------------------------------------------------------- //
 
     function updatePackagesList() {
         if (search.parameters.package.id) {
-            PackagesFactory.updateList().then(function (response) {
+            PackagesFactory.getPackageList().then(function (response) {
                 var currentPackageArray = response.data.packages.filter(function (photoPackage) {
                     return photoPackage.id == $stateParams.package;
                 });
@@ -62,11 +66,11 @@ app.factory("PhotographerSearchFactory", ["PackagesFactory", "$http", "$statePar
 
     // -- PROFILE VIEW CURRENT PHOTOGRAPHER INFROMATION RETREIVAL - MORE DETAILS ABOUT ONE PHOTOGRAPHER -- //
     var currentSubvendor = {};
-    
-    function updateSubvendorProfileDetails() {
+
+    function getSubvendorProfileDetails() {
         updateSearchParameters();
         // Description
-        if (search.parameters.package.id && search.parameters.longitude && search.parameters.latitude && search.parameters.subvendorId) {
+        if (search.parameters.package && search.parameters.longitude && search.parameters.latitude && search.parameters.subvendorId) {
             search.parameters.vendorType = 'photographer';
             $http({
                 method: 'GET',
@@ -84,11 +88,11 @@ app.factory("PhotographerSearchFactory", ["PackagesFactory", "$http", "$statePar
 
         // update route parameters based on search
         var newStateParameters = angular.copy(search.parameters);
-        newStateParameters.package = search.parameters.package.id;
+        newStateParameters.package = search.parameters.package;
         newStateParameters.date = search.parameters.date.toDateString();
         console.log('$state is currently:', $state);
         console.log('newStateParameters:', newStateParameters)
-        $state.transitionTo($state.current.name, newStateParameters);
+        $state.transitionTo($state.current.name, newStateParameters, {notify: false});
         // Package prices
 
         // Public images
@@ -100,9 +104,8 @@ app.factory("PhotographerSearchFactory", ["PackagesFactory", "$http", "$statePar
         packages: packages,
         photographers: photographers,
         updatePhotographersList: updatePhotographersList,
-        updatePackagesList: updatePackagesList,
         currentSubvendor: currentSubvendor,
-        updateSubvendorProfileDetails: updateSubvendorProfileDetails,
+        getSubvendorProfileDetails: getSubvendorProfileDetails,
         search: search
     };
-}]);
+});
