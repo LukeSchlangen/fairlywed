@@ -1,0 +1,15 @@
+<div class="availability-calendar">
+    <span ng-repeat="availability in vm.subvendor.availabilityList">
+        <md-button class="md-raised calendar-day" ng-attr-title="{{availability.status || 'unavailable'}}" 
+                ng-click="vm.toggleAvailability(availability)">
+            <div>{{availability.day | date:'EEE'}}</div>
+            <div hide-gt-sm>{{availability.day | date:'MMMM'}}</div>
+            <div>{{availability.day | date:'dd'}}</div>
+            <div>{{(availability.status || 'unavailable') | limitTo: 1}}</div>
+        </md-button>
+        <span class="calendar-month" ng-if="vm.isSaturday(availability.day)" hide-sm>
+            {{availability.day | date:'MMMM'}}
+            <br>
+        </span>
+    </span>
+</div>

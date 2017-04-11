@@ -1,0 +1,36 @@
+<h2>Subvendor Images Details Directive</h2>
+
+<form ng-submit="vm.uploadImage(vm.upload)">
+    <legend>Upload a new file here:</legend>
+    <label for="name">Name:</label>
+    <input type="text" name="name" id="name" ng-model="vm.upload.name" required/>
+    <br/>
+    <label for="file">File:</label>
+    <input type="file" name="file" id="file" ng-model="vm.upload.file" ngf-select ngf-max-size="25MB" required/>
+    <br/>
+    <input type="submit" value="Submit" />
+</form>
+
+<h2>All uploads are here:</h2>
+<div layout="row">
+    <md-content layout="column" flex-xs flex-gt-xs="50">
+        <md-card ng-repeat="image in vm.subvendor.imagesList" ng-if="$index % 2 == 0">
+            <img http-src="/uploads/{{image.id}}">
+            <md-card-actions layout="column" layout-align="center start" layout-gt-sm="row" layout-align-gt-sm="center center">
+                <md-checkbox ng-model="image.is_public" ng-change="vm.saveImage(image)">Is Public</md-checkbox>
+                <md-checkbox ng-model="image.is_in_gallery" ng-change="vm.saveImage(image)">Is In Your Gallery</md-checkbox>
+                <md-checkbox ng-model="image.is_active" ng-change="vm.saveImage(image)">Is Active</md-checkbox>
+            </md-card-actions>
+        </md-card>
+    </md-content>
+    <md-content layout="column" flex-xs flex-gt-xs="50">
+        <md-card ng-repeat="image in vm.subvendor.imagesList" ng-if="$index % 2 == 1">
+            <img http-src="/uploads/{{image.id}}">
+            <md-card-actions layout="column" layout-align="center start" layout-gt-sm="row" layout-align-gt-sm="center center">
+                <md-checkbox ng-model="image.is_public" ng-change="vm.saveImage(image)">Is Public</md-checkbox>
+                <md-checkbox ng-model="image.is_in_gallery" ng-change="vm.saveImage(image)">Is In Your Gallery</md-checkbox>
+                <md-checkbox ng-model="image.is_active" ng-change="vm.saveImage(image)">Is Active</md-checkbox>
+            </md-card-actions>
+        </md-card>
+    </md-content>
+</div>
