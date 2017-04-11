@@ -83,7 +83,7 @@ router.get('/availability', function (req, res) {
                 '	JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id ' +
                 '	JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=$2) ' +
                 'RIGHT OUTER JOIN calendar_dates ON calendar_dates.id=subvendor_availability.date_id ' +
-                'WHERE day >= (SELECT current_date - cast(extract(dow from current_date) as int)) AND day < (SELECT current_date - cast(extract(dow from current_date) as int)) + 371 ' +
+                'WHERE day >= (SELECT current_date - cast(extract(dow from current_date) as int)) AND day < (SELECT current_date - cast(extract(dow from current_date) as int)) + 21 ' +
                 'ORDER BY day;',
                 [userId, subvendorId],
                 function (err, subvendorQueryResult) {

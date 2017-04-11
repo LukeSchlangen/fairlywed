@@ -12,13 +12,25 @@
 </form>
 
 <h2>All uploads are here:</h2>
-<div ng-repeat="image in vm.subvendor.imagesList">
-    <p>{{image}}</p>
-    <ul>
-        <li>is_public: <input type="checkbox" ng-model="image.is_public" ng-change="vm.saveImage(image)"></li>
-        <li>is_in_gallery: <input type="checkbox" ng-model="image.is_in_gallery" ng-change="vm.saveImage(image)"></li>
-        <li>is_active: <input type="checkbox" ng-model="image.is_active" ng-change="vm.saveImage(image)"></li>
-    </ul>
-    <img http-src="/uploads/{{image.id}}">
-    <!--<a ng-href='/uploads/{{image.id}}'>download {{image.id}}</a>-->
+<div layout="row">
+    <md-content layout="column" flex-xs flex-gt-xs="50">
+        <md-card ng-repeat="image in vm.subvendor.imagesList" ng-if="$index % 2 == 0">
+            <img http-src="/uploads/{{image.id}}">
+            <md-card-actions layout="column" layout-align="center start" layout-gt-sm="row" layout-align-gt-sm="center center">
+                <md-checkbox ng-model="image.is_public" ng-change="vm.saveImage(image)">Is Public</md-checkbox>
+                <md-checkbox ng-model="image.is_in_gallery" ng-change="vm.saveImage(image)">Is In Your Gallery</md-checkbox>
+                <md-checkbox ng-model="image.is_active" ng-change="vm.saveImage(image)">Is Active</md-checkbox>
+            </md-card-actions>
+        </md-card>
+    </md-content>
+    <md-content layout="column" flex-xs flex-gt-xs="50">
+        <md-card ng-repeat="image in vm.subvendor.imagesList" ng-if="$index % 2 == 1">
+            <img http-src="/uploads/{{image.id}}">
+            <md-card-actions layout="column" layout-align="center start" layout-gt-sm="row" layout-align-gt-sm="center center">
+                <md-checkbox ng-model="image.is_public" ng-change="vm.saveImage(image)">Is Public</md-checkbox>
+                <md-checkbox ng-model="image.is_in_gallery" ng-change="vm.saveImage(image)">Is In Your Gallery</md-checkbox>
+                <md-checkbox ng-model="image.is_active" ng-change="vm.saveImage(image)">Is Active</md-checkbox>
+            </md-card-actions>
+        </md-card>
+    </md-content>
 </div>

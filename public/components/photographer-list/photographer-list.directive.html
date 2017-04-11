@@ -1,10 +1,10 @@
-<div ng-repeat="photographer in vm.photographers.list">
-    <a ui-sref="photographers.about(
+<md-button flex ng-repeat="photographer in vm.photographers.list" layout="row" ui-sref="photographers.about(
         {subvendorId: photographer.id, 
         package: vm.params.package, 
         location: vm.params.location, 
         longitude: vm.params.longitude, 
         latitude: vm.params.latitude, 
         date: vm.params.date
-        })">{{photographer.name}}</a>
-</div>
+        })">
+    {{photographer.name}}<span flex></span>{{photographer.price | currency:"$":0}}
+</md-button>

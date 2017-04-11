@@ -1,9 +1,34 @@
-<h2>Vendor Account Directive</h2>
-<input type="text" ng-model="vm.newVendor.name">
-<input type="text" ng-model="vm.newVendor.traveldistance">
-<button ng-click="vm.addVendor()">Add New Vendor</button>
-<section ng-repeat="vendor in vm.vendors.list">
-    <a ui-sref=".details({vendorId: vendor.id})">{{vendor.name}}, ID is {{vendor.id}}</a>
-</section>
+<span ng-if="vm.userData.details" flex>
+    <md-content class="md-padding" layout-xs="column" layout="row">
+        <div flex layout="column">
+            <md-card>
+                <md-card-content>
+                    <form layout layout-align="center" layout-padding ng-submit="vm.addVendor()">
+                        <div layout="row" layout-xs="column" flex>
+                            <md-input-container class="md-block" flex-gt-xs>
+                                <label>Legal Name Of Your Photography Business (e.g. Amazing Photography LLC)</label>
+                                <input ng-model="vm.newVendor.name">
+                            </md-input-container>
+                            <div>
+                                <md-button class="md-raised" ng-click="vm.addVendor()">
+                                    Add New Business
+                                </md-button>
+                            </div>
+                        </div>
+                    </form>
 
-<div ui-view></div>
+                    <span ng-show="vm.vendors.list.length > 0">
+                        <md-tabs class="main-toolbar">
+                            <md-tab label="{{vendor.name}}" ui-sref=".details({vendorId: vendor.id})" md-active="vm.isCurrentVendor(vendor.id)" ng-repeat="vendor in vm.vendors.list"></md-tab>
+                        </md-tabs>
+                        <md-card>
+                            <md-card-content>
+                                <div ui-view></div>
+                            </md-card-content>
+                        </md-card>
+                    </span>
+                </md-card-content>
+            </md-card>
+        </div>
+    </md-content>
+</span>

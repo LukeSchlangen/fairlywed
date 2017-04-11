@@ -1,5 +1,13 @@
-<h2>Photographer Home Page Directive</h2>
-<a ui-sref=".about">about</a>
+<!--<h2>Photographer Home Page Directive</h2>-->
+<!--<a ui-sref=".about">about</a>
 <a ui-sref=".gallery">gallery</a>
 <a ui-sref=".booking">book</a>
-<div ui-view></div>
+<div ui-view></div>-->
+
+<md-tabs class="main-toolbar"> 
+    <md-tab label="About" ui-sref=".about" md-active="vm.isCurrentState('photographers.about')"></md-tab> 
+    <md-tab label="Gallery" ui-sref=".gallery" md-active="vm.isCurrentState('photographers.gallery')"></md-tab> 
+    <md-tab label="Booking" ui-sref=".booking" md-active="vm.isCurrentState('photographers.booking')"></md-tab> 
+</md-tabs> 
+ 
+ <div ui-view></div>

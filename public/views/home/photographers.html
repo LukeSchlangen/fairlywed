@@ -1,3 +1,48 @@
-<h1>Photographers View</h1>
-<h2>Photographers Search Directive</h2><photographer-search></photographer-search>
-<h2>Photographers List Directive</h2><photographer-list></photographer-list>
+<div layout="row"><span flex></span>
+  <h1 class="md-display-4 brand-font">FairlyWed</h1><span flex></span></div>
+<div layout="row"><span flex></span>
+  <h2 class="md-display-1">Book Your Perfect Wedding Photographer</h2><span flex></span></div>
+<md-content class="md-padding" layout-xs="column" layout="row">
+  <div flex layout="column">
+    <md-card>
+      <md-card-title>
+        <md-card-title-text>
+          <span class="md-headline">Find A Photographer</span>
+        </md-card-title-text>
+      </md-card-title>
+      <md-card-content>
+        <photographer-search></photographer-search>
+      </md-card-content>
+    </md-card>
+  </div>
+</md-content>
+
+<md-content class="md-padding" layout-xs="column" layout="row">
+  <div flex layout="column">
+    <md-card>
+      <md-card-title>
+        <md-card-title-text>
+          <span class="md-headline">Your Best Matches</span>
+        </md-card-title-text>
+      </md-card-title>
+      <md-card-content>
+        <photographer-list></photographer-list>
+      </md-card-content>
+    </md-card>
+  </div>
+</md-content>
+
+<md-content class="md-padding" layout-xs="column" layout="row">
+  <div flex layout="column">
+    <md-card>
+      <md-card-title>
+        <md-card-title-text>
+          <span class="md-headline">Want to become a photographer on our site?</span>
+        </md-card-title-text>
+      </md-card-title>
+      <md-card-content>
+        <md-button ui-sref="account" layout="row">Click Here To Become A Photographer<span flex></span></md-button>
+      </md-card-content>
+    </md-card>
+  </div>
+</md-content>

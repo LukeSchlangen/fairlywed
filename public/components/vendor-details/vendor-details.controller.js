@@ -1,4 +1,4 @@
-app.controller("VendorDetailsController", function (VendorDetailsFactory) {
+app.controller("VendorDetailsController", function (VendorDetailsFactory, $stateParams) {
     var self = this;
 
     VendorDetailsFactory.getDetails();
@@ -10,7 +10,12 @@ app.controller("VendorDetailsController", function (VendorDetailsFactory) {
         VendorDetailsFactory.updateDetails(vendorDetailsToSave);
     }
 
-    self.addSubvendor = function (newSubvendor) {
-        VendorDetailsFactory.addSubvendor(newSubvendor);
+    self.addSubvendor = function () {
+        VendorDetailsFactory.addSubvendor(self.newSubvendor);
+        self.newSubvendor = {};
+    }
+
+    self.isCurrentSubvendor = function(subvendorIdToCheck) {
+        return $stateParams.subvendorId == subvendorIdToCheck;
     }
 });

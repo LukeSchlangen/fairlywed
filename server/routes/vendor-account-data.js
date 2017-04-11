@@ -33,15 +33,15 @@ router.post('/', function (req, res) {
             res.sendStatus(500);
         } else {
             client.query('WITH new_vendor_id AS (' +
-                'INSERT INTO vendors (name, location, traveldistance) ' +
+                'INSERT INTO vendors (name, location) ' +
                 'VALUES ($2, ' +
-                '		CAST(ST_SetSRID(ST_Point(COALESCE($3, -93.4687), COALESCE($4, 44.9212)),4326) AS geography), ' +
-                '		$5) ' +
+                '		CAST(ST_SetSRID(ST_Point(COALESCE($3, -93.4687), COALESCE($4, 44.9212)),4326) AS geography) ' +
+                '		) ' +
                 'RETURNING id' +
                 ') ' +
                 'INSERT INTO users_vendors (user_id, vendor_id) ' +
                 'VALUES ($1, (SELECT id FROM new_vendor_id)) RETURNING vendor_id;',
-                [userId, vendor.name, vendor.longitude, vendor.latitude, vendor.traveldistance],
+                [userId, vendor.name, vendor.longitude, vendor.latitude],
                 function (err, newVendorQueryResult) {
                     done();
                     if (err) {
