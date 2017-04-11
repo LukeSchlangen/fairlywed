@@ -1,2 +1,13 @@
-<input type="text" ng-model="vm.subvendor.details.name">
-<button ng-click="vm.updateDetails(vm.subvendor.details)">Update Details</button>
+<form layout layout-align="center" layout-padding>
+    <div layout="row" layout-xs="column" flex>
+        <md-input-container class="md-block" flex-gt-xs>
+            <label>Photographer Name As It Will Appear On Site</label>
+            <input ng-model="vm.subvendor.details.name">
+        </md-input-container>
+        <div>
+            <md-button class="md-raised" ng-click="vm.updateDetails(vm.subvendor.details)">
+                Update Business Details
+            </md-button>
+        </div>
+    </div>
+</form>

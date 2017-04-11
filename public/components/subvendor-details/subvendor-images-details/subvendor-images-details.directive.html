@@ -13,10 +13,6 @@
 
 <h2>All uploads are here:</h2>
 <div layout="row">
-
-
-
-
     <md-content layout="column" flex-xs flex-gt-xs="50">
         <md-card ng-repeat="image in vm.subvendor.imagesList" ng-if="$index % 2 == 0">
             <img http-src="/uploads/{{image.id}}">

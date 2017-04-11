@@ -1,6 +1,12 @@
 <div ng-repeat="package in vm.subvendor.packageList">
-    <span>{{package.name}}</span>
-    <span><input type="number" ng-model="package.price"></span>
-    <span><input type="checkbox" ng-model="package.is_active"></span>
-    <span><button ng-click="vm.savePackage(package)">Save</button></span>
+    <div layout="row" flex>
+        <span flex layout="row" layout-align="start center">{{package.name}}</span>
+        <md-input-container type="number" class="md-block" flex-gt-xs layout="row" layout-align="center end">
+            <label>Package Price In Dollars</label>
+            <input ng-model="package.price">
+        </md-input-container>
+        <span layout="row" flex layout-align="center center"><md-checkbox class="md-secondary" ng-model="package.is_active">Is Offerred</md-checkbox></span>
+        <span layout="row" flex layout-align="end center"><md-button class="md-raised" ng-click="vm.savePackage(package)">Save</md-button></span>
+    </div>
+    <hr>
 </div>
