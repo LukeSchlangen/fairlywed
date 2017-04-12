@@ -12,8 +12,8 @@ const multer = Multer({
 
 // Process the file upload and upload to Google Cloud Storage.
 router.post('/', multer.single('file'), (req, res) => {
-  // console.log('req.body', req.body);
-  // console.log('req.file', req.file);
+  console.log('req.body', req.body);
+  console.log('req.file', req.file);
   if (!req.file) {
     res.status(400).send('No file uploaded.');
     return;
