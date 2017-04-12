@@ -140,26 +140,11 @@ app.factory("SubvendorFactory", function ($http, AuthFactory, $stateParams, Uplo
         });
     }
 
-    function addNewImage(newImage) {
-        Upload.upload({
-            url: '/uploads',
-            method: 'POST',
-            headers: {
-                subvendor_id: $stateParams.subvendorId
-            },
-            data: newImage
-        }).then(function (response) {
-            console.log(response.data);
-            getImagesList();
-        })
-    }
-
     return {
         getDetails: getDetails,
         getPackagesList: getPackagesList,
         getAvailabilityList: getAvailabilityList,
         getImagesList: getImagesList,
-        addNewImage: addNewImage,
         subvendor: subvendor,
         updateDetails: updateDetails,
         updatePackage: updatePackage,
