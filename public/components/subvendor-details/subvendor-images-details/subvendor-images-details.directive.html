@@ -7,10 +7,10 @@
     vm.dzOptions{{vm.dzOptions}}
 </p>
 
-<form ng-submit="vm.uploadImage(vm.upload)" ng-if="vm.dzOptions">
-    <ng-dropzone class="dropzone" options="vm.dzOptions" callbacks="vm.dzCallbacks"></ng-dropzone>
-    <input type="submit" value="Submit" />
-</form>
+<!--<form ng-submit="vm.uploadImage(vm.upload)" ng-if="vm.dzOptions">-->
+    <ng-dropzone class="dropzone" options="vm.dzOptions" callbacks="vm.dzCallbacks" methods="vm.dzMethods"></ng-dropzone>
+    <!--<input type="submit" value="Submit" />
+</form>-->
 
 <!--<form ng-submit="vm.uploadImage(vm.upload)">
     <legend>Upload a new file here:</legend>

@@ -27,20 +27,27 @@ app.controller("SubvendorImagesDetailsController", function (SubvendorFactory, $
         // }
     };
 
-    AuthFactory.$onAuthStateChanged(function (firebaseUser) {
-        firebaseUser.getToken(function (idToken) {
-            self.dzOptions.headers.id_token = idToken;
-        })
+    var firebaseUser = AuthFactory.$getAuth();
+    firebaseUser.getToken().then(function (idToken) {
+        self.dzOptions.headers.id_token = idToken;
     });
 
     self.dzCallbacks = {
         'addedfile': function (file) {
-            console.log(file);
+            console.log('addedfile:', file);
             self.upload.file = file;
             // SubvendorFactory.saveImage(self.upload);
         },
         'success': function (file, xhr) {
             console.log(file, xhr);
+            SubvendorFactory.getImagesList();
+            self.dzMethods.removeFile(file);
         }
     };
+
+    // methods attribute specifies model that will set methods (click to see) for dropzone. For example, $scope.dzMethods.removeFile(file); or <button ng-click="dzMethods.removeAllFiles();">...</button>
+
+    self.removeNewFile = function(){
+		self.dzMethods.removeFile(self.newFile); //We got $scope.newFile from 'addedfile' event callback
+	}
 });
