@@ -17,7 +17,7 @@ app.factory("PhotographerBookingFactory", ["PhotographerSearchFactory", "$http",
                     latitude: search.latitude,
                     longitude: search.longitude,
                 },
-                packageId: search.package.id,
+                packageId: search.package,
                 subvendorId: search.subvendorId
             }
         }).then(function (response) {

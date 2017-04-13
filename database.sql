@@ -107,6 +107,7 @@ CREATE TABLE bookings (
 	requests TEXT,
 	location geography NOT NULL,
 	phone_number TEXT NOT NULL
+);
 
 CREATE TABLE subvendor_images (
 	id SERIAL PRIMARY KEY,
