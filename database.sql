@@ -43,7 +43,7 @@ CREATE TABLE subvendortypes (
 
 CREATE TABLE subvendors (
 	id SERIAL PRIMARY KEY,
-	name VARCHAR(500) UNIQUE NOT NULL, -- if null, pull value from the parent
+	name VARCHAR(500) UNIQUE NOT NULL,
 	location geography, -- if null, pull value from the parent
 	travelDistance INT, -- if null, pull value from the parent
 	description VARCHAR(2000),
