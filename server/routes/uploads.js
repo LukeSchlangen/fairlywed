@@ -37,8 +37,9 @@ router.post('/', multer.single('file'), (req, res) => {
           console.log('Error user data root GET SQL query task', err);
           res.sendStatus(500);
         } else {
+          var newImageId = imageId.rows[0].id.toString();
           // Create a new blob in the bucket and upload the file data.
-          const blob = bucket.file(imageId.rows[0].id.toString());
+          const blob = bucket.file(newImageId);
           const blobStream = blob.createWriteStream();
 
           blobStream.on('error', (err) => {
@@ -48,7 +49,14 @@ router.post('/', multer.single('file'), (req, res) => {
 
           blobStream.on('finish', () => {
             console.log('The image has been successfully uploaded to google cloud storage');
-            res.end();
+            client.query('UPDATE subvendor_images SET is_active=TRUE WHERE id = $1', [newImageId], function(err) {
+              if (err) {
+                console.log('error updating is_active status of new image:', err);
+                res.sendStatus(500);
+              } else {
+                res.end();
+              }
+            });
           });
 
           blobStream.end(req.file.buffer);

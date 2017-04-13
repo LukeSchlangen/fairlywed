@@ -106,7 +106,7 @@ CREATE TABLE subvendor_images (
     subvendor_id INT NOT NULL REFERENCES subvendors,
 	is_public BOOLEAN DEFAULT FALSE NOT NULL,
 	is_in_gallery BOOLEAN DEFAULT FALSE NOT NULL,
-	is_active BOOLEAN DEFAULT TRUE NOT NULL
+	is_active BOOLEAN DEFAULT FALSE NOT NULL
 );
 
 

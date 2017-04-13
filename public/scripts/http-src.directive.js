@@ -10,7 +10,7 @@ app.directive('httpSrc', function ($http) {
             method: 'Get',
             url: attrs.httpSrc,
             responseType: 'arraybuffer',
-            cache: 'false'
+            // cache: 'false'
         };
 
         $http(requestConfig)
