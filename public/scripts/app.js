@@ -1,4 +1,4 @@
 Dropzone.autoDiscover = false;
 
-var app = angular.module("sampleApp", ["firebase", "ui.router", 'ngFileUpload', 'ngMaterial', 'thatisuday.dropzone']);
+var app = angular.module("sampleApp", ["firebase", "ui.router", 'ngMaterial', 'thatisuday.dropzone']);
 
