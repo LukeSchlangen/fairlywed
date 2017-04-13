@@ -1,3 +1,10 @@
 <h2>Photographer Booking Page Directive</h2>
 <photographer-search></photographer-search>
-<button ng-click="console.log('This is where booking functionality should go')">Book</button>
+Time: <input type="time" id="time" name="time" ng-model="vm.bookingDetails.time" required /> Phone Number: <input type="tel"
+    id="phoneNumber" name="phoneNumber" ng-model="vm.bookingDetails.phoneNumber" required /> Requests: <input type="text" id="requests"
+    name="requests" ng-model="vm.bookingDetails.requests" /> Billing info: Credit Card Number: Expires On: Security Code: First
+Last Name: postal code:
+
+
+
+<button ng-click="vm.book()">Book</button>
