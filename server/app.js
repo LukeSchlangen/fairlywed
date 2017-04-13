@@ -12,11 +12,12 @@ var vendorDetailsData = require('./routes/vendor-details-data');
 var subvendorDetailsData = require('./routes/subvendor-details-data');
 var galleryImages = require('./routes/gallery-images');
 var packageData = require('./routes/package-data');
+var booking = require('./routes/booking');
 
 var uploads = require('./routes/uploads');
 var portDecision = process.env.PORT || 5000;
 
-app.get('/', function(req, res){
+app.get('/', function (req, res) {
   res.sendFile(path.resolve('./dist/public/views/index.html'));
 });
 
@@ -25,6 +26,7 @@ app.use(bodyParser.json());
 
 app.use("/vendorSearchData", vendorSearchData);
 app.use("/packageData", packageData);
+app.use('/booking', booking);
 app.use('/galleryImages', galleryImages);
 
 // Decodes the token in the request header and attaches the decoded token to req.decodedToken on the request.
@@ -38,6 +40,6 @@ app.use("/subvendorDetailsData", subvendorDetailsData);
 
 app.use('/uploads', uploads);
 
-app.listen(portDecision, function(){
+app.listen(portDecision, function () {
   console.log("Listening on port: ", portDecision);
 });

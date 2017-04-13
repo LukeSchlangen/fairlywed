@@ -5,8 +5,18 @@
                 <div layout="row">
                     <span class="brand-font nav-brand" ui-sref="home.photographers">FairlyWed</span>
                     <span flex></span>
-                    <span ng-show="vm.userData.details"><md-button class="md-raised" ng-click="vm.signOut()">Sign Out</md-button></span>
-                    <span ng-hide="vm.userData.details"><md-button class="md-raised" ng-click="vm.signIn('google')">Sign In With Google</md-button></span>
+                    <span ng-show="vm.userData.details">
+                        <md-button ui-sref="account.vendor">My Account</md-button>
+                    </span>
+                    <span ng-show="vm.userData.details">
+                        <md-button class="md-raised" ng-click="vm.signOut()">Sign Out</md-button>
+                    </span>
+                    <span ng-hide="vm.userData.details">
+                        <md-button class="md-raised" ng-click="vm.signIn('google')">Sign In With Google</md-button>
+                    </span>
+                </div>
+                <div layout="row" layout-align="end end" ng-hide="vm.userData.details">
+                    <small>Sign in to save your results, book a photographer, or become a photographer.</small>
                 </div>
             </md-card-content>
         </md-card>

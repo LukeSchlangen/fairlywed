@@ -1,3 +1,25 @@
-<h2>Photographer Booking Page Directive</h2>
-<photographer-search></photographer-search>
-<button ng-click="console.log('This is where booking functionality should go')">Book</button>
+<div layout="row">
+    <md-content layout="column" flex>
+        <md-card>
+            <md-card-content>
+                <photographer-search></photographer-search>
+                <form>
+                    <md-input-container md-no-float class="md-block">
+                        <label>Time</label>
+                        <input type="time" id="time" name="time" ng-model="vm.bookingDetails.time" required>
+                    </md-input-container>
+                    <md-input-container md-no-float class="md-block">
+                        <label>Phone Number</label>
+                        <input  type="tel" id="phoneNumber" name="phoneNumber" ng-model="vm.bookingDetails.phoneNumber" required >
+                    </md-input-container>
+                    <md-input-container md-no-float class="md-block">
+                        <label>Notes or Special Requests</label>
+                        <input type="text" id="requests" name="requests" ng-model="vm.bookingDetails.requests" >
+                    </md-input-container>
+                    <p>Billing info will be captured here</p>
+                    <md-button class="md-raised" ng-click="vm.book()">Book</md-button>
+                </form>
+            </md-card-content>
+        </md-card>
+    </md-content>
+</div>
