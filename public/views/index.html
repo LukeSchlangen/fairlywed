@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8">
-  <title>nodeFire with Authentication</title>
+  <title>FairlyWed | Book Your Perfect Wedding Photographer</title>
   <!-- AngularJS -->
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
 
@@ -24,7 +24,7 @@
 
   <!-- Main Angular Application File -->
   <script src="scripts/app.js"></script>
-  <script src="scripts/router.js"></script>
+  <script src="scripts/app.config.js"></script>
 
   <!-- Image directive so http requests have security -->
   <script src="scripts/http-src.directive.js"></script>
@@ -41,6 +41,7 @@
   <script src="factories/vendor-account.factory.js"></script>
   <script src="factories/vendor-details.factory.js"></script>
   <script src="factories/subvendor.factory.js"></script>
+  <script src="factories/public-images.factory.js"></script>
   <!--<script src="factories/vendor-details.factory.js"></script>-->
 
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBnVkpgWUFimXA6igDvgMCKN1GFBkf1wFI&libraries=places" type="text/javascript"></script>
@@ -81,15 +82,54 @@
   <script src="components/photographer-profile/photographer-profile-home/photographer-profile-home.controller.js"></script>
   <script src="components/photographer-profile/photographer-profile-home/photographer-profile-home.directive.js"></script>
 
-
+  <!--Angular Material To Make Things Look Nice-->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.1.3/angular-material.min.css" />
+  <!--<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.1.3/angular-material.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.0/angular-animate.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.0/angular-aria.min.js"></script>
+  <link href="https://fonts.googleapis.com/css?family=Tangerine" rel="stylesheet">
+  <style>
+    body {
+      min-width: 670px !important;
+    }
+    
+    .brand-font {
+      font-family: 'Tangerine', cursive;
+    }
+    
+    .nav-brand {
+      font-size: 300%;
+      cursor: pointer;
+    }
+    
+    .availability-calendar {
+      min-width: 540px !important;
+    }
+    
+    .calendar-day {
+      width: 10%;
+      min-width: 0px;
+    }
+    
+    .calendar-month {
+      width: 10%;
+      min-width: 40px !important;
+    }
+    
+    header {
+      background-image: url("assets/background.jpg");
+      background-repeat: no-repeat;
+      /*background-attachment: fixed;*/
+      background-position: center center;
+      background-size: cover;
+    }
+  </style>
 </head>
-<div ng-app="sampleApp">
 
+<body ng-app="sampleApp" layout="column">
   <auth></auth>
-  <a ui-sref="home.photographers">home</a>
-  <a ui-sref="account">account</a>
-  <div ui-view></div>
-
-</div>
+  <span ui-view></span>
+</body>
 
 </html>

@@ -1,11 +1,17 @@
-app.factory("SubvendorFactory", ["$http", "AuthFactory", "$stateParams", function ($http, AuthFactory, $stateParams) {
+app.factory("SubvendorFactory", function ($http, AuthFactory, $stateParams, Upload, VendorDetailsFactory) {
 
-    var subvendor = { packageList: [], details: {} };
+    var subvendor = { packageList: [], details: {}, imagesList: [] };
 
-    AuthFactory.$onAuthStateChanged(updateList);
+    AuthFactory.$onAuthStateChanged(getAllLists);
 
-    function updateList() {
+    function getAllLists() {
+        getDetails();
+        getPackagesList();
+        getAvailabilityList();
+        getImagesList();
+    }
 
+    function getPackagesList() {
         $http({
             method: 'GET',
             url: '/subvendorDetailsData/packages',
@@ -19,7 +25,9 @@ app.factory("SubvendorFactory", ["$http", "AuthFactory", "$stateParams", functio
             console.error('Error retreiving private user data: ', err);
             subvendor.packageList = [];
         });
+    }
 
+    function getAvailabilityList() {
         $http({
             method: 'GET',
             url: '/subvendorDetailsData/availability',
@@ -33,7 +41,25 @@ app.factory("SubvendorFactory", ["$http", "AuthFactory", "$stateParams", functio
             console.error('Error retreiving private user data: ', err);
             subvendor.availabilityList = [];
         });
+    }
 
+    function getImagesList() {
+        $http({
+            method: 'GET',
+            url: '/subvendorDetailsData/images',
+            headers: {
+                subvendor_id: $stateParams.subvendorId
+            }
+        }).then(function (response) {
+            console.log('subvendors controller returned: ', response.data);
+            subvendor.imagesList = response.data;
+        }).catch(function (err) {
+            console.error('Error retreiving private user data: ', err);
+            subvendor.imagesList = [];
+        });
+    }
+
+    function getDetails() {
         $http({
             method: 'GET',
             url: '/subvendorDetailsData',
@@ -59,7 +85,7 @@ app.factory("SubvendorFactory", ["$http", "AuthFactory", "$stateParams", functio
             data: packageToSave
         }).then(function (response) {
             console.log('subvendor details controller returned: ', response.data);
-            updateList();
+            getPackagesList();
         }).catch(function (err) {
             console.error('Error retreiving private user data: ', err);
         });
@@ -75,7 +101,7 @@ app.factory("SubvendorFactory", ["$http", "AuthFactory", "$stateParams", functio
             data: availabilityToSave
         }).then(function (response) {
             console.log('subvendor details controller returned: ', response.data);
-            updateList();
+            getAvailabilityList();
         }).catch(function (err) {
             console.error('Error retreiving private user data: ', err);
         });
@@ -91,17 +117,53 @@ app.factory("SubvendorFactory", ["$http", "AuthFactory", "$stateParams", functio
             data: subvendorToSave
         }).then(function (response) {
             console.log('subvendor factory returned: ', response.data);
-            updateList();
+            getDetails();
+            VendorDetailsFactory.getSubvendorList();
         }).catch(function (err) {
             console.error('Error retreiving private user data: ', err);
         });
     }
 
+    function saveImage(imageToSave) {
+        $http({
+            method: 'PUT',
+            url: '/subvendorDetailsData/updateImage',
+            headers: {
+                subvendor_id: $stateParams.subvendorId
+            },
+            data: imageToSave
+        }).then(function (response) {
+            console.log('subvendor factory returned: ', response.data);
+            getImagesList();
+        }).catch(function (err) {
+            console.error('Error retreiving private user data: ', err);
+        });
+    }
+
+    function addNewImage(newImage) {
+        Upload.upload({
+            url: '/uploads',
+            method: 'POST',
+            headers: {
+                subvendor_id: $stateParams.subvendorId
+            },
+            data: newImage
+        }).then(function (response) {
+            console.log(response.data);
+            getImagesList();
+        })
+    }
+
     return {
+        getDetails: getDetails,
+        getPackagesList: getPackagesList,
+        getAvailabilityList: getAvailabilityList,
+        getImagesList: getImagesList,
+        addNewImage: addNewImage,
         subvendor: subvendor,
         updateDetails: updateDetails,
-        updateList: updateList,
         updatePackage: updatePackage,
-        updateAvailability: updateAvailability
+        updateAvailability: updateAvailability,
+        saveImage: saveImage
     };
-}]);
+});

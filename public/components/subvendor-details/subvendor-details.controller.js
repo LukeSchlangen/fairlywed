@@ -1,1 +1,7 @@
-app.controller("SubvendorDetailsController", function () {});
+app.controller("SubvendorDetailsController", function ($state) {
+    var self = this;
+
+    self.isCurrentState = function(stateToCheck){
+        return $state.is(stateToCheck);
+    }
+});

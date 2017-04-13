@@ -1,10 +1,15 @@
-app.factory("VendorDetailsFactory", ["$http", "AuthFactory", "$stateParams", function ($http, AuthFactory, $stateParams) {
+app.factory("VendorDetailsFactory", function ($http, AuthFactory, $stateParams, VendorAccountFactory, $state) {
 
     var vendor = { subvendorList: [], details: {} };
 
-    AuthFactory.$onAuthStateChanged(updateList);
+    AuthFactory.$onAuthStateChanged(getAll);
 
-    function updateList() {
+    function getAll() {
+        getSubvendorList();
+        getDetails();
+    }
+
+    function getSubvendorList() {
         $http({
             method: 'GET',
             url: '/vendorDetailsData/subvendorsList',
@@ -18,7 +23,9 @@ app.factory("VendorDetailsFactory", ["$http", "AuthFactory", "$stateParams", fun
             console.error('Error retreiving private user data: ', err);
             vendor.subvendorList = [];
         });
+    }
 
+    function getDetails() {
         $http({
             method: 'GET',
             url: '/vendorDetailsData',
@@ -44,7 +51,8 @@ app.factory("VendorDetailsFactory", ["$http", "AuthFactory", "$stateParams", fun
             data: vendorToSave
         }).then(function (response) {
             console.log('vendor details factory returned: ', response.data);
-            updateList();
+            getDetails();
+            VendorAccountFactory.getVendorList();
         }).catch(function (err) {
             console.error('Error retreiving private user data: ', err);
         });
@@ -60,7 +68,9 @@ app.factory("VendorDetailsFactory", ["$http", "AuthFactory", "$stateParams", fun
             data: newSubvendor
         }).then(function (response) {
             console.log('vendor details factory returned: ', response.data);
-            updateList();
+            getSubvendorList();
+            $state.transitionTo('account.vendor.details.subvendor.details.about',
+                { vendorId: response.data.vendorId, subvendorId: response.data.newSubvendorId });
         }).catch(function (err) {
             console.error('Error retreiving private user data: ', err);
         });
@@ -68,8 +78,9 @@ app.factory("VendorDetailsFactory", ["$http", "AuthFactory", "$stateParams", fun
 
     return {
         vendor: vendor,
-        updateList: updateList,
         updateDetails: updateDetails,
-        addSubvendor: addSubvendor
+        addSubvendor: addSubvendor,
+        getDetails: getDetails,
+        getSubvendorList: getSubvendorList
     };
-}]);
+});

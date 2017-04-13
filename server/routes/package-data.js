@@ -9,7 +9,7 @@ router.get('/', function (req, res) {
             'SELECT packages.id, packages.name ' +
             'FROM packages ' +
             'JOIN subvendortypes ON packages.vendortype_id = subvendortypes.id ' +
-            'WHERE subvendortypes.name = $1;',
+            'WHERE subvendortypes.name = $1 ORDER BY id;',
             [vendorType],
             function (err, photographerQueryResult) {
                 done();
