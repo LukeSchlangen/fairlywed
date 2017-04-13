@@ -43,7 +43,7 @@ CREATE TABLE subvendortypes (
 
 CREATE TABLE subvendors (
 	id SERIAL PRIMARY KEY,
-	name VARCHAR(500) UNIQUE NOT NULL, -- if null, pull value from the parent
+	name VARCHAR(500) UNIQUE NOT NULL,
 	location geography, -- if null, pull value from the parent
 	travelDistance INT, -- if null, pull value from the parent
 	description VARCHAR(2000),
@@ -98,6 +98,17 @@ CREATE TABLE subvendor_availability (
 	PRIMARY KEY(subvendor_id, date_id)
 );
 
+CREATE TABLE bookings (
+	id SERIAL PRIMARY KEY,
+	packages_id INT NOT NULL REFERENCES packages,
+	subvendor_id INT NOT NULL REFERENCES subvendors,
+	time TIMESTAMP NOT NULL,
+	-- firebase_user_id VARCHAR(500) UNIQUE NOT NULL,
+	requests TEXT,
+	location geography NOT NULL,
+	phone_number TEXT NOT NULL
+);
+
 CREATE TABLE subvendor_images (
 	id SERIAL PRIMARY KEY,
 	original_name VARCHAR(500) NOT NULL,
@@ -106,7 +117,7 @@ CREATE TABLE subvendor_images (
     subvendor_id INT NOT NULL REFERENCES subvendors,
 	is_public BOOLEAN DEFAULT FALSE NOT NULL,
 	is_in_gallery BOOLEAN DEFAULT FALSE NOT NULL,
-	is_active BOOLEAN DEFAULT TRUE NOT NULL
+	is_active BOOLEAN DEFAULT FALSE NOT NULL
 );
 
 
@@ -128,7 +139,7 @@ INSERT INTO subvendors (name, parent_vendor_id, vendortype_id, location, descrip
 VALUES ('Minnetonka Photography', 1, 1, null, 'Minnetonka Photography does a really great job doing things and stuff. I mean, wow, just really great. This one time we did this thing and people were all like, wow, that was really great. What are the great things we do? Could you list them? Well, in fact, when it comes to listing things, it is one of the great things we do, and we do a really great job of it.'),
 ('Minnetonka Videography', 1, 2, null, 'Minnetonka Videography does a really great job doing things and stuff. I mean, wow, just really great. This one time we did this thing and people were all like, wow, that was really great. What are the great things we do? Could you list them? Well, in fact, when it comes to listing things, it is one of the great things we do, and we do a really great job of it.'),
 ('Minnetonka DJ', 1, 3, CAST(ST_SetSRID(ST_Point(-93.3687, 45.0212),4326) As geography), 'Minnetonka DJ does a really great job doing things and stuff. I mean, wow, just really great. This one time we did this thing and people were all like, wow, that was really great. What are the great things we do? Could you list them? Well, in fact, when it comes to listing things, it is one of the great things we do, and we do a really great job of it.'), -- the dj is stationed out of a different office and has a different location
-('Edina Wedding Photography', 2, 1, null, null),
+('Edina Wedding Photography', 2, 1, null, 'Edina Wedding Photography does a really great job doing things and stuff. I mean, wow, just really great. This one time we did this thing and people were all like, wow, that was really great. What are the great things we do? Could you list them? Well, in fact, when it comes to listing things, it is one of the great things we do, and we do a really great job of it.'),
 ('Bloomington Wedding Photography', 3, 1, null, null),
 ('The Bloomington Wedding Vendor', 3, 2, null, null),
 ('Minneapolis Wedding Photographers', 4, 1, null, null);

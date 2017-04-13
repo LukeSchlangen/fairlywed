@@ -51,19 +51,6 @@ app.factory("PhotographerSearchFactory", function (PackagesFactory, $http, $stat
     }
     // --------------------------------------------------------------- //
 
-    function updatePackagesList() {
-        if (search.parameters.package.id) {
-            PackagesFactory.getPackageList().then(function (response) {
-                var currentPackageArray = response.data.packages.filter(function (photoPackage) {
-                    return photoPackage.id == $stateParams.package;
-                });
-                search.parameters.package = currentPackageArray[0];
-            }); // Loading packages list for the first time
-        } else {
-            console.error("All package searches must have a package id");
-        }
-    }
-
     // -- PROFILE VIEW CURRENT PHOTOGRAPHER INFROMATION RETREIVAL - MORE DETAILS ABOUT ONE PHOTOGRAPHER -- //
     var currentSubvendor = {};
 
