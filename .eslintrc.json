@@ -16,7 +16,7 @@
         "no-this-before-super": "warn",
         "no-undef": "warn",
         "no-unreachable": "error",
-        "no-unused-vars": "warn",
+        "no-unused-vars": "error",
         "constructor-super": "warn",
         "valid-typeof": "warn"
     },
@@ -25,6 +25,7 @@
     ],
     "globals": {
         "angular": false,
-        "app": false
+        "app": false,
+        "google": false
     }
 }

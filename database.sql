@@ -93,6 +93,17 @@ CREATE TABLE subvendor_availability (
 	PRIMARY KEY(subvendor_id, date_id)
 );
 
+CREATE TABLE bookings (
+	id SERIAL PRIMARY KEY,
+	packages_id INT NOT NULL REFERENCES packages,
+	subvendor_id INT NOT NULL REFERENCES subvendors,
+	time TIMESTAMP NOT NULL,
+	-- firebase_user_id VARCHAR(500) UNIQUE NOT NULL,
+	requests TEXT,
+	location geography NOT NULL,
+	phone_number TEXT NOT NULL
+);
+
 
 -- INSERTING SAMPLE VENDOR DATA
 

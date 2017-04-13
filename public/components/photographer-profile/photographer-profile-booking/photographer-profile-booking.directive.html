@@ -1,13 +1,11 @@
 <h2>Photographer Booking Page Directive</h2>
-<div ng-if="isloggedIn">
-    {{vm}}
-    <photographer-search></photographer-search>
-    Name: <input>
-    <!--May Need to wire this up to Google location-->
-    Location: <input> Time: <input>
+{{vm}}
+<photographer-search></photographer-search>
+Time: <input type="time" id="time" name="time" ng-model="vm.bookingDetails.time" required /> Phone Number: <input type="tel"
+    id="phoneNumber" name="phoneNumber" ng-model="vm.bookingDetails.phoneNumber" required /> Requests: <input type="text" id="requests"
+    name="requests" ng-model="vm.bookingDetails.requests" /> Billing info: Credit Card Number: Expires On: Security Code: First
+Last Name: postal code:
 
-    <button ng-click="console.log('This is where booking functionality should go')">Book</button>
-</div>
-<div ng-if="!isLoggedIn">
-    <p>You appear to not have logged in</p>
-</div>
+
+
+<button ng-click="vm.book()">Book</button>
