@@ -2,6 +2,7 @@ app.controller("PhotographerProfileBookingController", ["PhotographerSearchFacto
     function (PhotographerSearchFactory, PhotographerBookingFactory) {
         var self = this;
         self.bookingDetails = PhotographerBookingFactory.bookingDetails;
-        self.book = PhotographerBookingFactory.bookPhotographer;
+        self.book = PhotographerBookingFactory.bookPhotographer
+        self.currentSubvendor = PhotographerSearchFactory.currentSubvendor;
     }
 ]);

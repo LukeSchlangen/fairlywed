@@ -11,13 +11,15 @@ router.post('/', function (req, res) {
     var subvendorId = req.body.subvendorId;
     pool.connect(function (err, client, done) {
         client.query(
-            'INSERT INTO bookings (packages_id, time, requests, location, phone_number, subvendor_id)' +
+            'WITH new_calendar_date_id AS ( INSERT INTO bookings (packages_id, time, requests, location, phone_number, subvendor_id) ' +
             'VALUES ($1, $2::timestamptz, $3,' +
             '		CAST(ST_SetSRID(ST_Point(COALESCE($4, -93.4687), COALESCE($5, 44.9212)),4326) AS geography), ' +
-            '		$6, $7); ' +
-            'UPDATE subvendor_availability' +
-            'SET availability_id=3' +
-            'WHERE ',
+            '		$6, $7) RETURNING subvendor_id) ' +
+            'UPDATE subvendor_availability ' +
+            'SET availability_id=3 ' +
+            'WHERE subvendor_id=(SELECT subvendor_id FROM new_calendar_date_id) AND date_id=( ' +
+            'SELECT id FROM calendar_dates WHERE ' +
+            'day=$2::date);',
             [packageId, time, requests, location.longitude, location.latitude, phoneNumber, subvendorId],
             function (err) {
                 done();
@@ -27,7 +29,8 @@ router.post('/', function (req, res) {
                 } else {
                     res.sendStatus(201);
                 }
-            });
+            }
+        );
     });
 });
 
