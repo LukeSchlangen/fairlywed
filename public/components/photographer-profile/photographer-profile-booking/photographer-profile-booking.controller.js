@@ -1,7 +1,9 @@
-app.controller("PhotographerProfileBookingController", function (PhotographerSearchFactory) {
-    var self = this;
-
-    PhotographerSearchFactory.getSubvendorProfileDetails();
-
-    self.currentSubvendor = PhotographerSearchFactory.currentSubvendor;
-});
+app.controller("PhotographerProfileBookingController", ["PhotographerSearchFactory", "PhotographerBookingFactory",
+    function (PhotographerSearchFactory, PhotographerBookingFactory) {
+        var self = this;
+        self.bookingDetails = PhotographerBookingFactory.bookingDetails;
+        self.book = PhotographerBookingFactory.bookPhotographer
+        PhotographerSearchFactory.updateSubvendorProfileDetails();
+        self.currentSubvendor = PhotographerSearchFactory.currentSubvendor;
+    }
+]);

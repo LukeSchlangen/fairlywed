@@ -14,7 +14,6 @@ gulp.task('remove-firebase-service-account', function () {
 });
 
 // for environment variables
-var m = {};
 
 // gulp.task('scripts', function () {
 //     return gulp.src(['./lib/file3.js', './lib/file1.js', './lib/file2.js'])
