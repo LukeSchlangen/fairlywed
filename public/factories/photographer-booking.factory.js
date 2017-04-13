@@ -22,7 +22,6 @@ app.factory("PhotographerBookingFactory", ["PhotographerSearchFactory", "$http",
             }
         }).then(function (response) {
             console.log('Photographer factory received photographer profile data from the server: ', response.data);
-            // currentSubvendor.details = response.data;
         }).catch(function (err) {
             console.error('Error retreiving photographer profile data: ', err);
         })

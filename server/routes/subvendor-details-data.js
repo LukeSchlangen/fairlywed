@@ -115,7 +115,7 @@ router.get('/images', function (req, res) {
                 '	FROM users_vendors  ' +
                 '	JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id ' +
                 '	JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=$2 ' +
-                ');',
+                ') AND subvendor_images.is_active=TRUE;',
                 [userId, subvendorId],
                 function (err, subvendorQueryResult) {
                     done();
