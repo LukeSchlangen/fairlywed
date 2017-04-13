@@ -67,7 +67,7 @@ router.get('/:imageId', function (req, res, next) {
       'FROM users_vendors ' +
       'JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id ' +
       'JOIN subvendors ON vendors.id=subvendors.parent_vendor_id ' +
-      'JOIN subvendor_images ON subvendor_images.id = $2 AND subvendor_images.subvendor_id=subvendors.id;',
+      'JOIN subvendor_images ON subvendor_images.id = $2 AND subvendor_images.subvendor_id=subvendors.id AND subvendor_images.is_active=TRUE;',
       [userId, imageIdToRetrieve], function (err, imageInfoResults) {
         done();
         if (imageInfoResults.rows.length === 1) {
