@@ -1,4 +1,4 @@
-app.factory("SubvendorFactory", function ($http, AuthFactory, $stateParams, Upload, VendorDetailsFactory) {
+app.factory("SubvendorFactory", function ($http, AuthFactory, $stateParams, VendorDetailsFactory) {
 
     var subvendor = { packageList: [], details: {}, imagesList: [] };
 
@@ -52,7 +52,34 @@ app.factory("SubvendorFactory", function ($http, AuthFactory, $stateParams, Uplo
             }
         }).then(function (response) {
             console.log('subvendors controller returned: ', response.data);
-            subvendor.imagesList = response.data;
+
+            // Remove deleted images from imagesList that are not in the new response
+            for (var i = subvendor.imagesList.length - 1; i >= 0; i--) {
+                var imageListItem = subvendor.imagesList[i];
+                if(!response.data.some(function(responseItem) {
+                    return imageListItem.id == responseItem.id;
+                })){
+                    subvendor.imagesList.splice(i, 1);
+                }
+            }
+
+            //Find values that are in response.data but not in subvendor.imagesList
+            var imagesInResponseButNotSubvendorImageList = response.data.filter(function (obj) {
+                return !subvendor.imagesList.some(function (obj2) {
+                    return obj.id == obj2.id;
+                });
+            });
+
+            //Find values that are in result2 but not in result1
+            var imagesInSubvendorImageListButNotInResponse = subvendor.imagesList.filter(function(obj) {
+                return !response.data.some(function(obj2) {
+                    return obj.id == obj2.id;
+                });
+            });
+
+            imagesInResponseButNotSubvendorImageList.forEach(function (image) {
+                subvendor.imagesList.unshift(image);
+            });
         }).catch(function (err) {
             console.error('Error retreiving private user data: ', err);
             subvendor.imagesList = [];
@@ -140,26 +167,11 @@ app.factory("SubvendorFactory", function ($http, AuthFactory, $stateParams, Uplo
         });
     }
 
-    function addNewImage(newImage) {
-        Upload.upload({
-            url: '/uploads',
-            method: 'POST',
-            headers: {
-                subvendor_id: $stateParams.subvendorId
-            },
-            data: newImage
-        }).then(function (response) {
-            console.log(response.data);
-            getImagesList();
-        })
-    }
-
     return {
         getDetails: getDetails,
         getPackagesList: getPackagesList,
         getAvailabilityList: getAvailabilityList,
         getImagesList: getImagesList,
-        addNewImage: addNewImage,
         subvendor: subvendor,
         updateDetails: updateDetails,
         updatePackage: updatePackage,

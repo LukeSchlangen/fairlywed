@@ -12,8 +12,8 @@ const multer = Multer({
 
 // Process the file upload and upload to Google Cloud Storage.
 router.post('/', multer.single('file'), (req, res) => {
-  // console.log('req.body', req.body);
-  // console.log('req.file', req.file);
+  console.log('req.body', req.body);
+  console.log('req.file', req.file);
   if (!req.file) {
     res.status(400).send('No file uploaded.');
     return;
@@ -37,8 +37,9 @@ router.post('/', multer.single('file'), (req, res) => {
           console.log('Error user data root GET SQL query task', err);
           res.sendStatus(500);
         } else {
+          var newImageId = imageId.rows[0].id.toString();
           // Create a new blob in the bucket and upload the file data.
-          const blob = bucket.file(imageId.rows[0].id.toString());
+          const blob = bucket.file(newImageId);
           const blobStream = blob.createWriteStream();
 
           blobStream.on('error', (err) => {
@@ -48,7 +49,14 @@ router.post('/', multer.single('file'), (req, res) => {
 
           blobStream.on('finish', () => {
             console.log('The image has been successfully uploaded to google cloud storage');
-            res.end();
+            client.query('UPDATE subvendor_images SET is_active=TRUE WHERE id = $1', [newImageId], function(err) {
+              if (err) {
+                console.log('error updating is_active status of new image:', err);
+                res.sendStatus(500);
+              } else {
+                res.end();
+              }
+            });
           });
 
           blobStream.end(req.file.buffer);
@@ -67,7 +75,7 @@ router.get('/:imageId', function (req, res, next) {
       'FROM users_vendors ' +
       'JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id ' +
       'JOIN subvendors ON vendors.id=subvendors.parent_vendor_id ' +
-      'JOIN subvendor_images ON subvendor_images.id = $2 AND subvendor_images.subvendor_id=subvendors.id;',
+      'JOIN subvendor_images ON subvendor_images.id = $2 AND subvendor_images.subvendor_id=subvendors.id AND subvendor_images.is_active=TRUE;',
       [userId, imageIdToRetrieve], function (err, imageInfoResults) {
         done();
         if (imageInfoResults.rows.length === 1) {

@@ -1,36 +1,24 @@
-<h2>Photographer Gallery Page Directive</h2>
-<!--<div ng-repeat="image in vm.images.list">
-    <p>{{image}}</p>
-    <img ng-src="/galleryImages/{{image.id}}">
-</div>-->
-
-<div layout="row"> 
+<div layout="row" ng-if="vm.images.list.length > 0"> 
     <md-content layout="column" flex-xs flex-gt-xs="50"> 
         <md-card ng-repeat="image in vm.images.list" ng-if="$index % 2 == 0"> 
-            <img ng-src="/galleryImages/{{image.id}}" class="md-card-image" alt="Washed Out"> 
+            <img ng-src="/galleryImages/{{image.id}}" class="md-card-image"> 
         </md-card> 
     </md-content> 
     <md-content layout="column" flex-xs flex-gt-xs="50"> 
         <md-card ng-repeat="image in vm.images.list" ng-if="$index % 2 == 1"> 
-            <img ng-src="/galleryImages/{{image.id}}" class="md-card-image" alt="Washed Out"> 
+            <img ng-src="/galleryImages/{{image.id}}" class="md-card-image"> 
         </md-card> 
     </md-content> 
-</div> 
-<!-- 
-<div layout="row"> 
-    <md-content layout="column" flex-xs flex-gt-md="100%/3"> 
-        <md-card ng-repeat="image in vm.images.list" ng-if="$index % 3 == 1"> 
-            <img ng-src="/galleryImages/{{image.id}}" class="md-card-image" alt="Washed Out"> 
+</div>
+
+<div layout="row" ng-hide="vm.images.list.length > 0"> 
+    <md-content layout="column" flex> 
+        <md-card>
+            <md-card-content>
+                <p>Oh no! This photographer doesn't have any images uploaded yet.</p>
+                <p>If you are this photographer, you can <a ui-sref="account.vendor">go here</a> to upload images.</p>
+                <p>Make sure you check the box to add them to your gallery!</p>
+            </md-card-content>
         </md-card> 
-    </md-content> 
-    <md-content layout="column" flex-xs flex-gt-md="100%/3"> 
-        <md-card ng-repeat="image in vm.images.list" ng-if="$index % 3 == 0"> 
-            <img ng-src="/galleryImages/{{image.id}}" class="md-card-image" alt="Washed Out"> 
-        </md-card> 
-    </md-content> 
-    <md-content layout="column" flex-xs flex-gt-md="100%/3"> 
-        <md-card ng-repeat="image in vm.images.list" ng-if="$index % 3 == 2"> 
-            <img ng-src="/galleryImages/{{image.id}}" class="md-card-image" alt="Washed Out"> 
-        </md-card> 
-    </md-content> 
-</div>-->
+    </md-content>
+</div>
