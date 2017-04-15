@@ -32,6 +32,19 @@ app.use('/galleryImages', galleryImages);
 // Decodes the token in the request header and attaches the decoded token to req.decodedToken on the request.
 app.use(auth.tokenDecoder);
 
+// Anonymous auth is ok for these routes, created for matchmaking/image comparison
+// This is used for tracking a user while they are not logged in
+// and then that tracking can be saved to the user after they log in
+
+
+
+// Routes that need an actual user account (not an anonymous user), should go below here
+app.use(auth.noAnonymousUsers);
+
+// This app.use checks if the user is newly not-anonymous (just logged in)
+// and updates all of the database records pointing to the anonymous user to point to the not-anonymous user
+app.use(auth.linkPreviouslyAnonymousUser);
+
 /* Whatever you do below this is protected by your authentication. */
 app.use("/userData", userData);
 app.use("/vendorAccountData", vendorAccountData);
