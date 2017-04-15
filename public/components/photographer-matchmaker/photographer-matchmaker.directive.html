@@ -1,0 +1,9 @@
+<h2>Match Maker, Match Maker, Make Me a Match!</h2>
+
+<div ng-repeat="photo in vm.photos.list track by $index">
+    <img ng-src="{{photo.url}}">
+    <input id="photo.id" type="checkbox" ng-model="photo.liked">
+</div>
+
+<button ng-click="vm.getPhotos()">Next images</button>
+<photographer-search></photographer-search>

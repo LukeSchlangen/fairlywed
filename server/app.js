@@ -13,6 +13,7 @@ var subvendorDetailsData = require('./routes/subvendor-details-data');
 var galleryImages = require('./routes/gallery-images');
 var packageData = require('./routes/package-data');
 var booking = require('./routes/booking');
+var photographerMatchmaker = require('./routes/photographer-matchmaker')
 
 var uploads = require('./routes/uploads');
 var portDecision = process.env.PORT || 5000;
@@ -28,6 +29,7 @@ app.use("/vendorSearchData", vendorSearchData);
 app.use("/packageData", packageData);
 app.use('/booking', booking);
 app.use('/galleryImages', galleryImages);
+app.use('/matchmaker', photographerMatchmaker);
 
 // Decodes the token in the request header and attaches the decoded token to req.decodedToken on the request.
 app.use(auth.tokenDecoder);
