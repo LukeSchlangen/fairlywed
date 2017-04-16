@@ -94,13 +94,40 @@ var linkPreviouslyAnonymousUser = function (req, res, next) {
               // If the anonymous user is not in the database, move on
               next();
             } else {
+              var previousAnonymousFirebaseUserId = previousAnonymousUserSQLIdResult.rows[0].id;
               // Change all of the references to the anonymous user to the non-anonymous user
               // TODO: SOME UPDATE QUERY to Change everything in the ranking table that Miles is creating
-              // pool.connect(function (err, client, done) {
-                console.log('All references to the previous SQL user id', previousAnonymousUserSQLIdResult.rows[0].id, 'should be replaced by the id', req.decodedToken.userSQLId);
-              // });
-              console.log('The previous user ID', previousAnonymousUserSQLIdResult.rows[0].id, 'should be deleted from the database');
-              next();
+              pool.connect(function (err, client, done) {
+                if (err) {
+                  console.log('Error connecting to database', err);
+                  res.sendStatus(500);
+                } else {
+                  client.query('UPDATE logs SET user_id=$1 WHERE user_id=$2', [req.decodedToken.userSQLId, previousAnonymousFirebaseUserId], function (err) {
+                    done();
+                    if (err) {
+                      console.log('Error updating logs in database', err);
+                      res.sendStatus(500);
+                    } else {
+                      pool.connect(function (err, client, done) {
+                        if (err) {
+                          console.log('Error connecting to database', err);
+                          res.sendStatus(500);
+                        } else {
+                          client.query('DELETE FROM users WHERE id=$1', [previousAnonymousFirebaseUserId], function (err) {
+                            done();
+                            if (err) {
+                              console.log('Error updating removing anonymous user from database', err);
+                              res.sendStatus(500);
+                            } else {
+                              next();
+                            }
+                          });
+                        }
+                      });
+                    }
+                  });
+                }
+              });
             }
           }
         });
