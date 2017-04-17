@@ -1,44 +1,224 @@
 var express = require('express');
 var router = express.Router();
-// var pool = require('../modules/pg-pool');
+var pool = require('../modules/pg-pool');
+var synaptic = require('synaptic'); // this line is not needed in the browser
+var Neuron = synaptic.Neuron,
+    Layer = synaptic.Layer,
+    Network = synaptic.Network,
+    Trainer = synaptic.Trainer,
+    Architect = synaptic.Architect;
 
 router.get('/', function (req, res) {
-    if (knownUserPreference === null) {
-        knownUserPreference = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-        var returnPhotos = photos().sort(function () { return 0.5 - Math.random() }).slice(0, 4);
-        res.send(returnPhotos);
-    } else if (req.body.length > 0) {
-        // var haveData = knownUserPreference.some(number => number !== 0);
-        if (trainingData) {
-            var trainingDatum = {
-                before: JSON.parse(JSON.stringify(knownUserPreference))
+    var firebaseUserId = req.decodedToken.user_id || req.decodedToken.uid;
+    if (req.query.photos && req.query.photos.length > 0) {
+        var photos = req.query.photos.map((photo) => {
+            var returnPhoto = JSON.parse(photo);
+            returnPhoto.liked = returnPhoto.liked || false;
+            return returnPhoto;
+        })
+        getTrainingData();
+        saveLikes(photos, res, firebaseUserId, getImagesWithUserId);
+        // get Latest info on Pref for user and get images
+    } else {
+        pool.connect(function (err, client, done) {
+            if (err) {
+                console.log('Error connecting to database', err);
+                res.sendStatus(500);
+            } else {
+                client.query('SELECT EXISTS(SELECT 1 FROM matchmaker_run WHERE firebase_user_id=$1)',
+                    [firebaseUserId],
+                    function (err, hasDoneMatchmakerBefore) {
+                        done();
+                        if (err) {
+                            console.log('Error matchmaker_run SELECT SQL query task', err);
+                            res.sendStatus(500);
+                        } else {
+                            if (hasDoneMatchmakerBefore.rows[0].exists) {
+                                // get Latest info on Pref for user and get images;
+                                getRandomImages(res);
+                            } else {
+                                // get random images
+                                getRandomImages(res);
+                            }
+                        }
+                    });
             }
-            req.body.forEach(photo => {
-                knownUserPreference[photo.id] = photo.liked;
-            });
-            trainingDatum.after = JSON.parse(JSON.stringify(knownUserPreference));
-            trainingData.push(trainingDatum);
-        } else {
-            req.body.forEach(photo => {
-                knownUserPreference[photo.id] = photo.liked;
-            });
-            var possiblePhotos = [];
-            var allPhotos = photos();
-            knownUserPreference.forEach((preference, index) => {
-                if (preference === 0) {
-                    possiblePhotos.push(allPhotos[index]);
-                }
-            })
-            res.send(possiblePhotos.sort(function () { return 0.5 - Math.random() }).slice(0, 4));
-        }
+        });
     }
 });
 
+function saveLikes(photos, res, firebaseUserId, cb) {
+    var likes = photos.map((photo) => photo.liked);
+    var ids = photos.map((photo) => photo.id);
+    pool.connect(function (err, client, done) {
+        if (err) {
+            console.log('Error connecting to database', err);
+            res.sendStatus(500);
+        } else {
+            client.query('WITH new_matchmaker_run_id AS ( INSERT INTO matchmaker_run (firebase_user_id, prior_run_id) ' +
+                'VALUES ($1, (SELECT id FROM matchmaker_run ORDER BY id DESC LIMIT 1)) RETURNING id) ' +
+                'INSERT INTO matchmaker_liked_photos (liked, subvendor_images_id, matchmaker_run_id)' +
+                'VALUES (unnest($2::bool[]), UNNEST($3::int[]), (SELECT id FROM new_matchmaker_run_id));',
+                [firebaseUserId, likes, ids],
+                function (err) {
+                    done();
+                    if (err) {
+                        console.log('Error matchmaker_run INSERT SQL query task', err);
+                        res.sendStatus(500);
+                    } else {
+                        cb && cb(res, firebaseUserId)
+                    }
+                });
+        }
+    });
+}
+
+function getRandomImages(res) {
+    pool.connect(function (err, client, done) {
+        if (err) {
+            console.log('Error connecting to database', err);
+            res.sendStatus(500);
+        } else {
+            client.query('SELECT * FROM subvendor_images WHERE is_public=true AND is_active=true ORDER BY RANDOM() LIMIT 4',
+                function (err, randomImages) {
+                    done();
+                    if (err) {
+                        console.log('Error matchmaker_run SELECT RANDOM SQL query task', err);
+                        res.sendStatus(500);
+                    } else {
+                        res.send(randomImages.rows)
+                    }
+                });
+        }
+    });
+}
+
+function getImagesWithUserId(res, firebaseUserId) {
+    var orderBy = getOrderBy(firebaseUserId);
+    pool.connect(function (err, client, done) {
+        if (err) {
+            console.log('Error connecting to database', err);
+            res.sendStatus(500);
+        } else {
+            client.query(`SELECT * FROM subvendor_images 
+                left outer join (
+                select subvendor_images_id  from matchmaker_liked_photos join matchmaker_run on matchmaker_run_id = matchmaker_run.id where matchmaker_run.firebase_user_id = $1
+                ) as joined_matchmaker on subvendor_images.id=joined_matchmaker.subvendor_images_id 
+                WHERE is_public=true AND is_active=true and joined_matchmaker.subvendor_images_id is null
+                ORDER BY $2 limit 4;`,
+                [firebaseUserId, orderBy],
+                function (err, images) {
+                    done();
+                    if (err) {
+                        console.log('Error matchmaker_run SELECT RANDOM SQL query task', err);
+                        res.sendStatus(500);
+                    } else {
+                        res.send(images.rows)
+                    }
+                });
+        }
+    });
+}
+
+function getOrderBy(firebaseUserId) {
+    if (!neuralNetwork) {
+        return 'RANDOM()'
+    } else {
+
+    }
+}
+
+function getTrainingData() {
+    pool.connect(function (err, client, done) {
+        if (err) {
+            console.log('Error connecting to database', err);
+        } else {
+            client.query(`with joined_matchmaker as (
+                select matchmaker_run.id, prior_run_id, firebase_user_id, jsonb_agg(jsonb_build_object(
+                        'liked', liked, 
+                        'subvendor_images_id', subvendor_images_id 
+                    )) as liked_images from matchmaker_liked_photos join matchmaker_run on matchmaker_run_id = matchmaker_run.id 
+                    GROUP BY matchmaker_run.id, prior_run_id, firebase_user_id)
+                select current_run.id, current_run.prior_run_id, current_run.liked_images , jsonb_agg(prior_run.liked_images) as prior_liked_images
+                from joined_matchmaker as current_run join joined_matchmaker as prior_run on current_run.prior_run_id>=prior_run.id and current_run.firebase_user_id=prior_run.firebase_user_id
+                group by current_run.id, current_run.prior_run_id, current_run.liked_images;`,
+                function (err, trainingData) {
+                    done();
+                    if (err) {
+                        console.log('Error getting training data SQL query task', err);
+                        //res.sendStatus(500);
+                    } else {
+                        //res.send(images.rows)
+                        runTrainingData(trainingData);
+                    }
+                });
+        }
+    });
+}
+
+function getTrainingData() {
+    pool.connect(function (err, client, done) {
+        if (err) {
+            console.log('Error connecting to database', err);
+        } else {
+            client.query(`with joined_matchmaker as (
+                select matchmaker_run.id, prior_run_id, firebase_user_id, jsonb_agg(jsonb_build_object(
+                        'liked', liked, 
+                        'subvendor_images_id', subvendor_images_id 
+                    )) as liked_images from matchmaker_liked_photos join matchmaker_run on matchmaker_run_id = matchmaker_run.id 
+                    GROUP BY matchmaker_run.id, prior_run_id, firebase_user_id)
+                select current_run.id, current_run.prior_run_id, current_run.liked_images , jsonb_agg(prior_run.liked_images) as prior_liked_images
+                from joined_matchmaker as current_run join joined_matchmaker as prior_run on current_run.prior_run_id>=prior_run.id and current_run.firebase_user_id=prior_run.firebase_user_id
+                group by current_run.id, current_run.prior_run_id, current_run.liked_images;`,
+                function (err, trainingData) {
+                    done();
+                    if (err) {
+                        console.log('Error getting training data SQL query task', err);
+                        //res.sendStatus(500);
+                    } else {
+                        //res.send(images.rows)
+                        runTrainingData(trainingData);
+                    }
+                });
+        }
+    });
+}
+
+function Perceptron(input, hidden, output) {
+    // create the layers
+    var inputLayer = new Layer(input);
+    var hiddenLayer1 = new Layer(hidden);
+    var hiddenLayer2 = new Layer(hidden);
+    var outputLayer = new Layer(output);
+
+    // connect the layers
+    inputLayer.project(hiddenLayer1);
+    hiddenLayer1.project(hiddenLayer2);
+    hiddenLayer2.project(outputLayer);
+
+    // set the layers
+    this.set({
+        input: inputLayer,
+        hidden: [hiddenLayer1, hiddenLayer2],
+        output: outputLayer
+    });
+}
+
+// extend the prototype chain
+Perceptron.prototype = new Network();
+Perceptron.prototype.constructor = Perceptron;
+
+function runTrainingData(trainingData) {
+
+}
+
 module.exports = router;
+
+var neuralNetwork;
+
 
 var knownUserPreference = null;
 
-var trainingData
 
 function photos() {
     return [

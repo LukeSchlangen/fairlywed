@@ -1,8 +1,27 @@
 <h2>Match Maker, Match Maker, Make Me a Match!</h2>
 
-<div ng-repeat="photo in vm.photos.list track by $index">
+<!--<div ng-repeat="photo in vm.photos.list track by $index">
     <img ng-src="{{photo.url}}">
     <input id="photo.id" type="checkbox" ng-model="photo.liked">
+</div>-->
+
+<div layout="row">
+    <md-content layout="column" flex-xs flex-gt-xs="50">
+        <md-card ng-repeat="photo in vm.photos.list" ng-if="$index % 2 == 0">
+            <img http-src="/uploads/{{photo.id}}">
+            <md-card-actions layout="column" layout-align="center start" layout-gt-sm="row" layout-align-gt-sm="center center">
+                <md-checkbox ng-model="photo.liked">Liked</md-checkbox>
+            </md-card-actions>
+        </md-card>
+    </md-content>
+    <md-content layout="column" flex-xs flex-gt-xs="50">
+        <md-card ng-repeat="photo in vm.photos.list" ng-if="$index % 2 == 1">
+            <img http-src="/uploads/{{photo.id}}">
+            <md-card-actions layout="column" layout-align="center start" layout-gt-sm="row" layout-align-gt-sm="center center">
+                <md-checkbox ng-model="photo.liked">Liked</md-checkbox>
+            </md-card-actions>
+        </md-card>
+    </md-content>
 </div>
 
 <button ng-click="vm.getPhotos()">Next images</button>

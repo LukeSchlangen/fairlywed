@@ -2,15 +2,16 @@ app.factory("PhotographerMatchmakerFactory", ["PhotographerSearchFactory", "$htt
 
     var photos = { list: [] };
     function getPhotos() {
-        var returnPhotos = photos.list.map(function (photoDetails) {
-            photoDetails.liked = photoDetails.liked ? 1 : -1;
-            return photoDetails;
-        });
-
+        var returnPhotos = photos.list.map(function (photo) {
+            return {
+                id: photo.id,
+                liked: photo.liked
+            }
+        })
         $http({
             method: 'GET',
             url: '/matchmaker/',
-            data: returnPhotos,
+            params: { photos: returnPhotos },
 
         }).then(function (response) {
             console.log('Photographer factory received photographer profile data from the server: ', response.data);

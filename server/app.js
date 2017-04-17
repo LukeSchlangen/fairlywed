@@ -29,10 +29,10 @@ app.use("/vendorSearchData", vendorSearchData);
 app.use("/packageData", packageData);
 app.use('/booking', booking);
 app.use('/galleryImages', galleryImages);
-app.use('/matchmaker', photographerMatchmaker);
 
 // Decodes the token in the request header and attaches the decoded token to req.decodedToken on the request.
 app.use(auth.tokenDecoder);
+app.use('/matchmaker', photographerMatchmaker);
 
 /* Whatever you do below this is protected by your authentication. */
 app.use("/userData", userData);

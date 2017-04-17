@@ -124,7 +124,7 @@ function copy(params) {
     var configText = stringBefore + JSON.stringify(newObject) + stringAfter;
 
     configText = configText.replace(/(?:\\\\n)+/g, "\\n");
-
+    configText = configText.replace(/(?:\\r)+/g, "");
     writeFile(params.paths.destination, configText);
 };
 // ----------- END CODE TO CREATE FIREBASE CONFIG VARIABLES FROM ENVIRONMENT VARIABLES -------------- //
