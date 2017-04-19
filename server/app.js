@@ -13,9 +13,12 @@ var subvendorDetailsData = require('./routes/subvendor-details-data');
 var galleryImages = require('./routes/gallery-images');
 var packageData = require('./routes/package-data');
 var booking = require('./routes/booking');
+var enfoceSSL = require('./modules/enforce-ssl');
 
 var uploads = require('./routes/uploads');
 var portDecision = process.env.PORT || 5000;
+
+app.use(enfoceSSL);
 
 app.get('/', function (req, res) {
   res.sendFile(path.resolve('./dist/public/views/index.html'));
