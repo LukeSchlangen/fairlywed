@@ -11,6 +11,7 @@ CREATE TABLE users (
 	name VARCHAR(200) NOT NULL,
 	email VARCHAR(200) NOT NULL,
 	firebase_user_id VARCHAR(500) UNIQUE NOT NULL,
+	authentication_provider VARCHAR(500) NOT NULL,
 	is_active BOOLEAN DEFAULT TRUE NOT NULL
 );
 
@@ -215,8 +216,8 @@ $do$;
 -----------------------------------------------------------------------------------
 
 -- INSERT INTO users
-INSERT INTO users (name, email, firebase_user_id) 
-VALUES ('Alice Fotografo', 'alicefotografo@gmail.com', 'HtSlvK5TTLern4NkqQyzQZ0KoYE2');
+INSERT INTO users (name, email, firebase_user_id, authentication_provider) 
+VALUES ('Alice Fotografo', 'alicefotografo@gmail.com', 'HtSlvK5TTLern4NkqQyzQZ0KoYE2', 'google');
 
 INSERT INTO users_vendors (user_id, vendor_id)
  VALUES (1, 1),
