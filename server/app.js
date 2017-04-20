@@ -6,6 +6,7 @@ var path = require('path');
 var bodyParser = require('body-parser');
 var auth = require('./modules/auth');
 var userData = require('./routes/user-data');
+var anonymousUserData = require('./routes/anonymous-user-data');
 var vendorSearchData = require('./routes/vendor-search-data');
 var vendorAccountData = require('./routes/vendor-account-data');
 var vendorDetailsData = require('./routes/vendor-details-data');
@@ -38,7 +39,7 @@ app.use(auth.tokenDecoder);
 // Anonymous auth is ok for these routes, created for matchmaking/image comparison
 // This is used for tracking a user while they are not logged in
 // and then that tracking can be saved to the user after they log in
-
+app.use("/anonymousUserData", anonymousUserData);
 
 
 // Routes that need an actual user account (not an anonymous user), should go below here

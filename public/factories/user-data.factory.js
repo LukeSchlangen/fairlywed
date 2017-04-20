@@ -14,12 +14,13 @@ app.factory("UserDataFactory", function (AuthFactory, $http) {
     AuthFactory.$onAuthStateChanged(function (firebaseUser) {
         userData.isSignedIn = firebaseUser && !firebaseUser.isAnonymous;
         userData.details = firebaseUser;
-        if (firebaseUser) {
+        if (userData.isSignedIn) {
             var requestConfigObject = {
                 method: 'GET',
                 url: '/userData'
             };
             if (userData.anonymousDetails) {
+                // user just switched from anonymous to known
                 userData.anonymousDetails.getToken().then(function (previousAnonymousUserIdToken) {
                     requestConfigObject.headers = {
                         previously_anonymous_id_token: previousAnonymousUserIdToken
@@ -29,6 +30,17 @@ app.factory("UserDataFactory", function (AuthFactory, $http) {
             } else {
                 getUserData(requestConfigObject);
             }
+        } else if (firebaseUser) {
+            // anonymous user is signed in
+            $http({
+                method: 'GET',
+                url: '/anonymousUserData'
+            }).then(function (response) {
+                userData.anonymousDetails = null;
+                console.log('User was logged in, and auth factory received data from the server: ', response.data);
+            }).catch(function (err) {
+                console.error('Error retreiving private user data: ', err);
+            });
         } else {
             userData.isSignedIn = false;
             console.log('Anonymous Sign in triggered');
