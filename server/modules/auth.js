@@ -22,21 +22,26 @@ var tokenDecoder = function (req, res, next) {
                 // If the user is not in the database, this adds them to the database
                 var userEmail = req.decodedToken.email;
                 var userName = req.decodedToken.name;
-                client.query('INSERT INTO users (name, email, firebase_user_id) VALUES ($1, $2, $3) RETURNING id', [userName, userEmail, firebaseUserId], function (err, newUserSQLIdResult) {
-                  if (err) {
-                    console.log('Error completing new user insert query task', err);
-                    res.sendStatus(500);
-                  } else {
-                    // this adds the user's id from the database to the request to simplify future database queries
-                    req.decodedToken.userSQLId = newUserSQLIdResult.rows[0].id;
-                    logger.write(req.decodedToken.userSQLId, "New user created");
-                    next();
-                  }
-                });
-              } else if (userSQLIdResult.rows.length > 1) {
-                // If there is more than one user with the unique firebase id assigned, there is a major problem
-                console.error("More than one user with firebase_user_id: ", firebaseUserId);
-                res.sendStatus(500);
+                var authenticationProvider = req.decodedToken.firebase.sign_in_provider;
+
+                if (authenticationProvider == "anonymous") {
+                  userEmail = "anonymous";
+                  userName = "anonymous";
+                }
+
+                client.query('INSERT INTO users (name, email, firebase_user_id, authentication_provider) VALUES ($1, $2, $3, $4) RETURNING id',
+                  [userName, userEmail, firebaseUserId, authenticationProvider],
+                  function (err, newUserSQLIdResult) {
+                    if (err) {
+                      console.log('Error completing new user insert query task', err);
+                      res.sendStatus(500);
+                    } else {
+                      // this adds the user's id from the database to the request to simplify future database queries
+                      req.decodedToken.userSQLId = newUserSQLIdResult.rows[0].id;
+                      logger.write(req.decodedToken.userSQLId, "New user created");
+                      next();
+                    }
+                  });
               } else {
                 // this else is for users that already exist. This should be the most common path
                 // this adds the user's id from the database to the request to simplify future database queries
@@ -64,6 +69,77 @@ var tokenDecoder = function (req, res, next) {
   }
 }
 
+var noAnonymousUsers = function (req, res, next) {
+  var authenticationProvider = req.decodedToken.provider_id;
+
+  if (authenticationProvider == "anonymous") {
+    res.status(403).send('Must be logged in to see private user data.')
+  } else {
+    next();
+  }
+}
+
+var linkPreviouslyAnonymousUser = function (req, res, next) {
+  if (req.headers.previously_anonymous_id_token) {
+    admin.auth().verifyIdToken(req.headers.previously_anonymous_id_token).then(function (previousAnonymousUserDecodedToken) {
+      pool.connect(function (err, client, done) {
+        var previousAnonymousFirebaseUserId = previousAnonymousUserDecodedToken.user_id || previousAnonymousUserDecodedToken.uid;
+        client.query('SELECT id FROM users WHERE firebase_user_id=$1', [previousAnonymousFirebaseUserId], function (err, previousAnonymousUserSQLIdResult) {
+          done();
+          if (err) {
+            console.log('Error completing user id query task', err);
+            res.sendStatus(500);
+          } else {
+            if (previousAnonymousUserSQLIdResult.rows.length === 0) {
+              // If the anonymous user is not in the database, move on
+              next();
+            } else {
+              var previousAnonymousFirebaseUserId = previousAnonymousUserSQLIdResult.rows[0].id;
+              // Change all of the references to the anonymous user to the non-anonymous user
+              // TODO: SOME UPDATE QUERY to Change everything in the ranking table that Miles is creating
+              pool.connect(function (err, client, done) {
+                if (err) {
+                  console.log('Error connecting to database', err);
+                  res.sendStatus(500);
+                } else {
+                  client.query('UPDATE logs SET user_id=$1 WHERE user_id=$2', [req.decodedToken.userSQLId, previousAnonymousFirebaseUserId], function (err) {
+                    done();
+                    if (err) {
+                      console.log('Error updating logs in database', err);
+                      res.sendStatus(500);
+                    } else {
+                      pool.connect(function (err, client, done) {
+                        if (err) {
+                          console.log('Error connecting to database', err);
+                          res.sendStatus(500);
+                        } else {
+                          client.query('DELETE FROM users WHERE id=$1', [previousAnonymousFirebaseUserId], function (err) {
+                            done();
+                            if (err) {
+                              console.log('Error updating removing anonymous user from database', err);
+                              res.sendStatus(500);
+                            } else {
+                              next();
+                            }
+                          });
+                        }
+                      });
+                    }
+                  });
+                }
+              });
+            }
+          }
+        });
+      });
+    });
+  } else {
+    next();
+  }
+}
+
 module.exports = {
   tokenDecoder: tokenDecoder,
+  noAnonymousUsers: noAnonymousUsers,
+  linkPreviouslyAnonymousUser: linkPreviouslyAnonymousUser
 };
