@@ -3,7 +3,7 @@
         <md-card>
             <md-card-content>
                 <photographer-search></photographer-search>
-                <form>
+                <form ng-submit="vm.doCheckout()">
                     <md-input-container md-no-float class="md-block">
                         <label>Time</label>
                         <input type="time" id="time" name="time" ng-model="vm.bookingDetails.time" required>
@@ -17,8 +17,8 @@
                         <input type="text" id="requests" name="requests" ng-model="vm.bookingDetails.requests" >
                     </md-input-container>
                     <p>Billing info will be captured here</p>
-                    <md-button class="md-raised" ng-click="vm.book()">Book</md-button>
-                    <button ng-click="vm.doCheckout()">Hooked up Buy button</button>
+                    <!--<md-button class="md-raised" ng-click="vm.book()">Book</md-button>-->
+                    <button type="submit">Hooked up Buy button</button>
                 </form>
             </md-card-content>
         </md-card>

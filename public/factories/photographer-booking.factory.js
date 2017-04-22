@@ -1,7 +1,7 @@
 app.factory("PhotographerBookingFactory", ["PhotographerSearchFactory", "$http", function (PhotographerSearchFactory, $http) {
 
     var bookingDetails = {};
-    function bookPhotographer() {
+    function bookPhotographer(token) {
         var search = PhotographerSearchFactory.search.parameters;
         var time = search.date;
         time.setHours(bookingDetails.time.getHours());
@@ -18,7 +18,8 @@ app.factory("PhotographerBookingFactory", ["PhotographerSearchFactory", "$http",
                     longitude: search.longitude,
                 },
                 packageId: search.package,
-                subvendorId: search.subvendorId
+                subvendorId: search.subvendorId,
+                tokenId: token.id
             }
         }).then(function (response) {
             console.log('Photographer factory received photographer profile data from the server: ', response.data);

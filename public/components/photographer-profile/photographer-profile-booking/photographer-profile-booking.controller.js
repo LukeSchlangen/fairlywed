@@ -2,7 +2,6 @@ app.controller("PhotographerProfileBookingController", ["PhotographerSearchFacto
     function (PhotographerSearchFactory, PhotographerBookingFactory, StripeCheckout, $log) {
         var self = this;
         self.bookingDetails = PhotographerBookingFactory.bookingDetails;
-        self.book = PhotographerBookingFactory.bookPhotographer
         self.currentSubvendor = PhotographerSearchFactory.currentSubvendor;
 
 
@@ -12,7 +11,8 @@ app.controller("PhotographerProfileBookingController", ["PhotographerSearchFacto
         var handler = StripeCheckout.configure({
             name: "Custom Example",
             token: function (token, args) {
-                $log.debug("Got stripe token: " + token.id);
+                $log.debug("Got stripe token: ", token);
+                PhotographerBookingFactory.bookPhotographer(token);
             }
         });
         self.doCheckout = function (token, args) {
