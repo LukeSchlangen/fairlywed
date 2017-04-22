@@ -64,24 +64,6 @@ gulp.task('createDist', ['remove-dist-folder'], () => {
             after: '; firebase.initializeApp(firebaseConfig);'
         }
     });
-
-    copy({
-        keys: [
-            { newKey: 'authorizeUrl', environmentVariable: 'STRIPE_AUTHORIZE_URL' },
-            { newKey: 'responseType', environmentVariable: 'STRIPE_RESPONSE_TYPE' },
-            { newKey: 'clientId', environmentVariable: 'STRIPE_CLIENT_ID' },
-            { newKey: 'scope', environmentVariable: 'STRIPE_SCOPE' },
-            { newKey: 'redirectUri', environmentVariable: 'STRIPE_REDIRECT_URI' }
-        ],
-        paths: {
-            env: '.env',
-            destination: 'dist/public/scripts/stripe.config.js'
-        },
-        stringBuilder: {
-            before: 'var stripeConfig =  ',
-            after: ';'
-        }
-    });
 });
 
 gulp.task('default', ['createDist', 'createFirebaseServiceAccount']);

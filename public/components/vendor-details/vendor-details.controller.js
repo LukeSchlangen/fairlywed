@@ -1,4 +1,4 @@
-app.controller("VendorDetailsController", function (VendorDetailsFactory, $stateParams) {
+app.controller("VendorDetailsController", function (VendorDetailsFactory, $stateParams, StripeConnectFactory) {
     var self = this;
 
     VendorDetailsFactory.getDetails();
@@ -6,23 +6,18 @@ app.controller("VendorDetailsController", function (VendorDetailsFactory, $state
 
     self.vendor = VendorDetailsFactory.vendor;
 
+    self.connectStripeAccount = StripeConnectFactory.connectStripeAccount;
+
     self.updateDetails = function (vendorDetailsToSave) {
         VendorDetailsFactory.updateDetails(vendorDetailsToSave);
     }
-
-    // Should build something like https://connect.stripe.com/oauth/authorize?response_type=code&client_id=ca_AV83SzOuXp4xnSFtdNewKemvF0hTuSiZ&scope=read_write&redirect_uri=https://localhost:5000/#/account/vendor
-    self.stripeUrl = stripeConfig.authorizeUrl + 
-                    '?response_type=' + stripeConfig.responseType +
-                    '&client_id=' + stripeConfig.clientId +
-                    '&scope=' + stripeConfig.scope +
-                    '&redirect_uri=' + stripeConfig.redirectUri;
 
     self.addSubvendor = function () {
         VendorDetailsFactory.addSubvendor(self.newSubvendor);
         self.newSubvendor = {};
     }
 
-    self.isCurrentSubvendor = function(subvendorIdToCheck) {
+    self.isCurrentSubvendor = function (subvendorIdToCheck) {
         return $stateParams.subvendorId == subvendorIdToCheck;
     }
 });

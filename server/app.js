@@ -15,6 +15,7 @@ var galleryImages = require('./routes/gallery-images');
 var packageData = require('./routes/package-data');
 var booking = require('./routes/booking');
 var enfoceSSL = require('./modules/enforce-ssl');
+var stripeConnect = require('./routes/stripe-connect');
 
 var uploads = require('./routes/uploads');
 var portDecision = process.env.PORT || 5000;
@@ -54,6 +55,8 @@ app.use("/userData", userData);
 app.use("/vendorAccountData", vendorAccountData);
 app.use("/vendorDetailsData", vendorDetailsData);
 app.use("/subvendorDetailsData", subvendorDetailsData);
+
+app.use("/stripeConnect", stripeConnect);
 
 app.use('/uploads', uploads);
 

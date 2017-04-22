@@ -34,6 +34,7 @@ CREATE TABLE users_vendors (
 	id SERIAL,
 	user_id INT NOT NULL REFERENCES users,
 	vendor_id INT NOT NULL REFERENCES vendors,
+	stripe_connect_state VARCHAR(100) DEFAULT md5(random()::text) NOT NULL,
 	PRIMARY KEY(user_id, vendor_id)
 );
 
