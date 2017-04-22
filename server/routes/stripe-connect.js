@@ -40,7 +40,7 @@ router.post('/authorizeStripeAccount', function (req, res) {
         client.query('SELECT vendor_id ' +
             'FROM users_vendors ' +
             'WHERE user_id=$1 ' +
-            'AND vendors_id=$2 ' +
+            'AND vendor_id=$2 ' +
             'AND stripe_connect_state=$3',
             [userId, vendorId, stripeConnectState],
             function (err, stripeConnectVendorIdResult) {
@@ -71,18 +71,38 @@ router.post('/authorizeStripeAccount', function (req, res) {
                             } else {
                                 var stripeUserAuthenticationCredentials = JSON.parse(body);
 
-                                console.log(stripeUserAuthenticationCredentials);
-
-                                // Do something with your accessToken
-                                // Make vendors_stripe table | id | stripe_user_id | vendor_id | creator_user_id | refresh_token
-                                // only allow insert if "scope": "read_write"
-                                // do things differently for dev and production based on "livemode": false,
-                                // Make foreign key to vendors_stripe table in vendors table
-
-                                // TODO: Handle stripe errors
-
-                                res.sendStatus(200);
-
+                                if (stripeUserAuthenticationCredentials.error) {
+                                    console.log('Stripe error', stripeUserAuthenticationCredentials.error, 'with description', stripeUserAuthenticationCredentials.error_description);
+                                    res.sendStatus(500);
+                                } else if (stripeUserAuthenticationCredentials.scope != "read_write") {
+                                    console.log('FairlyWed requires "read_write" account access, but got ', stripeUserAuthenticationCredentials.scope);
+                                    res.sendStatus(500);
+                                } else {
+                                    var env = process.env.NODE_ENV || 'development';
+                                    if ((env === 'production' && stripeUserAuthenticationCredentials.livemode) || (env === 'development' && !stripeUserAuthenticationCredentials.livemode)) {
+                                        pool.connect(function (err, client, done) {
+                                            client.query('WITH stripe_account_id AS ( ' +
+                                                '	INSERT INTO stripe_accounts (creator_user_id, stripe_user_id, stripe_refresh_user_token) ' +
+                                                '	VALUES ($1, $2, $3) ' +
+                                                '	RETURNING id ' +
+                                                ') ' +
+                                                'UPDATE vendors SET stripe_account_id=(SELECT id FROM stripe_account_id) ' +
+                                                'WHERE id=$4;',
+                                                [userId, stripeUserAuthenticationCredentials.stripe_user_id, stripeUserAuthenticationCredentials.refresh_token, stripeConnectVendorId],
+                                                function (err) {
+                                                    done();
+                                                    if (err) {
+                                                        console.log('Error adding stripe account to vendor', err);
+                                                        res.sendStatus(500);
+                                                    } else {
+                                                        res.sendStatus(200);
+                                                    }
+                                                });
+                                        });
+                                    } else {
+                                        console.log('Stripe livemode did not match environment. Environment is ', env, ' and livemode is ', stripeUserAuthenticationCredentials.livemode);
+                                    }
+                                }
                             }
 
                         });

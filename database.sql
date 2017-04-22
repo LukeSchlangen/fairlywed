@@ -22,11 +22,20 @@ CREATE TABLE logs (
 	user_id INT NOT NULL REFERENCES users
 );
 
+CREATE TABLE stripe_accounts (
+	id SERIAL PRIMARY KEY,
+	creator_user_id INT NOT NULL REFERENCES users,
+	stripe_user_id VARCHAR(100) NOT NULL,
+	stripe_refresh_user_token  VARCHAR(100) NOT NULL,
+	is_active BOOLEAN DEFAULT TRUE NOT NULL
+);
+
 CREATE TABLE vendors (
 	id SERIAL PRIMARY KEY,
 	name VARCHAR(500) NOT NULL,
 	location geography NOT NULL,
 	travelDistance INT DEFAULT 16093 NOT NULL, -- Default to 10 mile radius
+	stripe_account_id INT REFERENCES stripe_accounts,
 	is_active BOOLEAN DEFAULT TRUE NOT NULL
 );
 
@@ -209,6 +218,15 @@ FOR i IN -100..400 LOOP
 END LOOP;
 END
 $do$;
+
+-- INSERTING A MOCK STRIPE ACCOUNT
+WITH stripe_account_id AS (
+	INSERT INTO stripe_accounts (creator_user_id, stripe_user_id, stripe_refresh_user_token)
+	VALUES (1, 2, 3) 
+	RETURNING id
+) 
+UPDATE vendors SET stripe_account_id=(SELECT id FROM stripe_account_id)
+WHERE id=1;
 
 -----------------------------------------------------------------------------------
 
