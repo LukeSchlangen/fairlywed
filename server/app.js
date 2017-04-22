@@ -16,6 +16,7 @@ var packageData = require('./routes/package-data');
 var booking = require('./routes/booking');
 var enfoceSSL = require('./modules/enforce-ssl');
 var stripeConnect = require('./routes/stripe-connect');
+var rawStripeResponseRedirect = require('./routes/raw-stripe-response-redirect');
 
 var uploads = require('./routes/uploads');
 var portDecision = process.env.PORT || 5000;
@@ -33,6 +34,8 @@ app.use("/vendorSearchData", vendorSearchData);
 app.use("/packageData", packageData);
 app.use('/booking', booking);
 app.use('/galleryImages', galleryImages);
+
+app.use('/rawStripeResponse', rawStripeResponseRedirect);
 
 // Decodes the token in the request header and attaches the decoded token to req.decodedToken on the request.
 app.use(auth.tokenDecoder);

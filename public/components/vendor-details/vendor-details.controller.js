@@ -8,6 +8,8 @@ app.controller("VendorDetailsController", function (VendorDetailsFactory, $state
 
     self.connectStripeAccount = StripeConnectFactory.connectStripeAccount;
 
+    VendorDetailsFactory.stripeAuthorizationCheck();
+
     self.updateDetails = function (vendorDetailsToSave) {
         VendorDetailsFactory.updateDetails(vendorDetailsToSave);
     }
