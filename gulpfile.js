@@ -64,6 +64,20 @@ gulp.task('createDist', ['remove-dist-folder'], () => {
             after: '; firebase.initializeApp(firebaseConfig);'
         }
     });
+
+    copy({
+        keys: [
+            { newKey: 'key', environmentVariable: 'STRIPE_PUBLISHABLE_KEY' }
+        ],
+        paths: {
+            env: '.env',
+            destination: 'dist/public/scripts/stripe.config.js'
+        },
+        stringBuilder: {
+            before: 'var stripeConfig =  ',
+            after: ';'
+        }
+    });
 });
 
 gulp.task('default', ['createDist', 'createFirebaseServiceAccount']);
