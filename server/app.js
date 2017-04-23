@@ -25,13 +25,13 @@ app.get('/', function (req, res) {
 app.use(express.static('dist/public'));
 app.use(bodyParser.json());
 
-app.use("/vendorSearchData", vendorSearchData);
 app.use("/packageData", packageData);
 app.use('/booking', booking);
 app.use('/galleryImages', galleryImages);
 
 // Decodes the token in the request header and attaches the decoded token to req.decodedToken on the request.
 app.use(auth.tokenDecoder);
+app.use("/vendorSearchData", vendorSearchData);
 app.use('/matchmaker', photographerMatchmaker);
 
 // Anonymous auth is ok for these routes, created for matchmaking/image comparison

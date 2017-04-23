@@ -123,8 +123,8 @@ CREATE TABLE subvendor_images (
 
 CREATE TABLE matchmaker_run (
 	id SERIAL PRIMARY KEY,
-	firebase_user_id VARCHAR(500) NOT NULL,
-	prior_run_id  INT,
+	user_id INT NOT NULL REFERENCES users,
+	prior_run_id INT,
 	FOREIGN KEY (prior_run_id) REFERENCES matchmaker_run(id)
 );
 

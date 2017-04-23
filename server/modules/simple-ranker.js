@@ -13,8 +13,8 @@ function reccommendedPhotographers(req, res, userId, data, cb) {
                 from matchmaker_liked_photos 
                 join matchmaker_run on matchmaker_run_id = matchmaker_run.id
                 join subvendor_images on matchmaker_liked_photos.subvendor_images_id = subvendor_images.id 
-                where matchmaker_run.firebase_user_id = $1
-                group by subvendor_id, matchmaker_run.firebase_user_id;`,
+                where matchmaker_run.user_id = $1
+                group by subvendor_id, matchmaker_run.user_id;`,
                 [userId],
                 function (err, reccommendedPhotographers) {
                     done();

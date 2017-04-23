@@ -2,9 +2,11 @@ var express = require('express');
 var router = express.Router();
 var pool = require('../modules/pg-pool');
 var vendorSearch = require('../modules/vendor-search')
+var simpleRanker = require('../modules/simple-ranker')
 
 router.get('/', function (req, res) {
- vendorSearch(req,res);
+    var userId = req.decodedToken.userSQLId;
+  simpleRanker.reccommendedPhotographers(req, res, userId, null, vendorSearch);
 });
 
 router.get('/subvendorProfile', function (req, res) {
