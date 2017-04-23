@@ -7,7 +7,6 @@ var vendorSearch = require('../modules/vendor-search');
 
 router.get('/', function (req, res) {
     var userId = req.decodedToken.userSQLId;
-    neuralNetwork.train();
     if (req.query.photos && req.query.photos.length > 0) {
         var photos = req.query.photos.map((photo) => {
             var returnPhoto = JSON.parse(photo);
