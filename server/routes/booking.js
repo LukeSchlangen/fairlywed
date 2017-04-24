@@ -45,15 +45,15 @@ router.post('/', function (req, res) {
                     res.sendStatus(500);
                 } else {
                     var booking = bookingResults.rows[0];
-                    var totalPurchaseAmmount = 10000; // a $100 purchase
+                    var totalPurchaseAmmount = booking.price * 100; // a $100 purchase
                     var stripePaymentFee = totalPurchaseAmmount * 0.029 + 30; // 2.9% plus 30 cents
-                    var fairlywedApplicationFee = totalPurchaseAmmount * 0.10 - stripePaymentFee; // 10% minus stripe's cut
+                    var fairlywedApplicationFee = Math.floor(totalPurchaseAmmount * 0.10 - stripePaymentFee); // 10% minus stripe's cut, round down to nearest penny
 
                     console.log('The stripe token ', stripeToken);
 
                     // Create a Charge:
                     stripe.charges.create({
-                        amount: 1000,
+                        amount: totalPurchaseAmmount,
                         currency: "usd",
                         source: stripeToken.id,
                         application_fee: fairlywedApplicationFee,
