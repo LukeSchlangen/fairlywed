@@ -34,7 +34,7 @@ router.post('/', function (req, res) {
             booking_temp_table AS (INSERT INTO bookings (package_id, time, requests, location, price, subvendor_id, client_id, vendor_id, stripe_account_id)
             VALUES ((SELECT package_id FROM subvendor_pricing_info), $2::timestamptz, $3, CAST(ST_SetSRID(ST_Point($4, $5),4326) AS geography), (SELECT price FROM subvendor_pricing_info), (SELECT subvendor_id FROM subvendor_pricing_info), $6, (SELECT vendor_id FROM subvendor_pricing_info), (SELECT stripe_account_id FROM subvendor_pricing_info)) RETURNING id),
 
-            temp_throwaway AS (UPDATE subvendor_availability SET availability_id=(SELECT id FROM availability WHERE status='booked') RETURNING id)
+            temp_throwaway AS (UPDATE subvendor_availability SET availability_id=(SELECT id FROM availability WHERE status='booked') WHERE id=(SELECT subvendor_availability_id FROM subvendor_pricing_info) RETURNING id)
 
             SELECT *, (SELECT id FROM booking_temp_table) AS booking_id FROM subvendor_pricing_info;`,
             [packageId, time, requests, location.longitude, location.latitude, 1, subvendorId],
