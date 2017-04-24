@@ -19,7 +19,7 @@ app.factory("PhotographerBookingFactory", ["PhotographerSearchFactory", "$http",
                 },
                 packageId: search.package,
                 subvendorId: search.subvendorId,
-                tokenId: token.id
+                stripeToken: token
             }
         }).then(function (response) {
             console.log('Photographer factory received photographer profile data from the server: ', response.data);

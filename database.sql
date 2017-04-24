@@ -85,10 +85,9 @@ CREATE TABLE clients (
 );
 
 CREATE TABLE users_clients (
-	id SERIAL,
-	user_id INT NOT NULL REFERENCES users,
-	client_id INT NOT NULL REFERENCES clients,
-	PRIMARY KEY(user_id, client_id)
+	id SERIAL PRIMARY KEY,
+	user_id INT REFERENCES users,
+	phone_number VARCHAR(18)
 );
 
 CREATE TABLE availability (
@@ -111,13 +110,14 @@ CREATE TABLE subvendor_availability (
 
 CREATE TABLE bookings (
 	id SERIAL PRIMARY KEY,
-	packages_id INT NOT NULL REFERENCES packages,
+	package_id INT NOT NULL REFERENCES packages,
 	subvendor_id INT NOT NULL REFERENCES subvendors,
+	stripe_account_id INT NOT NULL,
+	vendor_id INT NOT NULL,
+	client_id INT NOT NULL,
 	time TIMESTAMP NOT NULL,
-	-- firebase_user_id VARCHAR(500) UNIQUE NOT NULL,
 	requests TEXT,
-	location geography NOT NULL,
-	phone_number TEXT NOT NULL
+	location geography NOT NULL
 );
 
 CREATE TABLE subvendor_images (
