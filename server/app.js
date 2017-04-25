@@ -32,7 +32,6 @@ app.use(bodyParser.json());
 
 app.use("/vendorSearchData", vendorSearchData);
 app.use("/packageData", packageData);
-app.use('/booking', booking);
 app.use('/galleryImages', galleryImages);
 
 app.use('/rawStripeResponse', rawStripeResponseRedirect);
@@ -54,6 +53,7 @@ app.use(auth.noAnonymousUsers);
 app.use(auth.linkPreviouslyAnonymousUser);
 
 /* Whatever you do below this is protected by your authentication. */
+app.use('/booking', booking);
 app.use("/userData", userData);
 app.use("/vendorAccountData", vendorAccountData);
 app.use("/vendorDetailsData", vendorDetailsData);

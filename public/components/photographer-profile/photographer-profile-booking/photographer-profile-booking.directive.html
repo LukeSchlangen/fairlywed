@@ -16,9 +16,8 @@
                         <label>Notes or Special Requests</label>
                         <input type="text" id="requests" name="requests" ng-model="vm.bookingDetails.requests" >
                     </md-input-container>
-                    <p>Billing info will be captured here</p>
-                    <!--<md-button class="md-raised" ng-click="vm.book()">Book</md-button>-->
-                    <button type="submit">Hooked up Buy button</button>
+                    <h3>{{vm.currentSubvendor.details.currentPackage.price | currency:"$":0}}</h3>
+                    <md-button class="md-raised" type="submit">Book</button>
                 </form>
             </md-card-content>
         </md-card>

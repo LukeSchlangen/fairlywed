@@ -4,14 +4,12 @@ app.factory("PhotographerSearchFactory", function (PackagesFactory, $http, $stat
 
     var packages = { list: [] };
     var photographers = { list: [] };
-    var packages = { list: [] };
 
     // -- SETTING DEFAULT VALUES FOR SEARCH OR GETTING THEM FROM STATE PARAMETERS ROUTING -- //
     var search = {};
     updateSearchParameters();
     function updateSearchParameters() {
         search.parameters = {};
-        search.parameters.package = {};
         search.parameters.location = $stateParams.location || "Minneapolis, MN, USA";
         search.parameters.longitude = $stateParams.longitude || -93.26501080000003;
         search.parameters.latitude = $stateParams.latitude || 44.977753;
@@ -20,6 +18,7 @@ app.factory("PhotographerSearchFactory", function (PackagesFactory, $http, $stat
         packages = PackagesFactory.packages;
         photographers = { list: [] };
         search.parameters.subvendorId = $stateParams.subvendorId;
+        updateCurrentSubvendorCurrentPackage();
     }
     // ------------------------------------------------------------------------------------ //
 
@@ -47,7 +46,7 @@ app.factory("PhotographerSearchFactory", function (PackagesFactory, $http, $stat
         newStateParameters.date = search.parameters.date.toDateString();
         console.log('$state is currently:', $state);
         console.log('newStateParameters:', newStateParameters)
-        $state.transitionTo($state.current.name, newStateParameters, {notify: false});
+        $state.transitionTo($state.current.name, newStateParameters, { notify: false });
     }
     // --------------------------------------------------------------- //
 
@@ -66,6 +65,7 @@ app.factory("PhotographerSearchFactory", function (PackagesFactory, $http, $stat
             }).then(function (response) {
                 console.log('Photographer factory received photographer profile data from the server: ', response.data);
                 currentSubvendor.details = response.data;
+                updateCurrentSubvendorCurrentPackage();
             }).catch(function (err) {
                 console.error('Error retreiving photographer profile data: ', err);
             });
@@ -79,13 +79,23 @@ app.factory("PhotographerSearchFactory", function (PackagesFactory, $http, $stat
         newStateParameters.date = search.parameters.date.toDateString();
         console.log('$state is currently:', $state);
         console.log('newStateParameters:', newStateParameters)
-        $state.transitionTo($state.current.name, newStateParameters, {notify: false});
-        // Package prices
-
-        // Public images
-
+        $state.transitionTo($state.current.name, newStateParameters, { notify: false });
+        updateCurrentSubvendorCurrentPackage();
     }
     // ------------------------------------------------------------------------------------ //
+
+    function updateCurrentSubvendorCurrentPackage() {
+        if (currentSubvendor && currentSubvendor.details) {
+            currentSubvendor.details.currentPackage = {};
+            if (currentSubvendor.details.packages && search.parameters && search.parameters.package) {
+                currentSubvendor.details.packages.forEach(function (packageToCheck) {
+                    if (packageToCheck.id == search.parameters.package) {
+                        currentSubvendor.details.currentPackage = packageToCheck;
+                    }
+                });
+            }
+        }
+    }
 
     return {
         packages: packages,

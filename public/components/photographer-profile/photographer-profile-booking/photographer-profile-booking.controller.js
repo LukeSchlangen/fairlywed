@@ -2,8 +2,8 @@ app.controller("PhotographerProfileBookingController", ["PhotographerSearchFacto
     function (PhotographerSearchFactory, PhotographerBookingFactory, StripeCheckout, $log) {
         var self = this;
         self.bookingDetails = PhotographerBookingFactory.bookingDetails;
-        self.currentSubvendor = PhotographerSearchFactory.currentSubvendor;
-
+        self.currentSubvendor = PhotographerSearchFactory.currentSubvendor;  
+        PhotographerSearchFactory.getSubvendorProfileDetails();
 
         // Stripe implementation
         // You should configure a handler when the view is loaded,
@@ -17,8 +17,8 @@ app.controller("PhotographerProfileBookingController", ["PhotographerSearchFacto
         });
         self.doCheckout = function (token, args) {
             var options = {
-                description: "Ten dollahs!",
-                amount: 1000
+                description: "Book the day!",
+                amount: PhotographerSearchFactory.currentSubvendor.details.currentPackage.price * 100
             };
             // The default handler API is enhanced by having open()
             // return a promise. This promise can be used in lieu of or

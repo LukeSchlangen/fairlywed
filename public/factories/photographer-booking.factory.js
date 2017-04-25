@@ -1,11 +1,13 @@
 app.factory("PhotographerBookingFactory", ["PhotographerSearchFactory", "$http", function (PhotographerSearchFactory, $http) {
 
     var bookingDetails = {};
+
     function bookPhotographer(token) {
         var search = PhotographerSearchFactory.search.parameters;
         var time = search.date;
         time.setHours(bookingDetails.time.getHours());
         time.setMinutes(bookingDetails.time.getMinutes());
+
         $http({
             method: 'POST',
             url: '/booking/',
@@ -13,12 +15,12 @@ app.factory("PhotographerBookingFactory", ["PhotographerSearchFactory", "$http",
                 phoneNumber: bookingDetails.phoneNumber,
                 requests: bookingDetails.requests,
                 time: time,
-                location: {
-                    latitude: search.latitude,
-                    longitude: search.longitude,
-                },
+                location: search.location,
+                latitude: search.latitude,
+                longitude: search.longitude,
                 packageId: search.package,
                 subvendorId: search.subvendorId,
+                price: PhotographerSearchFactory.currentSubvendor.details.currentPackage.price,
                 stripeToken: token
             }
         }).then(function (response) {

@@ -79,17 +79,6 @@ CREATE TABLE subvendors_packages (
 	PRIMARY KEY(subvendor_id, package_id)
 );
 
-CREATE TABLE clients (
-	id SERIAL PRIMARY KEY,
-	user_id INT NOT NULL REFERENCES users
-);
-
-CREATE TABLE users_clients (
-	id SERIAL PRIMARY KEY,
-	user_id INT REFERENCES users,
-	phone_number VARCHAR(18)
-);
-
 CREATE TABLE availability (
 	id SERIAL PRIMARY KEY,
 	status VARCHAR(500) NOT NULL
@@ -114,9 +103,11 @@ CREATE TABLE bookings (
 	subvendor_id INT NOT NULL REFERENCES subvendors,
 	stripe_account_id INT NOT NULL,
 	vendor_id INT NOT NULL,
-	client_id INT NOT NULL,
+	client_user_id INT NOT NULL,
 	time TIMESTAMP NOT NULL,
+	price INT NOT NULL,
 	requests TEXT,
+	location_name VARCHAR(1000) NOT NULL,
 	location geography NOT NULL
 );
 
@@ -219,15 +210,6 @@ END LOOP;
 END
 $do$;
 
--- INSERTING A MOCK STRIPE ACCOUNT
-WITH stripe_account_id AS (
-	INSERT INTO stripe_accounts (creator_user_id, stripe_user_id, stripe_refresh_user_token)
-	VALUES (1, 2, 3) 
-	RETURNING id
-) 
-UPDATE vendors SET stripe_account_id=(SELECT id FROM stripe_account_id)
-WHERE id=1;
-
 -----------------------------------------------------------------------------------
 
 ------------- SET UP THAT VARIES FOR EACH ENVIRONMENT AND DEVELOPER ---------------
@@ -241,6 +223,15 @@ VALUES ('Alice Fotografo', 'alicefotografo@gmail.com', 'HtSlvK5TTLern4NkqQyzQZ0K
 INSERT INTO users_vendors (user_id, vendor_id)
  VALUES (1, 1),
  (1,2);
+
+-- INSERTING A MOCK STRIPE ACCOUNT
+WITH stripe_account_id AS (
+	INSERT INTO stripe_accounts (creator_user_id, stripe_user_id, stripe_refresh_user_token)
+	VALUES (1, 'acct_103zys4vIhx7Z90Z', 'rt_AWXVluRHQ35uv4ECNxtMaeJvtb6VZ9zx5rceyF2KjUZy6EgR') 
+	RETURNING id
+) 
+UPDATE vendors SET stripe_account_id=(SELECT id FROM stripe_account_id)
+WHERE id=1;
 
 
 -----------------------------------------------------------------------------------

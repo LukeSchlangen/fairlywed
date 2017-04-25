@@ -4,9 +4,12 @@ var pool = require('../modules/pg-pool');
 var stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 router.post('/', function (req, res) {
-    var location = req.body.location;
+    var userSubmittedPrice = req.body.price;
+    var locationName = req.body.location;
+    var longitude = req.body.longitude;
+    var latitude = req.body.latitude;
     var packageId = req.body.packageId;
-    var clientId = 1;
+    var clientUserId = req.decodedToken.userSQLId;
     var requests = req.body.requests;
     var time = new Date(req.body.time);
     var subvendorId = req.body.subvendorId;
@@ -31,13 +34,13 @@ router.post('/', function (req, res) {
             JOIN subvendors_packages ON subvendors.id = subvendors_packages.subvendor_id AND subvendors_packages.package_id=$1 
             JOIN stripe_accounts ON vendors.stripe_account_id=stripe_accounts.id),
                     
-            booking_temp_table AS (INSERT INTO bookings (package_id, time, requests, location, price, subvendor_id, client_id, vendor_id, stripe_account_id)
-            VALUES ((SELECT package_id FROM subvendor_pricing_info), $2::timestamptz, $3, CAST(ST_SetSRID(ST_Point($4, $5),4326) AS geography), (SELECT price FROM subvendor_pricing_info), (SELECT subvendor_id FROM subvendor_pricing_info), $6, (SELECT vendor_id FROM subvendor_pricing_info), (SELECT stripe_account_id FROM subvendor_pricing_info)) RETURNING id),
+            booking_temp_table AS (INSERT INTO bookings (package_id, time, requests, location_name, location, price, subvendor_id, client_user_id, vendor_id, stripe_account_id)
+            VALUES ((SELECT package_id FROM subvendor_pricing_info), $2::timestamptz, $3, $8, CAST(ST_SetSRID(ST_Point($4, $5),4326) AS geography), (SELECT price FROM subvendor_pricing_info), (SELECT subvendor_id FROM subvendor_pricing_info), $6, (SELECT vendor_id FROM subvendor_pricing_info), (SELECT stripe_account_id FROM subvendor_pricing_info)) RETURNING id),
 
             temp_throwaway AS (UPDATE subvendor_availability SET availability_id=(SELECT id FROM availability WHERE status='booked') WHERE id=(SELECT subvendor_availability_id FROM subvendor_pricing_info) RETURNING id)
 
             SELECT *, (SELECT id FROM booking_temp_table) AS booking_id FROM subvendor_pricing_info;`,
-            [packageId, time, requests, location.longitude, location.latitude, 1, subvendorId],
+            [packageId, time, requests, longitude, latitude, clientUserId, subvendorId, locationName],
             function (err, bookingResults) {
                 done();
                 if (err) {
@@ -45,38 +48,74 @@ router.post('/', function (req, res) {
                     res.sendStatus(500);
                 } else {
                     var booking = bookingResults.rows[0];
-                    var totalPurchaseAmmount = booking.price * 100; // a $100 purchase
-                    var stripePaymentFee = totalPurchaseAmmount * 0.029 + 30; // 2.9% plus 30 cents
-                    var fairlywedApplicationFee = Math.floor(totalPurchaseAmmount * 0.10 - stripePaymentFee); // 10% minus stripe's cut, round down to nearest penny
+                    if (userSubmittedPrice == booking.price) {
+                        var totalPurchaseAmountInCents = booking.price * 100; // the purchase price in dollars converted to cents
+                        var stripePaymentFee = totalPurchaseAmountInCents * 0.029 + 30; // 2.9% plus 30 cents
+                        var fairlywedApplicationFee = Math.floor(totalPurchaseAmountInCents * 0.10 - stripePaymentFee); // 10% minus stripe's cut, round down to nearest penny
 
-                    console.log('The stripe token ', stripeToken);
+                        console.log('The stripe token ', stripeToken);
 
-                    // Create a Charge:
-                    stripe.charges.create({
-                        amount: totalPurchaseAmmount,
-                        currency: "usd",
-                        source: stripeToken.id,
-                        application_fee: fairlywedApplicationFee,
-                    }, {
-                            stripe_account: booking.stripe_user_id,
-                        }).then(function (charge) {
-                            if (err) {
-                                console.log('Error user data root INSERT SQL bookings', err);
+                        // Create a Charge:
+                        stripe.charges.create({
+                            amount: totalPurchaseAmountInCents,
+                            currency: "usd",
+                            source: stripeToken.id,
+                            application_fee: fairlywedApplicationFee,
+                        }, {
+                                stripe_account: booking.stripe_user_id,
+                            }).then(function (charge) {
+
+                                // Save charge to database
+
+                                // pool.connect(function (err, client, done) {
+                                //     client.query('SELECT * FROM users WHERE id=$1', [userId, charge.toString()], function (err, userDataQueryResult) {
+                                //         done();
+                                //         if (err) {
+                                //             console.log('Error user data root GET SQL query task', err);
+                                //             res.sendStatus(500);
+                                //         } else {
+                                //             res.send({ name: userDataQueryResult.rows[0].name });
+                                //         }
+                                //     });
+                                // });
+
+                                if (err) {
+                                    console.log('Error user data root INSERT SQL bookings', err);
+                                    res.sendStatus(500);
+                                } else {
+                                    console.log('Stripe Charge successful', charge);
+                                    res.sendStatus(201);
+                                }
+                            }).catch(function (err) {
+                                // remove booking from database, make photographer available again
+                                undoBooking('Error creating stripe charge', booking);
+                                console.log('Error creating stripe charge', err);
                                 res.sendStatus(500);
-                            } else {
-                                console.log('Stripe Charge successful', charge)
-                                res.sendStatus(201);
-                            }
-                        }).catch(function (err) {
-                            // remove booking from database, make photographer available again
-                            console.log('Error creating stripe charge', err)
-                            res.sendStatus(500);
-                        });
+                            });
+                    } else {
+                        console.log('User price from DOM did not match user submitted price');
+                        res.sendStatus(400);
+                    }
 
                 }
             }
         );
     });
 });
+
+function undoBooking(reasonForUndo, bookingToUndo) {
+    pool.connect(function (err, client, done) {
+        client.query(`UPDATE subvendor_availability 
+    SET availability_id=(SELECT id FROM availability WHERE status='available') 
+    WHERE id=$1`, [bookingToUndo.subvendor_availability_id], function (err) {
+                done();
+                if (err) {
+                    console.log('UNDO BOOKING FAILED!! Booking created than undone due to ', reasonForUndo, 'but undo failed meaning photographer may have been booked multiple times for the same date.');
+                } else {
+                    console.log('Booking created than undone due to ', reasonForUndo);
+                }
+            });
+    });
+}
 
 module.exports = router;
