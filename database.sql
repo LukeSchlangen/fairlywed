@@ -25,6 +25,7 @@ CREATE TABLE logs (
 CREATE TABLE vendors (
 	id SERIAL PRIMARY KEY,
 	name VARCHAR(500) NOT NULL,
+    location_name VARCHAR(1000) NOT NULL, 
 	location geography NOT NULL,
 	travelDistance INT DEFAULT 16093 NOT NULL, -- Default to 10 mile radius
 	is_active BOOLEAN DEFAULT TRUE NOT NULL
@@ -45,8 +46,9 @@ CREATE TABLE subvendortypes (
 CREATE TABLE subvendors (
 	id SERIAL PRIMARY KEY,
 	name VARCHAR(500) UNIQUE NOT NULL,
-	location geography, -- if null, pull value from the parent
-	travelDistance INT, -- if null, pull value from the parent
+    location_name VARCHAR(1000), -- if null, pull value from the parent, MVP doesn't have input fields for this
+	location geography, -- if null, pull value from the parent, MVP doesn't have input fields for this
+	travelDistance INT, -- if null, pull value from the parent, MVP doesn't have input fields for this
 	description VARCHAR(2000),
 	parent_vendor_id INT NOT NULL REFERENCES vendors,
 	vendortype_id INT NOT NULL REFERENCES subvendortypes,
@@ -129,11 +131,11 @@ INSERT INTO subvendortypes (name)
 VALUES ('photographer'), ('videographer'), ('dj');
 
 -- INSERTING VENDORS
-INSERT INTO vendors (name, location)
-VALUES ('Big Time Minnetonka Wedding Vendor', CAST(ST_SetSRID(ST_Point(-93.4687, 44.9212),4326) As geography)),
-('Edina Wedding Photography', CAST(ST_SetSRID(ST_Point(-93.3499, 44.8897),4326) As geography)),
-('The Bloomington Wedding Vendor', CAST(ST_SetSRID(ST_Point(-86.5264, 39.1653),4326) As geography)),
-('Minneapolis Wedding Vendor', CAST(ST_SetSRID(ST_Point(-93.2650, 44.9777),4326) As geography));
+INSERT INTO vendors (name, location_name, location)
+VALUES ('Big Time Minnetonka Wedding Vendor', 'Minnetonka, MN', CAST(ST_SetSRID(ST_Point(-93.4687, 44.9212),4326) As geography)),
+('Edina Wedding Photography', 'Edina, MN', CAST(ST_SetSRID(ST_Point(-93.3499, 44.8897),4326) As geography)),
+('The Bloomington Wedding Vendor', 'Bloomington, MN', CAST(ST_SetSRID(ST_Point(-86.5264, 39.1653),4326) As geography)),
+('Minneapolis Wedding Vendor', 'Minneapolis, MN', CAST(ST_SetSRID(ST_Point(-93.2650, 44.9777),4326) As geography));
     
 -- INSERTING SUBVENDORS
 INSERT INTO subvendors (name, parent_vendor_id, vendortype_id, location, description)

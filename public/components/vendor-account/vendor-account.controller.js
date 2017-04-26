@@ -1,9 +1,11 @@
-app.controller("VendorAccountController", function (PackagesFactory, VendorAccountFactory, $stateParams, UserDataFactory) {
+app.controller("VendorAccountController", function (PackagesFactory, VendorAccountFactory, $stateParams, UserDataFactory, $scope) {
     var self = this;
     self.packages = PackagesFactory.packages;
     self.vendors = VendorAccountFactory.vendors;
     PackagesFactory.getPackageList();
     VendorAccountFactory.getVendorList();
+    self.newVendor = {};
+
     self.initialize = function () {
         var input = document.getElementById('searchTextField');
         var autocomplete = new google.maps.places.Autocomplete(input, {
@@ -12,9 +14,13 @@ app.controller("VendorAccountController", function (PackagesFactory, VendorAccou
         console.log("Initializing google maps");
         google.maps.event.addListener(autocomplete, 'place_changed', function () {
             var place = autocomplete.getPlace();
+            self.newVendor.latitude = place.geometry.location.lat();
+            self.newVendor.longitude = place.geometry.location.lng();
+            self.newVendor.location = place.formatted_address;
+            $scope.$apply();
+            // self.updatePhotographersList();
         });
-    };
-
+    }
 
     self.updatePrice = function (packageObject) {
         console.log('Package price update: ', packageObject)

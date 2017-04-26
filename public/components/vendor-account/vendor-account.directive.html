@@ -1,4 +1,4 @@
-<span ng-hide="vm.userData.isSignedIn"  flex>
+<span ng-hide="vm.userData.isSignedIn" flex>
     <md-content class="md-padding" layout-xs="column" layout="row">
         <div flex layout="column">
             <md-card>
@@ -16,8 +16,14 @@
     <md-content class="md-padding" layout-xs="column" layout="row">
         <div flex layout="column">
             <md-card>
+                        <p>{{vm.newVendor}}</p>
                 <md-card-content>
                     <form layout layout-align="center" layout-padding ng-submit="vm.addVendor()">
+                        <md-input-container class="md-block" flex-gt-xs>
+                            <label>Where are you located?</label>
+                            <input id="searchTextField" type="text" size="50" placeholder="Address" autocomplete="on" runat="server" ng-init="vm.initialize()"
+                                name="location">
+                        </md-input-container>
                         <div layout="row" layout-xs="column" flex>
                             <md-input-container class="md-block" flex-gt-xs>
                                 <label>Legal Name Of Your Photography Business (e.g. Amazing Photography LLC)</label>
