@@ -97,6 +97,12 @@ CREATE TABLE subvendor_availability (
 	PRIMARY KEY(subvendor_id, date_id)
 );
 
+CREATE TABLE stripe_charge_attempts (
+	id SERIAL PRIMARY KEY,
+	response_object TEXT NOT NULL,
+	was_successful BOOLEAN DEFAULT FALSE NOT NULL
+);
+
 CREATE TABLE bookings (
 	id SERIAL PRIMARY KEY,
 	package_id INT NOT NULL REFERENCES packages,
@@ -108,7 +114,8 @@ CREATE TABLE bookings (
 	price INT NOT NULL,
 	requests TEXT,
 	location_name VARCHAR(1000) NOT NULL,
-	location geography NOT NULL
+	location geography NOT NULL,
+	stripe_charge_id INT REFERENCES stripe_charge_attempts
 );
 
 CREATE TABLE subvendor_images (
@@ -230,8 +237,8 @@ WITH stripe_account_id AS (
 	VALUES (1, 'acct_103zys4vIhx7Z90Z', 'rt_AWXVluRHQ35uv4ECNxtMaeJvtb6VZ9zx5rceyF2KjUZy6EgR') 
 	RETURNING id
 ) 
-UPDATE vendors SET stripe_account_id=(SELECT id FROM stripe_account_id)
-WHERE id=1;
+UPDATE vendors SET stripe_account_id=(SELECT id FROM stripe_account_id);
+-- WHERE id=1; This line should be uncommented to just add the stripe account to one vendor, but for now, all vendors have the same stripe account
 
 
 -----------------------------------------------------------------------------------

@@ -15,10 +15,13 @@ router.post('/', function (req, res) {
     var subvendorId = req.body.subvendorId;
     var stripeToken = req.body.stripeToken;
     pool.connect(function (err, client, done) {
-        client.query(
-            // insert booking if photographer is listed as available for that date
-            // This will need to return the photographer's price for the given package
-            `WITH subvendor_pricing_info AS (SELECT price, subvendors_packages.subvendor_id, subvendors_packages.package_id, subvendor_availability.date_id, stripe_accounts.id AS stripe_account_id, stripe_accounts.stripe_user_id, vendors.id AS vendor_id, subvendor_availability.id AS subvendor_availability_id FROM subvendors 
+        if (err) {
+            console.log('error connecting to database', err);
+        } else {
+            client.query(
+                // insert booking if photographer is listed as available for that date
+                // This will need to return the photographer's price for the given package
+                `WITH subvendor_pricing_info AS (SELECT price, subvendors_packages.subvendor_id, subvendors_packages.package_id, subvendor_availability.date_id, stripe_accounts.id AS stripe_account_id, stripe_accounts.stripe_user_id, vendors.id AS vendor_id, subvendor_availability.id AS subvendor_availability_id FROM subvendors 
             JOIN subvendor_availability ON 
             subvendor_availability.date_id=(
             SELECT id FROM calendar_dates WHERE day=$2::date
@@ -40,74 +43,77 @@ router.post('/', function (req, res) {
             temp_throwaway AS (UPDATE subvendor_availability SET availability_id=(SELECT id FROM availability WHERE status='booked') WHERE id=(SELECT subvendor_availability_id FROM subvendor_pricing_info) RETURNING id)
 
             SELECT *, (SELECT id FROM booking_temp_table) AS booking_id FROM subvendor_pricing_info;`,
-            [packageId, time, requests, longitude, latitude, clientUserId, subvendorId, locationName],
-            function (err, bookingResults) {
-                done();
-                if (err) {
-                    console.log('error making booking query', err);
-                    res.sendStatus(500);
-                } else {
-                    var booking = bookingResults.rows[0];
-                    if (userSubmittedPrice == booking.price) {
-                        var totalPurchaseAmountInCents = booking.price * 100; // the purchase price in dollars converted to cents
-                        var stripePaymentFee = totalPurchaseAmountInCents * 0.029 + 30; // 2.9% plus 30 cents
-                        var fairlywedApplicationFee = Math.floor(totalPurchaseAmountInCents * 0.10 - stripePaymentFee); // 10% minus stripe's cut, round down to nearest penny
-
-                        console.log('The stripe token ', stripeToken);
-
-                        // Create a Charge:
-                        stripe.charges.create({
-                            amount: totalPurchaseAmountInCents,
-                            currency: "usd",
-                            source: stripeToken.id,
-                            application_fee: fairlywedApplicationFee,
-                        }, {
-                                stripe_account: booking.stripe_user_id,
-                            }).then(function (charge) {
-
-                                // Save charge to database
-
-                                // pool.connect(function (err, client, done) {
-                                //     client.query('SELECT * FROM users WHERE id=$1', [userId, charge.toString()], function (err, userDataQueryResult) {
-                                //         done();
-                                //         if (err) {
-                                //             console.log('Error user data root GET SQL query task', err);
-                                //             res.sendStatus(500);
-                                //         } else {
-                                //             res.send({ name: userDataQueryResult.rows[0].name });
-                                //         }
-                                //     });
-                                // });
-
-                                if (err) {
-                                    console.log('Error user data root INSERT SQL bookings', err);
-                                    res.sendStatus(500);
-                                } else {
-                                    console.log('Stripe Charge successful', charge);
-                                    res.sendStatus(201);
-                                }
-                            }).catch(function (err) {
-                                // remove booking from database, make photographer available again
-                                undoBooking('Error creating stripe charge', booking);
-                                console.log('Error creating stripe charge', err);
-                                res.sendStatus(500);
-                            });
+                [packageId, time, requests, longitude, latitude, clientUserId, subvendorId, locationName],
+                function (err, bookingResults) {
+                    done();
+                    if (err) {
+                        console.log('error making booking query', err);
+                        res.sendStatus(500);
                     } else {
-                        console.log('User price from DOM did not match user submitted price');
-                        res.sendStatus(400);
-                    }
+                        var booking = bookingResults.rows[0];
+                        if (userSubmittedPrice == booking.price) {
+                            var totalPurchaseAmountInCents = booking.price * 100; // the purchase price in dollars converted to cents
+                            var stripePaymentFee = totalPurchaseAmountInCents * 0.029 + 30; // 2.9% plus 30 cents
+                            var fairlywedApplicationFee = Math.floor(totalPurchaseAmountInCents * 0.10 - stripePaymentFee); // 10% minus stripe's cut, round down to nearest penny
 
+                            // Create a Charge:
+                            stripe.charges.create({
+                                amount: totalPurchaseAmountInCents,
+                                currency: "usd",
+                                source: stripeToken.id,
+                                application_fee: fairlywedApplicationFee,
+                            }, {
+                                    stripe_account: booking.stripe_user_id,
+                                }).then(function (charge) {
+                                    pool.connect(function (err, client, done) {
+                                        client.query(`WITH charge_id_table AS (INSERT INTO stripe_charge_attempts (response_object, was_successful) VALUES ($2, TRUE) RETURNING id)
+                                        UPDATE bookings SET stripe_charge_id=(SELECT id FROM charge_id_table) WHERE id=$1;`,
+                                            [booking.booking_id, JSON.stringify(charge)],
+                                            function (err) {
+                                                done();
+                                                if (err) {
+                                                    console.log('Error with stripe_charge_id INSERT or tying booking to stripe charge after success on creating stripe charge', err);
+                                                    res.sendStatus(500);
+                                                } else {
+                                                    res.sendStatus(201);
+                                                }
+                                            });
+                                    });
+                                }).catch(function (stripeError) {
+                                    // remove booking from database, make photographer available again
+                                    undoBooking('Error creating stripe charge', booking);
+                                    console.log('Error creating stripe charge', stripeError);
+                                    pool.connect(function (err, client, done) {
+                                        client.query(`WITH charge_id_table AS (INSERT INTO stripe_charge_attempts (response_object, was_successful) VALUES ($2, FALSE) RETURNING id)
+                                        UPDATE bookings SET stripe_charge_id=(SELECT id FROM charge_id_table) WHERE id=$1;`,
+                                            [booking.booking_id, JSON.stringify(stripeError)],
+                                            function (err) {
+                                                done();
+                                                if (err) {
+                                                    console.log('Error with stripe_charge_id INSERT or tying booking to stripe charge after error on creating stripe charge', err);
+                                                }
+                                            });
+                                    });
+                                    res.sendStatus(500);
+                                });
+                        } else {
+                            console.log('User price from DOM did not match user submitted price');
+                            res.sendStatus(400);
+                        }
+
+                    }
                 }
-            }
-        );
+            );
+
+        }
     });
 });
 
 function undoBooking(reasonForUndo, bookingToUndo) {
     pool.connect(function (err, client, done) {
         client.query(`UPDATE subvendor_availability 
-    SET availability_id=(SELECT id FROM availability WHERE status='available') 
-    WHERE id=$1`, [bookingToUndo.subvendor_availability_id], function (err) {
+                SET availability_id=(SELECT id FROM availability WHERE status='available') 
+                WHERE id=$1`, [bookingToUndo.subvendor_availability_id], function (err) {
                 done();
                 if (err) {
                     console.log('UNDO BOOKING FAILED!! Booking created than undone due to ', reasonForUndo, 'but undo failed meaning photographer may have been booked multiple times for the same date.');
