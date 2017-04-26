@@ -25,8 +25,10 @@ app.factory("PhotographerBookingFactory", ["PhotographerSearchFactory", "$http",
             }
         }).then(function (response) {
             console.log('Photographer factory received photographer profile data from the server: ', response.data);
+            alert('Hooray! Congratulations! You have booked your wedding photographer!');
         }).catch(function (err) {
-            console.error('Error retreiving photographer profile data: ', err);
+            console.error('Error booking the photographer: ', err);
+            alert('Oh no! It looks like this photographer is no longer available on that day or something else went wrong. Don\'t worry, we haven\'t charged your credit card.');
         })
     }
     return {

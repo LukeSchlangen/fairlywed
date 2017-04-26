@@ -148,14 +148,14 @@ app.config(function ($stateProvider, $urlRouterProvider, $mdThemingProvider, Str
     // .backgroundPalette('white');
 });
 
-app.run(function ($log, StripeCheckout) {
-    // You can set defaults here, too.
-    StripeCheckout.defaults({
-        opened: function () {
-            $log.debug("Stripe Checkout opened");
-        },
-        closed: function () {
-            $log.debug("Stripe Checkout closed");
-        }
-    });
-});
+// app.run(function ($log, StripeCheckout) {
+//     // You can set defaults here, too.
+//     StripeCheckout.defaults({
+//         opened: function () {
+//             $log.debug("Stripe Checkout opened");
+//         },
+//         closed: function () {
+//             $log.debug("Stripe Checkout closed");
+//         }
+//     });
+// });

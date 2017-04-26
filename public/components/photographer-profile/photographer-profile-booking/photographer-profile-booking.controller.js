@@ -1,5 +1,5 @@
-app.controller("PhotographerProfileBookingController", ["PhotographerSearchFactory", "PhotographerBookingFactory", "StripeCheckout", "$log",
-    function (PhotographerSearchFactory, PhotographerBookingFactory, StripeCheckout, $log) {
+app.controller("PhotographerProfileBookingController", ["PhotographerSearchFactory", "PhotographerBookingFactory", "StripeCheckout",
+    function (PhotographerSearchFactory, PhotographerBookingFactory, StripeCheckout) {
         var self = this;
         self.bookingDetails = PhotographerBookingFactory.bookingDetails;
         self.currentSubvendor = PhotographerSearchFactory.currentSubvendor;  
@@ -11,7 +11,6 @@ app.controller("PhotographerProfileBookingController", ["PhotographerSearchFacto
         var handler = StripeCheckout.configure({
             name: "Custom Example",
             token: function (token, args) {
-                $log.debug("Got stripe token: ", token);
                 PhotographerBookingFactory.bookPhotographer(token);
             }
         });
@@ -27,11 +26,11 @@ app.controller("PhotographerProfileBookingController", ["PhotographerSearchFacto
             //
             // The rejection callback doesn't work in IE6-7.
             handler.open(options)
-                .then(function (result) {
-                    alert("Got Stripe token: " + result[0].id);
-                }, function () {
-                    alert("Stripe Checkout closed without making a sale :(");
-                });
+                // .then(function (result) {
+                //     alert("Got Stripe token: " + result[0].id);
+                // }, function () {
+                //     alert("Stripe Checkout closed without making a sale :(");
+                // });
         };
     }
 ]);
