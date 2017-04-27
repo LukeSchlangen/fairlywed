@@ -164,15 +164,16 @@ router.put('/', function (req, res) {
     var userId = req.decodedToken.userSQLId;
     var subvendorId = req.headers.subvendor_id;
     var subvendorDetails = req.body;
+    var travelDistanceInMeters = parseInt(subvendorDetails.travel_distance * 1609.34).toString();
     pool.connect(function (err, client, done) {
         client.query('UPDATE subvendors ' +
-            'SET name=$3, traveldistance=$4 ' +
+            'SET name=$3, travel_distance=$4::int ' +
             'WHERE id = ( ' +
             'SELECT subvendors.id ' +
             'FROM users_vendors ' +
             'JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id ' +
             'JOIN subvendors ON subvendors.parent_vendor_id=vendors.id AND subvendors.id=$2);',
-            [userId, subvendorId, subvendorDetails.name, subvendorDetails.traveldistance],
+            [userId, subvendorId, subvendorDetails.name, travelDistanceInMeters],
             function (err) {
                 done();
                 if (err) {
