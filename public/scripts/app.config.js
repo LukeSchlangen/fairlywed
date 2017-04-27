@@ -1,4 +1,6 @@
-app.config(function ($stateProvider, $urlRouterProvider, $mdThemingProvider) {
+app.config(function ($stateProvider, $urlRouterProvider, $mdThemingProvider, StripeCheckoutProvider) {
+
+    StripeCheckoutProvider.defaults(stripeConfig);
 
     $urlRouterProvider.otherwise(function ($injector) {
 
@@ -62,7 +64,7 @@ app.config(function ($stateProvider, $urlRouterProvider, $mdThemingProvider) {
             templateUrl: 'views/account/vendor.html'
         })
         .state('account.vendor.details', {
-            url: '/details/:vendorId',
+            url: '/details/:vendorId?state&scope&code',
             templateUrl: 'views/account/vendor-details.html',
             onEnter: function ($state, $stateParams) {
                 if (!$stateParams.vendorId) {

@@ -60,8 +60,22 @@ gulp.task('createDist', ['remove-dist-folder'], () => {
             destination: 'dist/public/scripts/firebase.config.js'
         },
         stringBuilder: {
-            before: 'var config =  ',
-            after: '; firebase.initializeApp(config);'
+            before: 'var firebaseConfig =  ',
+            after: '; firebase.initializeApp(firebaseConfig);'
+        }
+    });
+
+    copy({
+        keys: [
+            { newKey: 'key', environmentVariable: 'STRIPE_PUBLISHABLE_KEY' }
+        ],
+        paths: {
+            env: '.env',
+            destination: 'dist/public/scripts/stripe.config.js'
+        },
+        stringBuilder: {
+            before: 'var stripeConfig =  ',
+            after: ';'
         }
     });
 });
@@ -126,7 +140,7 @@ function copy(params) {
     configText = configText.replace(/(?:\\\\n)+/g, "\\n");
     configText = configText.replace(/(?:\\r)+/g, "");
 
-    writeFile(params.paths.destination, configText, function() {});
+    writeFile(params.paths.destination, configText, function () { });
 };
 // ----------- END CODE TO CREATE FIREBASE CONFIG VARIABLES FROM ENVIRONMENT VARIABLES -------------- //
 

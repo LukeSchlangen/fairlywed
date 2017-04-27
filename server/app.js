@@ -16,6 +16,8 @@ var packageData = require('./routes/package-data');
 var booking = require('./routes/booking');
 var photographerMatchmaker = require('./routes/photographer-matchmaker')
 var enfoceSSL = require('./modules/enforce-ssl');
+var stripeConnect = require('./routes/stripe-connect');
+var rawStripeResponseRedirect = require('./routes/raw-stripe-response-redirect');
 
 var uploads = require('./routes/uploads');
 var portDecision = process.env.PORT || 5000;
@@ -30,8 +32,9 @@ app.use(express.static('dist/public'));
 app.use(bodyParser.json());
 
 app.use("/packageData", packageData);
-app.use('/booking', booking);
 app.use('/galleryImages', galleryImages);
+
+app.use('/rawStripeResponse', rawStripeResponseRedirect);
 
 // Decodes the token in the request header and attaches the decoded token to req.decodedToken on the request.
 app.use(auth.tokenDecoder);
@@ -52,10 +55,13 @@ app.use(auth.noAnonymousUsers);
 app.use(auth.linkPreviouslyAnonymousUser);
 
 /* Whatever you do below this is protected by your authentication. */
+app.use('/booking', booking);
 app.use("/userData", userData);
 app.use("/vendorAccountData", vendorAccountData);
 app.use("/vendorDetailsData", vendorDetailsData);
 app.use("/subvendorDetailsData", subvendorDetailsData);
+
+app.use("/stripeConnect", stripeConnect);
 
 app.use('/uploads', uploads);
 

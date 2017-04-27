@@ -1,11 +1,13 @@
 app.factory("PhotographerBookingFactory", ["PhotographerSearchFactory", "$http", function (PhotographerSearchFactory, $http) {
 
     var bookingDetails = {};
-    function bookPhotographer() {
+
+    function bookPhotographer(token) {
         var search = PhotographerSearchFactory.search.parameters;
         var time = search.date;
         time.setHours(bookingDetails.time.getHours());
         time.setMinutes(bookingDetails.time.getMinutes());
+
         $http({
             method: 'POST',
             url: '/booking/',
@@ -13,17 +15,20 @@ app.factory("PhotographerBookingFactory", ["PhotographerSearchFactory", "$http",
                 phoneNumber: bookingDetails.phoneNumber,
                 requests: bookingDetails.requests,
                 time: time,
-                location: {
-                    latitude: search.latitude,
-                    longitude: search.longitude,
-                },
+                location: search.location,
+                latitude: search.latitude,
+                longitude: search.longitude,
                 packageId: search.package,
-                subvendorId: search.subvendorId
+                subvendorId: search.subvendorId,
+                price: PhotographerSearchFactory.currentSubvendor.details.currentPackage.price,
+                stripeToken: token
             }
         }).then(function (response) {
             console.log('Photographer factory received photographer profile data from the server: ', response.data);
+            alert('Hooray! Congratulations! You have booked your wedding photographer!');
         }).catch(function (err) {
-            console.error('Error retreiving photographer profile data: ', err);
+            console.error('Error booking the photographer: ', err);
+            alert('Oh no! It looks like this photographer is no longer available on that day or something else went wrong. Don\'t worry, we haven\'t charged your credit card.');
         })
     }
     return {

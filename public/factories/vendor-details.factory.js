@@ -1,8 +1,15 @@
-app.factory("VendorDetailsFactory", function ($http, AuthFactory, $stateParams, VendorAccountFactory, $state) {
+app.factory("VendorDetailsFactory", function ($http, AuthFactory, $stateParams, VendorAccountFactory, $state, StripeConnectFactory) {
 
     var vendor = { subvendorList: [], details: {} };
 
     AuthFactory.$onAuthStateChanged(getAll);
+    AuthFactory.$onAuthStateChanged(stripeAuthorizationCheck);
+
+    function stripeAuthorizationCheck() {
+        if($stateParams.state && $stateParams.code && $stateParams.scope) {
+            StripeConnectFactory.authorizeStripeAccount();
+        }
+    }
 
     function getAll() {
         getSubvendorList();
@@ -81,6 +88,7 @@ app.factory("VendorDetailsFactory", function ($http, AuthFactory, $stateParams, 
         updateDetails: updateDetails,
         addSubvendor: addSubvendor,
         getDetails: getDetails,
-        getSubvendorList: getSubvendorList
+        getSubvendorList: getSubvendorList,
+        stripeAuthorizationCheck: stripeAuthorizationCheck
     };
 });

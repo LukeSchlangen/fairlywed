@@ -16,6 +16,14 @@
     </div>
 </form>
 
+<div>
+    Stripe allows you to accept credit card payments through FairlyWed. Clicking this button will take you to Stripe to set up
+    your account.
+    <md-button class="md-raised" ng-click="vm.connectStripeAccount()">
+        Set up Account on Stripe
+    </md-button>
+</div>
+
 <form layout layout-align="center" layout-padding>
     <div layout="row" layout-xs="column" flex>
         <md-input-container class="md-block" flex-gt-xs>
@@ -31,7 +39,8 @@
 </form>
 
 <md-tabs class="main-toolbar">
-    <md-tab label="{{subvendor.name}}" ui-sref=".subvendor.details({subvendorId: subvendor.id})" md-active="vm.isCurrentSubvendor(subvendor.id)" ng-repeat="subvendor in vm.vendor.subvendorList"></md-tab>
+    <md-tab label="{{subvendor.name}}" ui-sref=".subvendor.details({subvendorId: subvendor.id})" md-active="vm.isCurrentSubvendor(subvendor.id)"
+        ng-repeat="subvendor in vm.vendor.subvendorList"></md-tab>
 </md-tabs>
 
- <div ui-view></div>
+<div ui-view></div>
