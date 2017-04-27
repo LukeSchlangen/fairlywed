@@ -121,6 +121,19 @@ CREATE TABLE subvendor_images (
 	is_active BOOLEAN DEFAULT FALSE NOT NULL
 );
 
+CREATE TABLE matchmaker_run (
+	id SERIAL PRIMARY KEY,
+	user_id INT NOT NULL REFERENCES users,
+	prior_run_id INT,
+	FOREIGN KEY (prior_run_id) REFERENCES matchmaker_run(id)
+);
+
+CREATE TABLE matchmaker_liked_photos (
+	id SERIAL PRIMARY KEY,
+	matchmaker_run_id INT NOT NULL REFERENCES matchmaker_run,
+	subvendor_images_id INT NOT NULL REFERENCES subvendor_images,
+	liked BOOLEAN DEFAULT FALSE NOT NULL
+);
 
 -- INSERTING SAMPLE VENDOR DATA
 

@@ -14,6 +14,7 @@ var subvendorDetailsData = require('./routes/subvendor-details-data');
 var galleryImages = require('./routes/gallery-images');
 var packageData = require('./routes/package-data');
 var booking = require('./routes/booking');
+var photographerMatchmaker = require('./routes/photographer-matchmaker')
 var enfoceSSL = require('./modules/enforce-ssl');
 
 var uploads = require('./routes/uploads');
@@ -28,13 +29,14 @@ app.get('/', function (req, res) {
 app.use(express.static('dist/public'));
 app.use(bodyParser.json());
 
-app.use("/vendorSearchData", vendorSearchData);
 app.use("/packageData", packageData);
 app.use('/booking', booking);
 app.use('/galleryImages', galleryImages);
 
 // Decodes the token in the request header and attaches the decoded token to req.decodedToken on the request.
 app.use(auth.tokenDecoder);
+app.use("/vendorSearchData", vendorSearchData);
+app.use('/matchmaker', photographerMatchmaker);
 
 // Anonymous auth is ok for these routes, created for matchmaking/image comparison
 // This is used for tracking a user while they are not logged in
