@@ -33,7 +33,7 @@ router.post('/', function (req, res) {
             AND (SELECT ST_Distance( 
                         (SELECT COALESCE(subvendors.location, vendors.location)), 
                         (CAST(ST_SetSRID(ST_Point($4, $5),4326) As geography)) 
-                    )) < (SELECT COALESCE(subvendors.travelDistance, vendors.travelDistance))
+                    )) < (SELECT COALESCE(subvendors.travel_distance, vendors.travel_distance))
             JOIN subvendors_packages ON subvendors.id = subvendors_packages.subvendor_id AND subvendors_packages.package_id=$1 
             JOIN stripe_accounts ON vendors.stripe_account_id=stripe_accounts.id),
                     

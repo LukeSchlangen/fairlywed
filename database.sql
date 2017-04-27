@@ -145,11 +145,37 @@ CREATE TABLE matchmaker_liked_photos (
 	liked BOOLEAN DEFAULT FALSE NOT NULL
 );
 
--- INSERTING SAMPLE VENDOR DATA
+-- INSERTING NECESSARY DATABASE DATA (NEEDED FOR ALL ENVIRONMENTS)
 
 -- INSERTING SUBVENDOR TYPES
 INSERT INTO subvendortypes (name)
 VALUES ('photographer'), ('videographer'), ('dj');
+
+-- INSERTING PACKAGES
+INSERT INTO packages (name, vendortype_id)
+VALUES ('Two Photographers: 10 Hours', 1),
+('Two Photographers: 8 Hours', 1),
+('One Photographer: 10 Hours', 1),
+('One Photographer: 8 Hours', 1),
+('One Photographer: 6 Hours', 1),
+('One Photographer: 4 Hours', 1),
+('Two Photographers: 10 Hours - 1 hour Engagement Session Included', 1),
+('Two Photographers: 8 Hours - 1 hour Engagement Session Included', 1),
+('One Photographer: 10 Hours - 1 hour Engagement Session Included', 1),
+('One Photographer: 8 Hours - 1 hour Engagement Session Included', 1),
+('One Photographer: 6 Hours - 1 hour Engagement Session Included', 1),
+('One Photographer: 4 Hours - 1 hour Engagement Session Included', 1);
+
+-- CREATING AVAILABILITY STATUSES
+INSERT INTO availability (status)
+VALUES ('unavailable'), ('available'), ('booked');
+
+-----------------------------------------------------------------------------------
+
+--------------------------- MOCK DATA FOR LOCAL TESTING ---------------------------
+
+-----------------------------------------------------------------------------------
+
 
 -- INSERTING VENDORS
 INSERT INTO vendors (name, location_address, location)
@@ -167,21 +193,6 @@ VALUES ('Minnetonka Photography', 1, 1, null, 'Minnetonka Photography does a rea
 ('Bloomington Wedding Photography', 3, 1, null, null),
 ('The Bloomington Wedding Vendor', 3, 2, null, null),
 ('Minneapolis Wedding Photographers', 4, 1, null, null);
-
--- INSERTING PACKAGES
-INSERT INTO packages (name, vendortype_id)
-VALUES ('Two Photographers: 10 Hours', 1),
-('Two Photographers: 8 Hours', 1),
-('One Photographer: 10 Hours', 1),
-('One Photographer: 8 Hours', 1),
-('One Photographer: 6 Hours', 1),
-('One Photographer: 4 Hours', 1),
-('Two Photographers: 10 Hours - 1 hour Engagement Session Included', 1),
-('Two Photographers: 8 Hours - 1 hour Engagement Session Included', 1),
-('One Photographer: 10 Hours - 1 hour Engagement Session Included', 1),
-('One Photographer: 8 Hours - 1 hour Engagement Session Included', 1),
-('One Photographer: 6 Hours - 1 hour Engagement Session Included', 1),
-('One Photographer: 4 Hours - 1 hour Engagement Session Included', 1);
 
 
 -- INSERTING PACKAGE PRICES - All photographer subvendors offer each package
@@ -210,10 +221,6 @@ VALUES (1, 1, 2000),
 (7, 4, 1600),
 (7, 5, 1500),
 (7, 6, 1400);
-
--- CREATING AVAILABILITY STATUSES
-INSERT INTO availability (status)
-VALUES ('unavailable'), ('available'), ('booked');
 
 -- INSERTING SAMPLE AVAILABILITY - All photographer subvendors available for next 100 days
 DO
