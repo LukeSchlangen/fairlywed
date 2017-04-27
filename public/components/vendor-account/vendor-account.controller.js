@@ -5,9 +5,10 @@ app.controller("VendorAccountController", function (PackagesFactory, VendorAccou
     PackagesFactory.getPackageList();
     VendorAccountFactory.getVendorList();
     self.newVendor = {};
+    self.showAddNewVendorForm = false;
 
     self.initialize = function () {
-        var input = document.getElementById('searchTextField');
+        var input = document.getElementById('vendorLocationTextField');
         var autocomplete = new google.maps.places.Autocomplete(input, {
             componentRestrictions: { 'country': 'us' }
         });
@@ -16,9 +17,8 @@ app.controller("VendorAccountController", function (PackagesFactory, VendorAccou
             var place = autocomplete.getPlace();
             self.newVendor.latitude = place.geometry.location.lat();
             self.newVendor.longitude = place.geometry.location.lng();
-            self.newVendor.location = place.formatted_address;
+            self.newVendor.location_address = place.formatted_address;
             $scope.$apply();
-            // self.updatePhotographersList();
         });
     }
 
@@ -29,9 +29,10 @@ app.controller("VendorAccountController", function (PackagesFactory, VendorAccou
     self.addVendor = function () {
         VendorAccountFactory.addVendor(self.newVendor);
         self.newVendor = {};
+        self.showAddNewVendorForm = false;
     }
 
-    self.isCurrentVendor = function(vendorIdToCheck) {
+    self.isCurrentVendor = function (vendorIdToCheck) {
         return $stateParams.vendorId == vendorIdToCheck;
     }
 

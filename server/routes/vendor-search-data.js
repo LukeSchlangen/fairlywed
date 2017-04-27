@@ -21,7 +21,7 @@ router.get('/', function (req, res) {
       'AND (SELECT ST_Distance(' +
       '		(SELECT COALESCE(subvendors.location, vendors.location)),' +
       '		(CAST(ST_SetSRID(ST_Point($3, $4),4326) As geography))' +
-      '	)) < (SELECT COALESCE(subvendors.travelDistance, vendors.travelDistance)) ' +
+      '	)) < (SELECT COALESCE(subvendors.travel_distance, vendors.travel_distance)) ' +
       'AND subvendor_availability.date_id = (SELECT id FROM calendar_dates WHERE day=$5) ' +
       'LIMIT 10;',
       [searchObject.vendorType, searchObject.package, searchObject.longitude, searchObject.latitude, searchObject.date],
@@ -59,7 +59,7 @@ router.get('/subvendorProfile', function (req, res) {
           'AND (SELECT ST_Distance(' +
           '		(SELECT COALESCE(subvendors.location, vendors.location)),' +
           '		(CAST(ST_SetSRID(ST_Point($2, $3),4326) As geography))' +
-          '	)) < (SELECT COALESCE(subvendors.travelDistance, vendors.travelDistance)) ' +
+          '	)) < (SELECT COALESCE(subvendors.travel_distance, vendors.travel_distance)) ' +
           'AND subvendor_availability.date_id = (SELECT id FROM calendar_dates WHERE day=$4) ' +
           'LIMIT 10;',
           [searchObject.subvendorId, searchObject.longitude, searchObject.latitude, searchObject.date],

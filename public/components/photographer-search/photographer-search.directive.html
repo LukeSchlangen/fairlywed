@@ -11,7 +11,7 @@
     <md-input-container class="md-block" flex-gt-xs>
         <label>Where is the wedding?</label>
         <input id="searchTextField" type="text" size="50" placeholder="Address" autocomplete="on" runat="server" ng-init="vm.initialize()"
-            name="location">
+            name="location" ng-model="vm.search.parameters.location">
     </md-input-container>
 
     <md-input-container>
