@@ -33,8 +33,9 @@ CREATE TABLE stripe_accounts (
 CREATE TABLE vendors (
 	id SERIAL PRIMARY KEY,
 	name VARCHAR(500) NOT NULL,
+    location_address VARCHAR(1000) NOT NULL, 
 	location geography NOT NULL,
-	travelDistance INT DEFAULT 16093 NOT NULL, -- Default to 10 mile radius
+	travel_distance INT DEFAULT 16093 NOT NULL, -- Default to 10 mile radius, stored in meters
 	stripe_account_id INT REFERENCES stripe_accounts,
 	is_active BOOLEAN DEFAULT TRUE NOT NULL
 );
@@ -55,8 +56,9 @@ CREATE TABLE subvendortypes (
 CREATE TABLE subvendors (
 	id SERIAL PRIMARY KEY,
 	name VARCHAR(500) UNIQUE NOT NULL,
-	location geography, -- if null, pull value from the parent
-	travelDistance INT, -- if null, pull value from the parent
+    location_address VARCHAR(1000), -- if null, pull value from the parent, MVP doesn't have input fields for this
+	location geography, -- if null, pull value from the parent, MVP doesn't have input fields for this
+	travel_distance INT, -- if null, pull value from the parent, MVP doesn't have input fields for this
 	description VARCHAR(2000),
 	parent_vendor_id INT NOT NULL REFERENCES vendors,
 	vendortype_id INT NOT NULL REFERENCES subvendortypes,
@@ -150,11 +152,11 @@ INSERT INTO subvendortypes (name)
 VALUES ('photographer'), ('videographer'), ('dj');
 
 -- INSERTING VENDORS
-INSERT INTO vendors (name, location)
-VALUES ('Big Time Minnetonka Wedding Vendor', CAST(ST_SetSRID(ST_Point(-93.4687, 44.9212),4326) As geography)),
-('Edina Wedding Photography', CAST(ST_SetSRID(ST_Point(-93.3499, 44.8897),4326) As geography)),
-('The Bloomington Wedding Vendor', CAST(ST_SetSRID(ST_Point(-86.5264, 39.1653),4326) As geography)),
-('Minneapolis Wedding Vendor', CAST(ST_SetSRID(ST_Point(-93.2650, 44.9777),4326) As geography));
+INSERT INTO vendors (name, location_address, location)
+VALUES ('Big Time Minnetonka Wedding Vendor', 'Minnetonka, MN', CAST(ST_SetSRID(ST_Point(-93.4687, 44.9212),4326) As geography)),
+('Edina Wedding Photography', 'Edina, MN', CAST(ST_SetSRID(ST_Point(-93.3499, 44.8897),4326) As geography)),
+('The Bloomington Wedding Vendor', 'Bloomington, MN', CAST(ST_SetSRID(ST_Point(-86.5264, 39.1653),4326) As geography)),
+('Minneapolis Wedding Vendor', 'Minneapolis, MN', CAST(ST_SetSRID(ST_Point(-93.2650, 44.9777),4326) As geography));
     
 -- INSERTING SUBVENDORS
 INSERT INTO subvendors (name, parent_vendor_id, vendortype_id, location, description)
@@ -268,7 +270,7 @@ JOIN vendors ON vendors.id = subvendors.parent_vendor_id
 WHERE (SELECT ST_Distance(
 		(SELECT COALESCE(subvendors.location, vendors.location)),
 		(CAST(ST_SetSRID(ST_Point(-93.4708, 44.8547),4326) As geography))
-	)) < (SELECT COALESCE(subvendors.travelDistance, vendors.travelDistance)); -- This query would also need additional AND statements to limit to specific types of vendors, like photographers
+	)) < (SELECT COALESCE(subvendors.travel_distance, vendors.travel_distance)); -- This query would also need additional AND statements to limit to specific types of vendors, like photographers
 
 -- Only Returning photographers (regardless of location)
 SELECT COALESCE(subvendors.name, vendors.name) AS name, 
@@ -296,7 +298,7 @@ AND packages.name='Two Photographers: 8 Hours'
 AND (SELECT ST_Distance(
 		(SELECT COALESCE(subvendors.location, vendors.location)),
 		(CAST(ST_SetSRID(ST_Point(-93.26501080000003, 44.977753),4326) As geography))
-	)) < (SELECT COALESCE(subvendors.travelDistance, vendors.travelDistance))
+	)) < (SELECT COALESCE(subvendors.travel_distance, vendors.travel_distance))
 LIMIT 10;
 
 SELECT *
@@ -323,7 +325,7 @@ AND packages.name='Two Photographers: 8 Hours'
 AND (SELECT ST_Distance(
 		(SELECT COALESCE(subvendors.location, vendors.location)),
 		(CAST(ST_SetSRID(ST_Point(-93.26501080000003, 44.977753),4326) As geography))
-	)) < (SELECT COALESCE(subvendors.travelDistance, vendors.travelDistance)) 
+	)) < (SELECT COALESCE(subvendors.travel_distance, vendors.travel_distance)) 
 AND subvendor_availability.date_id = (SELECT id FROM calendar_dates WHERE day='2017-12-12') 
 LIMIT 10;
 
@@ -407,7 +409,7 @@ FALSE);
 
 -- ADD NEW VENDOR
 WITH new_vendor_id AS (
-	INSERT INTO vendors (name, location, traveldistance) 
+	INSERT INTO vendors (name, location, travel_distance) 
 	VALUES ('Bob Studios', 
 			CAST(ST_SetSRID(ST_Point(COALESCE(NULL, -93.4687), COALESCE(NULL, 44.9212)),4326) AS geography), 
 			100000) 

@@ -1,4 +1,4 @@
-<span ng-hide="vm.userData.isSignedIn"  flex>
+<span ng-hide="vm.userData.isSignedIn" flex>
     <md-content class="md-padding" layout-xs="column" layout="row">
         <div flex layout="column">
             <md-card>
@@ -13,11 +13,16 @@
     </md-content>
 </span>
 <span ng-if="vm.userData.isSignedIn" flex>
-    <md-content class="md-padding" layout-xs="column" layout="row">
+    <md-content class="md-padding" flex layout="column">
         <div flex layout="column">
             <md-card>
                 <md-card-content>
-                    <form layout layout-align="center" layout-padding ng-submit="vm.addVendor()">
+                    <form flex layout="column" layout-align="center" layout-padding ng-submit="vm.addVendor()"  ng-show="vm.vendors.list.length == 0 || vm.showAddNewVendorForm">
+                        <md-input-container class="md-block" flex-gt-xs>
+                            <label>Where are you located?</label>
+                            <input id="vendorLocationTextField" type="text" size="50" placeholder="Address" autocomplete="on" runat="server" ng-init="vm.initialize()"
+                                name="location" ng-model="vm.newVendor.location_address">
+                        </md-input-container>
                         <div layout="row" layout-xs="column" flex>
                             <md-input-container class="md-block" flex-gt-xs>
                                 <label>Legal Name Of Your Photography Business (e.g. Amazing Photography LLC)</label>
@@ -25,11 +30,17 @@
                             </md-input-container>
                             <div>
                                 <md-button class="md-raised" ng-click="vm.addVendor()">
-                                    Add New Business
+                                    Save New Business
                                 </md-button>
                             </div>
                         </div>
                     </form>
+                    <div flex layout="row" layout-align="right" ng-click="vm.showAddNewVendorForm = true" ng-hide="vm.vendors.list.length == 0 || vm.showAddNewVendorForm">
+                        <span flex></span>
+                        <md-button class="md-raised">
+                            Add New Business
+                        </md-button>
+                    </div>
 
                     <span ng-show="vm.vendors.list.length > 0">
                         <md-tabs class="main-toolbar">

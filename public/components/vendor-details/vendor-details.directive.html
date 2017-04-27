@@ -1,46 +1,67 @@
-<form layout layout-align="center" layout-padding>
-    <div layout="row" layout-xs="column" flex>
-        <md-input-container class="md-block" flex-gt-xs>
-            <label>Legal Name Of The Business</label>
-            <input ng-model="vm.vendor.details.name">
-        </md-input-container>
-        <md-input-container class="md-block" flex-gt-xs>
-            <label>Distance You Are Willing To Travel For Free</label>
-            <input type="number" ng-model="vm.vendor.details.traveldistance">
-        </md-input-container>
-        <div>
-            <md-button class="md-raised" ng-click="vm.updateDetails(vm.vendor.details)">
-                Update Business Details
+<md-card>
+    <md-card-content>
+        <form layout layout-align="center" layout-padding>
+            <div layout="column" flex>
+                <md-input-container class="md-block" flex-gt-xs>
+                    <label>Legal Name Of The Business</label>
+                    <input ng-model="vm.vendor.details.name">
+                </md-input-container>
+                <md-input-container class="md-block" flex-gt-xs>
+                    <label>Where are you located?</label>
+                    <input id="vendorLocationDetailsTextField" type="text" size="50" placeholder="Address" autocomplete="on" runat="server" ng-init="vm.initialize()"
+                        name="location" ng-model="vm.vendor.details.location_address">
+                </md-input-container>
+                <md-input-container class="md-block" flex-gt-xs>
+                    <label>Distance, in Miles, You Are Willing To Travel For Free</label>
+                    <input type="number" ng-model="vm.vendor.details.travel_distance">
+                </md-input-container>
+                <div>
+                    <p>Stripe allows you to accept credit card payments through FairlyWed. Clicking this button will take you
+                        to Stripe to set up your account.</p>
+                    <md-button class="md-raised" ng-click="vm.connectStripeAccount()">
+                        Set up Account on Stripe
+                    </md-button>
+                </div>
+                <div>
+                    <md-button class="md-raised" ng-click="vm.updateDetails(vm.vendor.details)">
+                        Save Business Details for {{vm.vendor.details.name}}
+                    </md-button>
+                </div>
+            </div>
+        </form>
+    </md-card-content>
+</md-card>
+
+<md-card>
+    <md-card-content>
+        <div flex layout="row" ng-click="vm.showAddNewSubvendorForm = true" ng-hide="vm.vendor.subvendorList.length == 0 || vm.showAddNewSubvendorForm">
+            <span flex></span>
+            <md-button class="md-raised" ng-click="vm.addVendor()">
+                Add New Photographer to {{vm.vendor.details.name}}
             </md-button>
         </div>
-    </div>
-</form>
+        <form layout layout-align="center" layout-padding ng-show="vm.vendor.subvendorList.length == 0 || vm.showAddNewSubvendorForm">
+            <div layout="column" flex>
+                <p ng-show="vm.vendor.subvendorList.length == 0">Congratulations! You made it! Now that you have created a business on FairlyWed, how would you like to show
+                    up on the website? Maybe the name of your company is {{vm.vendor.details.name}}, but on the site, you
+                    would rather show up as {{vm.userData.details.displayName}} Wedding Photography.</p>
+                <md-input-container class="md-block" flex-gt-xs>
+                    <label>Photographer Name As It Will Show On The Site (e.g. {{vm.userData.details.displayName}} Photography)</label>
+                    <input ng-model="vm.newSubvendor.name">
+                </md-input-container>
+                <div>
+                    <md-button class="md-raised" ng-click="vm.addSubvendor()">
+                        Add New Photographer
+                    </md-button>
+                </div>
+            </div>
+        </form>
+        <span ng-show="vm.vendor.subvendorList.length > 0">
+            <md-tabs class="main-toolbar">
+                <md-tab label="{{subvendor.name}}" ui-sref=".subvendor.details({subvendorId: subvendor.id})" md-active="vm.isCurrentSubvendor(subvendor.id)" ng-repeat="subvendor in vm.vendor.subvendorList"></md-tab>
+            </md-tabs>
 
-<div>
-    Stripe allows you to accept credit card payments through FairlyWed. Clicking this button will take you to Stripe to set up
-    your account.
-    <md-button class="md-raised" ng-click="vm.connectStripeAccount()">
-        Set up Account on Stripe
-    </md-button>
-</div>
-
-<form layout layout-align="center" layout-padding>
-    <div layout="row" layout-xs="column" flex>
-        <md-input-container class="md-block" flex-gt-xs>
-            <label>Photographer Name As It Will Show On The Site (e.g. Luke and Lindsey Photography)</label>
-            <input ng-model="vm.newSubvendor.name">
-        </md-input-container>
-        <div>
-            <md-button class="md-raised" ng-click="vm.addSubvendor()">
-                Add New Photographer
-            </md-button>
-        </div>
-    </div>
-</form>
-
-<md-tabs class="main-toolbar">
-    <md-tab label="{{subvendor.name}}" ui-sref=".subvendor.details({subvendorId: subvendor.id})" md-active="vm.isCurrentSubvendor(subvendor.id)"
-        ng-repeat="subvendor in vm.vendor.subvendorList"></md-tab>
-</md-tabs>
-
-<div ui-view></div>
+            <div ui-view></div>
+        </span>
+    </md-card-content>
+</md-card>
