@@ -6,6 +6,7 @@ var path = require('path');
 var bodyParser = require('body-parser');
 var auth = require('./modules/auth');
 var userData = require('./routes/user-data');
+var anonymousUserData = require('./routes/anonymous-user-data');
 var vendorSearchData = require('./routes/vendor-search-data');
 var vendorAccountData = require('./routes/vendor-account-data');
 var vendorDetailsData = require('./routes/vendor-details-data');
@@ -14,9 +15,12 @@ var galleryImages = require('./routes/gallery-images');
 var packageData = require('./routes/package-data');
 var booking = require('./routes/booking');
 var photographerMatchmaker = require('./routes/photographer-matchmaker')
+var enfoceSSL = require('./modules/enforce-ssl');
 
 var uploads = require('./routes/uploads');
 var portDecision = process.env.PORT || 5000;
+
+app.use(enfoceSSL);
 
 app.get('/', function (req, res) {
   res.sendFile(path.resolve('./dist/public/views/index.html'));
@@ -37,7 +41,7 @@ app.use('/matchmaker', photographerMatchmaker);
 // Anonymous auth is ok for these routes, created for matchmaking/image comparison
 // This is used for tracking a user while they are not logged in
 // and then that tracking can be saved to the user after they log in
-
+app.use("/anonymousUserData", anonymousUserData);
 
 
 // Routes that need an actual user account (not an anonymous user), should go below here
