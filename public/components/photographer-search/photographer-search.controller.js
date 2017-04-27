@@ -1,4 +1,4 @@
-app.controller("PhotographerSearchController", function (PhotographerSearchFactory, PackagesFactory) {
+app.controller("PhotographerSearchController", function (PhotographerSearchFactory, PackagesFactory, $scope) {
     var self = this;
     self.search = PhotographerSearchFactory.search;
     self.packages = PackagesFactory.packages;
@@ -16,6 +16,7 @@ app.controller("PhotographerSearchController", function (PhotographerSearchFacto
             self.search.parameters.latitude = place.geometry.location.lat();
             self.search.parameters.longitude = place.geometry.location.lng();
             self.search.parameters.location = place.formatted_address;
+            $scope.$apply();
             self.updatePhotographersList();
         });
     }
