@@ -101,6 +101,10 @@ app.config(function ($stateProvider, $urlRouterProvider, $mdThemingProvider, Str
             url: '/packages',
             templateUrl: 'views/account/subvendor-details/packages.html'
         })
+        .state('matchmaker', {
+            url: '/matchmaker',
+            templateUrl: 'views/matchmaker.html'
+        })
         .state('404', {
             template: 'That is a 404'
         });
@@ -147,15 +151,3 @@ app.config(function ($stateProvider, $urlRouterProvider, $mdThemingProvider, Str
         .accentPalette('black')
     // .backgroundPalette('white');
 });
-
-// app.run(function ($log, StripeCheckout) {
-//     // You can set defaults here, too.
-//     StripeCheckout.defaults({
-//         opened: function () {
-//             $log.debug("Stripe Checkout opened");
-//         },
-//         closed: function () {
-//             $log.debug("Stripe Checkout closed");
-//         }
-//     });
-// });

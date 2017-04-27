@@ -138,6 +138,7 @@ function copy(params) {
     var configText = stringBefore + JSON.stringify(newObject) + stringAfter;
 
     configText = configText.replace(/(?:\\\\n)+/g, "\\n");
+    configText = configText.replace(/(?:\\r)+/g, "");
 
     writeFile(params.paths.destination, configText, function () { });
 };
