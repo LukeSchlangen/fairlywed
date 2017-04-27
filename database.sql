@@ -22,12 +22,21 @@ CREATE TABLE logs (
 	user_id INT NOT NULL REFERENCES users
 );
 
+CREATE TABLE stripe_accounts (
+	id SERIAL PRIMARY KEY,
+	creator_user_id INT NOT NULL REFERENCES users,
+	stripe_user_id VARCHAR(100) NOT NULL,
+	stripe_refresh_user_token  VARCHAR(100) NOT NULL,
+	is_active BOOLEAN DEFAULT TRUE NOT NULL
+);
+
 CREATE TABLE vendors (
 	id SERIAL PRIMARY KEY,
 	name VARCHAR(500) NOT NULL,
     location_address VARCHAR(1000) NOT NULL, 
 	location geography NOT NULL,
 	travel_distance INT DEFAULT 16093 NOT NULL, -- Default to 10 mile radius, stored in meters
+	stripe_account_id INT REFERENCES stripe_accounts,
 	is_active BOOLEAN DEFAULT TRUE NOT NULL
 );
 
@@ -35,6 +44,7 @@ CREATE TABLE users_vendors (
 	id SERIAL,
 	user_id INT NOT NULL REFERENCES users,
 	vendor_id INT NOT NULL REFERENCES vendors,
+	stripe_connect_state VARCHAR(100) DEFAULT md5(random()::text) NOT NULL,
 	PRIMARY KEY(user_id, vendor_id)
 );
 
@@ -71,18 +81,6 @@ CREATE TABLE subvendors_packages (
 	PRIMARY KEY(subvendor_id, package_id)
 );
 
-CREATE TABLE clients (
-	id SERIAL PRIMARY KEY,
-	user_id INT NOT NULL REFERENCES users
-);
-
-CREATE TABLE users_clients (
-	id SERIAL,
-	user_id INT NOT NULL REFERENCES users,
-	client_id INT NOT NULL REFERENCES clients,
-	PRIMARY KEY(user_id, client_id)
-);
-
 CREATE TABLE availability (
 	id SERIAL PRIMARY KEY,
 	status VARCHAR(500) NOT NULL
@@ -101,15 +99,25 @@ CREATE TABLE subvendor_availability (
 	PRIMARY KEY(subvendor_id, date_id)
 );
 
+CREATE TABLE stripe_charge_attempts (
+	id SERIAL PRIMARY KEY,
+	response_object TEXT NOT NULL,
+	was_successful BOOLEAN DEFAULT FALSE NOT NULL
+);
+
 CREATE TABLE bookings (
 	id SERIAL PRIMARY KEY,
-	packages_id INT NOT NULL REFERENCES packages,
+	package_id INT NOT NULL REFERENCES packages,
 	subvendor_id INT NOT NULL REFERENCES subvendors,
+	stripe_account_id INT NOT NULL,
+	vendor_id INT NOT NULL,
+	client_user_id INT NOT NULL,
 	time TIMESTAMP NOT NULL,
-	-- firebase_user_id VARCHAR(500) UNIQUE NOT NULL,
+	price INT NOT NULL,
 	requests TEXT,
+	location_name VARCHAR(1000) NOT NULL,
 	location geography NOT NULL,
-	phone_number TEXT NOT NULL
+	stripe_charge_id INT REFERENCES stripe_charge_attempts
 );
 
 CREATE TABLE subvendor_images (
@@ -123,6 +131,19 @@ CREATE TABLE subvendor_images (
 	is_active BOOLEAN DEFAULT FALSE NOT NULL
 );
 
+CREATE TABLE matchmaker_run (
+	id SERIAL PRIMARY KEY,
+	user_id INT NOT NULL REFERENCES users,
+	prior_run_id INT,
+	FOREIGN KEY (prior_run_id) REFERENCES matchmaker_run(id)
+);
+
+CREATE TABLE matchmaker_liked_photos (
+	id SERIAL PRIMARY KEY,
+	matchmaker_run_id INT NOT NULL REFERENCES matchmaker_run,
+	subvendor_images_id INT NOT NULL REFERENCES subvendor_images,
+	liked BOOLEAN DEFAULT FALSE NOT NULL
+);
 
 -- INSERTING SAMPLE VENDOR DATA
 
@@ -224,6 +245,15 @@ VALUES ('Alice Fotografo', 'alicefotografo@gmail.com', 'HtSlvK5TTLern4NkqQyzQZ0K
 INSERT INTO users_vendors (user_id, vendor_id)
  VALUES (1, 1),
  (1,2);
+
+-- INSERTING A MOCK STRIPE ACCOUNT
+WITH stripe_account_id AS (
+	INSERT INTO stripe_accounts (creator_user_id, stripe_user_id, stripe_refresh_user_token)
+	VALUES (1, 'acct_103zys4vIhx7Z90Z', 'rt_AWXVluRHQ35uv4ECNxtMaeJvtb6VZ9zx5rceyF2KjUZy6EgR') 
+	RETURNING id
+) 
+UPDATE vendors SET stripe_account_id=(SELECT id FROM stripe_account_id);
+-- WHERE id=1; This line should be uncommented to just add the stripe account to one vendor, but for now, all vendors have the same stripe account
 
 
 -----------------------------------------------------------------------------------

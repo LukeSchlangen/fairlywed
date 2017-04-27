@@ -8,10 +8,14 @@
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
 
   <!-- Angular File Upload-->
-  <link rel="stylesheet" href="/vendors/dropzone.css" />  
-  <link rel="stylesheet" href="/vendors/ng-dropzone.min.css" />  
+  <link rel="stylesheet" href="/vendors/dropzone.css" />
+  <link rel="stylesheet" href="/vendors/ng-dropzone.min.css" />
   <script src="/vendors/dropzone.js"></script>
   <script src="/vendors/ng-dropzone.min.js"></script>
+
+  <!-- Stripe -->
+  <script src="https://checkout.stripe.com/checkout.js"></script>
+  <script src="vendors/angular-stripe-checkout.js"></script>
 
   <!--Angular ui-router-->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.3.2/angular-ui-router.js"></script>
@@ -24,6 +28,9 @@
 
   <!-- Firebase Config -->
   <script src="scripts/firebase.config.js"></script>
+
+  <!-- Stripe Config -->
+  <script src="scripts/stripe.config.js"></script>
 
   <!-- Main Angular Application File -->
   <script src="scripts/app.js"></script>
@@ -45,6 +52,8 @@
   <script src="factories/vendor-details.factory.js"></script>
   <script src="factories/subvendor.factory.js"></script>
   <script src="factories/public-images.factory.js"></script>
+  <script src="factories/stripe-connect.factory.js"></script>
+  <script src="factories/photographer-matchmaker.factory.js"></script>
   <!--<script src="factories/vendor-details.factory.js"></script>-->
 
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBnVkpgWUFimXA6igDvgMCKN1GFBkf1wFI&libraries=places" type="text/javascript"></script>
@@ -84,6 +93,10 @@
   <script src="components/photographer-profile/photographer-profile-gallery/photographer-profile-gallery.directive.js"></script>
   <script src="components/photographer-profile/photographer-profile-home/photographer-profile-home.controller.js"></script>
   <script src="components/photographer-profile/photographer-profile-home/photographer-profile-home.directive.js"></script>
+
+  <!--Matchmaker Angular Directives - Should be paired with matching controllers-->
+  <script src="components/photographer-matchmaker/photographer-matchmaker.controller.js"></script>
+  <script src="components/photographer-matchmaker/photographer-matchmaker.directive.js"></script>
 
   <!--Angular Material To Make Things Look Nice-->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.1.3/angular-material.min.css" />

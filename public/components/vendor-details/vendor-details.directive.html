@@ -16,6 +16,13 @@
                     <input type="number" ng-model="vm.vendor.details.travel_distance">
                 </md-input-container>
                 <div>
+                    <p>Stripe allows you to accept credit card payments through FairlyWed. Clicking this button will take you
+                        to Stripe to set up your account.</p>
+                    <md-button class="md-raised" ng-click="vm.connectStripeAccount()">
+                        Set up Account on Stripe
+                    </md-button>
+                </div>
+                <div>
                     <md-button class="md-raised" ng-click="vm.updateDetails(vm.vendor.details)">
                         Save Business Details for {{vm.vendor.details.name}}
                     </md-button>
@@ -49,7 +56,6 @@
                 </div>
             </div>
         </form>
-
         <span ng-show="vm.vendor.subvendorList.length > 0">
             <md-tabs class="main-toolbar">
                 <md-tab label="{{subvendor.name}}" ui-sref=".subvendor.details({subvendorId: subvendor.id})" md-active="vm.isCurrentSubvendor(subvendor.id)" ng-repeat="subvendor in vm.vendor.subvendorList"></md-tab>

@@ -6,5 +6,5 @@
         latitude: vm.params.latitude, 
         date: vm.params.date
         })">
-    {{photographer.name}}<span flex></span>{{photographer.price | currency:"$":0}}
+    {{photographer.name}}<span flex="90"></span>{{photographer.price | currency:"$":0}}<span flex="10"></span>{{vm.formatRating(photographer.rating)}}
 </md-button>

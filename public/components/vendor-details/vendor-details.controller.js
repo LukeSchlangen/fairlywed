@@ -1,4 +1,4 @@
-app.controller("VendorDetailsController", function (VendorDetailsFactory, UserDataFactory, $stateParams, $scope) {
+app.controller("VendorDetailsController", function (VendorDetailsFactory, UserDataFactory, $stateParams, $scope, StripeConnectFactory) {
     var self = this;
 
     VendorDetailsFactory.getDetails();
@@ -7,6 +7,10 @@ app.controller("VendorDetailsController", function (VendorDetailsFactory, UserDa
     self.vendor = VendorDetailsFactory.vendor;
     self.userData = UserDataFactory.userData;
     self.showAddNewSubvendorForm = false;
+
+    self.connectStripeAccount = StripeConnectFactory.connectStripeAccount;
+
+    VendorDetailsFactory.stripeAuthorizationCheck();
 
     self.updateDetails = function (vendorDetailsToSave) {
         VendorDetailsFactory.updateDetails(vendorDetailsToSave);
@@ -33,7 +37,7 @@ app.controller("VendorDetailsController", function (VendorDetailsFactory, UserDa
         self.showAddNewSubvendorForm = false;
     }
 
-    self.isCurrentSubvendor = function(subvendorIdToCheck) {
+    self.isCurrentSubvendor = function (subvendorIdToCheck) {
         return $stateParams.subvendorId == subvendorIdToCheck;
     }
 });

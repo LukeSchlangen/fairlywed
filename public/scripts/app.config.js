@@ -1,4 +1,6 @@
-app.config(function ($stateProvider, $urlRouterProvider, $mdThemingProvider) {
+app.config(function ($stateProvider, $urlRouterProvider, $mdThemingProvider, StripeCheckoutProvider) {
+
+    StripeCheckoutProvider.defaults(stripeConfig);
 
     $urlRouterProvider.otherwise(function ($injector) {
 
@@ -62,7 +64,7 @@ app.config(function ($stateProvider, $urlRouterProvider, $mdThemingProvider) {
             templateUrl: 'views/account/vendor.html'
         })
         .state('account.vendor.details', {
-            url: '/details/:vendorId',
+            url: '/details/:vendorId?state&scope&code',
             templateUrl: 'views/account/vendor-details.html',
             onEnter: function ($state, $stateParams) {
                 if (!$stateParams.vendorId) {
@@ -79,7 +81,7 @@ app.config(function ($stateProvider, $urlRouterProvider, $mdThemingProvider) {
             templateUrl: 'views/account/subvendor-details/subvendor-details.html',
             onEnter: function ($state, $stateParams) {
                 if (!$stateParams.subvendorId) {
-                    $state.transitionTo('account.vendor.details', {vendorId: $stateParams.vendorId});
+                    $state.transitionTo('account.vendor.details', { vendorId: $stateParams.vendorId });
                 }
             }
         })
@@ -98,6 +100,10 @@ app.config(function ($stateProvider, $urlRouterProvider, $mdThemingProvider) {
         .state('account.vendor.details.subvendor.details.packages', {
             url: '/packages',
             templateUrl: 'views/account/subvendor-details/packages.html'
+        })
+        .state('matchmaker', {
+            url: '/matchmaker',
+            templateUrl: 'views/matchmaker.html'
         })
         .state('404', {
             template: 'That is a 404'
@@ -143,5 +149,5 @@ app.config(function ($stateProvider, $urlRouterProvider, $mdThemingProvider) {
     $mdThemingProvider.theme('default')
         .primaryPalette('black')
         .accentPalette('black')
-        // .backgroundPalette('white');
+    // .backgroundPalette('white');
 });
