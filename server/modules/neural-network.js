@@ -8,6 +8,55 @@ var Neuron = synaptic.Neuron,
 
 var neuralNetwork = null;
 
+function orderBy(likedImages) {
+    var flattenLikedImages = [].concat.apply([], likedImages.liked_images_final);
+    // max is indexed starting at 1
+    var finalLikedImages = new Array(neuralNetwork.layers.input.size).fill(.5);
+    flattenLikedImages.forEach((image) => {
+        // Once again these id's start at index 1
+        finalLikedImages[image.subvendor_images_id - 1] = image.liked ? 1 : 0;
+    });
+    var networkOrder = neuralNetwork.activate(finalLikedImages);
+    var orderBy = `ORDER BY
+        CASE ${networkOrder.map((order, index) => {
+            return `WHEN(
+            subvendors.id  = ${index + 1})
+        THEN -${order}`
+        })}
+        ELSE 0
+        END`;
+    return orderBy;
+
+}
+
+function getLikedImages(userId) {
+    pool.connect(function (err, client, done) {
+        if (err) {
+            console.log('Error connecting to database', err);
+        } else {
+            client.query(` with joined_matchmaker as (
+                select user_id, jsonb_agg(jsonb_build_object(
+                        'liked', liked, 
+                        'subvendor_images_id', subvendor_images_id 
+                    )) as liked_images from matchmaker_liked_photos join matchmaker_run on matchmaker_run_id = matchmaker_run.id where user_id=$1
+                    GROUP BY matchmaker_run.id, prior_run_id, user_id)
+                select user_id, jsonb_agg(liked_images) as liked_images_final
+                from joined_matchmaker group by user_id;`,
+                [userId],
+                function (err, likedImages) {
+                    done();
+                    if (err) {
+                        console.log('Error getting training data SQL query task', err);
+                        //res.sendStatus(500);
+                    } else {
+                        //res.send(images.rows)
+                        orderBy(likedImages)
+                    }
+                });
+        }
+    });
+}
+
 function getTrainingData(max) {
     pool.connect(function (err, client, done) {
         if (err) {
@@ -35,8 +84,8 @@ function getTrainingData(max) {
         }
     });
 }
-function getTotalNumberOfImages(){
-      pool.connect(function (err, client, done) {
+function getTotalNumberOfImages() {
+    pool.connect(function (err, client, done) {
         if (err) {
             console.log('Error connecting to database', err);
         } else {
@@ -52,7 +101,7 @@ function getTotalNumberOfImages(){
                     }
                 });
         }
-      });
+    });
 }
 
 function Perceptron(input, hidden, output) {
@@ -80,18 +129,18 @@ Perceptron.prototype = new Network();
 Perceptron.prototype.constructor = Perceptron;
 
 function runTrainingData(trainingData, max) {
-    var finalTrainingSet =  trainingData.map((row) =>{
+    var finalTrainingSet = trainingData.map((row) => {
         var flattenPriorLikedImages = [].concat.apply([], row.prior_liked_images);
         // max is indexed starting at 1
         var finalPrior = new Array(max - 1).fill(.5);
-        flattenPriorLikedImages.forEach((priorImage)=>{
+        flattenPriorLikedImages.forEach((priorImage) => {
             // Once again these id's start at index 1
-            finalPrior[priorImage.subvendor_images_id -1] = priorImage.liked ? 1 : 0;
+            finalPrior[priorImage.subvendor_images_id - 1] = priorImage.liked ? 1 : 0;
         });
         var finalAfter = new Array(max - 1).fill(0);
-        row.liked_images.forEach((afterImage)=>{
+        row.liked_images.forEach((afterImage) => {
             // Once again these id's start at index 1
-            finalAfter[afterImage.subvendor_images_id -1] = afterImage.liked ? 1 : 0;
+            finalAfter[afterImage.subvendor_images_id - 1] = afterImage.liked ? 1 : 0;
         });
         return {
             input: finalPrior,
@@ -99,7 +148,7 @@ function runTrainingData(trainingData, max) {
         }
     });
 
-    neuralNetwork = new Perceptron(max-1, Math.ceil(max*.75), max-1);
+    neuralNetwork = new Perceptron(max - 1, Math.ceil(max * .75), max - 1);
     var trainer = new Trainer(neuralNetwork);
     var trainingOutput = trainer.train(finalTrainingSet);
     console.log(trainingOutput);
@@ -107,8 +156,8 @@ function runTrainingData(trainingData, max) {
 
 
 var neuralNetwork = {
-    orderBy: null,
-    reccommendedPhotographers: null,
+    orderBy: getLikedImages,
+    recommendedPhotographers: null,
     train: getTotalNumberOfImages,
 }
 

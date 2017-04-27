@@ -5,8 +5,8 @@ var vendorSearch = require('../modules/vendor-search')
 var simpleRanker = require('../modules/simple-ranker')
 
 router.get('/', function (req, res) {
-    var userId = req.decodedToken.userSQLId;
-  simpleRanker.reccommendedPhotographers(req, res, userId, null, vendorSearch);
+  var userId = req.decodedToken.userSQLId;
+  simpleRanker.recommendedPhotographers(req, res, userId, null, vendorSearch);
 });
 
 router.get('/subvendorProfile', function (req, res) {

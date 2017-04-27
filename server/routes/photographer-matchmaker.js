@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var pool = require('../modules/pg-pool');
-var neuralNetwork = require('../modules/neural-network');
+// var neuralNetwork = require('../modules/neural-network');
 var simpleRanker = require('../modules/simple-ranker');
 var vendorSearch = require('../modules/vendor-search');
 
@@ -42,11 +42,11 @@ router.get('/', function (req, res) {
         });
     }
 });
-
-router.post('/runTrainer', function (req, res) {
-    neuralNetwork.train();
-    res.send(200)
-})
+// // change this
+// router.get('/runTrainer', function (req, res) {
+//     neuralNetwork.train();
+//     res.send(200)
+// })
 
 function saveLikes(req, res, photos, userId, cb) {
     var likes = photos.map((photo) => photo.liked);
@@ -57,7 +57,7 @@ function saveLikes(req, res, photos, userId, cb) {
             res.sendStatus(500);
         } else {
             client.query('WITH new_matchmaker_run_id AS ( INSERT INTO matchmaker_run (user_id, prior_run_id) ' +
-                'VALUES ($1, (SELECT id FROM matchmaker_run ORDER BY id DESC LIMIT 1)) RETURNING id) ' +
+                'VALUES ($1, (SELECT id FROM matchmaker_run where user_id=$1 ORDER BY id DESC LIMIT 1)) RETURNING id) ' +
                 'INSERT INTO matchmaker_liked_photos (liked, subvendor_images_id, matchmaker_run_id)' +
                 'VALUES (unnest($2::bool[]), UNNEST($3::int[]), (SELECT id FROM new_matchmaker_run_id));',
                 [userId, likes, ids],
@@ -80,14 +80,14 @@ function getRandomImages(res) {
             console.log('Error connecting to database', err);
             res.sendStatus(500);
         } else {
-            client.query('SELECT * FROM subvendor_images WHERE is_public=true AND is_active=true ORDER BY RANDOM() LIMIT 4',
+            client.query('SELECT * FROM subvendor_images WHERE is_public=true AND is_active=true ORDER BY RANDOM() LIMIT 2',
                 function (err, randomImages) {
                     done();
                     if (err) {
                         console.log('Error matchmaker_run SELECT RANDOM SQL query task', err);
                         res.sendStatus(500);
                     } else {
-                        res.send({images: randomImages.rows})
+                        res.send({ images: randomImages.rows })
                     }
                 });
         }
@@ -106,7 +106,7 @@ function getImagesWithUserId(req, res, userId) {
                 select subvendor_images_id  from matchmaker_liked_photos join matchmaker_run on matchmaker_run_id = matchmaker_run.id where matchmaker_run.user_id = $1
                 ) as joined_matchmaker on subvendor_images.id=joined_matchmaker.subvendor_images_id 
                 WHERE is_public=true AND is_active=true and joined_matchmaker.subvendor_images_id is null
-                ORDER BY $2 limit 4;`,
+                ORDER BY $2 limit 2;`,
                 [userId, orderBy],
                 function (err, images) {
                     done();
@@ -114,7 +114,7 @@ function getImagesWithUserId(req, res, userId) {
                         console.log('Error matchmaker_run SELECT RANDOM SQL query task', err);
                         res.sendStatus(500);
                     } else {
-                        simpleRanker.reccommendedPhotographers(req, res, userId, images.rows, vendorSearch);
+                        simpleRanker.recommendedPhotographers(req, res, userId, images.rows, vendorSearch);
                     }
                 });
         }
