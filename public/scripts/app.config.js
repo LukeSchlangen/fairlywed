@@ -101,10 +101,6 @@ app.config(function ($stateProvider, $urlRouterProvider, $mdThemingProvider, Str
             url: '/packages',
             templateUrl: 'views/account/subvendor-details/packages.html'
         })
-        .state('matchmaker', {
-            url: '/matchmaker',
-            templateUrl: 'views/matchmaker.html'
-        })
         .state('404', {
             template: 'That is a 404'
         });
