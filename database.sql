@@ -239,6 +239,20 @@ END LOOP;
 END
 $do$;
 
+
+-- ALTERNATIVE WITHOUT MOCK DATA
+-- DO
+-- $do$
+-- BEGIN 
+-- FOR i IN -100..400 LOOP
+-- 	WITH new_calendar_date_id AS (
+-- 		INSERT INTO calendar_dates (day) 
+-- 		VALUES ((CURRENT_DATE) + i) 
+-- 		RETURNING id;
+-- END LOOP;
+-- END
+-- $do$;
+
 -----------------------------------------------------------------------------------
 
 ------------- SET UP THAT VARIES FOR EACH ENVIRONMENT AND DEVELOPER ---------------
