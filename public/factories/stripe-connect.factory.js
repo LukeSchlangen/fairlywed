@@ -1,5 +1,8 @@
-app.factory("StripeConnectFactory", function ($http, $stateParams, $window) {
-    function connectStripeAccount() {
+app.factory("StripeConnectFactory", function ($http, $stateParams) {
+
+    var connectToStripeLink = { url: '' };
+
+    function getConnectStripeAccountUrl() {
         $http({
             method: 'GET',
             url: '/stripeConnect/getConnectUrl',
@@ -8,7 +11,7 @@ app.factory("StripeConnectFactory", function ($http, $stateParams, $window) {
             }
         }).then(function (response) {
             console.log('Connecting Stripe Account');
-            $window.open(response.data.stripeUrl, '_blank');
+            connectToStripeLink.url = response.data.stripeUrl;
         }).catch(function (err) {
             console.log('error retreiving stripe url', err);
         });
@@ -36,8 +39,9 @@ app.factory("StripeConnectFactory", function ($http, $stateParams, $window) {
     }
 
     return {
-        connectStripeAccount: connectStripeAccount,
-        authorizeStripeAccount: authorizeStripeAccount
+        getConnectStripeAccountUrl: getConnectStripeAccountUrl,
+        authorizeStripeAccount: authorizeStripeAccount,
+        connectToStripeLink: connectToStripeLink
     };
 });
 
