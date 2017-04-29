@@ -11,48 +11,31 @@ var tokenDecoder = function (req, res, next) {
       req.decodedToken = decodedToken;
       pool.connect(function (err, client, done) {
         var firebaseUserId = req.decodedToken.user_id || req.decodedToken.uid;
-        client.query('SELECT id FROM users WHERE firebase_user_id=$1', [firebaseUserId], function (err, userSQLIdResult) {
-          done();
-          if (err) {
-            console.log('Error completing user id query task', err);
-            res.sendStatus(500);
-          } else {
-            pool.connect(function (err, client, done) {
-              if (userSQLIdResult.rows.length === 0) {
-                // If the user is not in the database, this adds them to the database
-                var userEmail = req.decodedToken.email;
-                var userName = req.decodedToken.name;
-                var authenticationProvider = req.decodedToken.firebase.sign_in_provider;
+        // If the user is not in the database, this adds them to the database
+        var userEmail = req.decodedToken.email;
+        var userName = req.decodedToken.name;
+        var authenticationProvider = req.decodedToken.firebase.sign_in_provider;
 
-                if (authenticationProvider == "anonymous") {
-                  userEmail = "anonymous";
-                  userName = "anonymous";
-                }
-
-                client.query('INSERT INTO users (name, email, firebase_user_id, authentication_provider) VALUES ($1, $2, $3, $4) RETURNING id',
-                  [userName, userEmail, firebaseUserId, authenticationProvider],
-                  function (err, newUserSQLIdResult) {
-                    if (err) {
-                      console.log('Error completing new user insert query task', err);
-                      res.sendStatus(500);
-                    } else {
-                      // this adds the user's id from the database to the request to simplify future database queries
-                      req.decodedToken.userSQLId = newUserSQLIdResult.rows[0].id;
-                      logger.write(req.decodedToken.userSQLId, "New user created");
-                      next();
-                    }
-                  });
-              } else {
-                // this else is for users that already exist. This should be the most common path
-                // this adds the user's id from the database to the request to simplify future database queries
-                req.decodedToken.userSQLId = userSQLIdResult.rows[0].id;
-                logger.write(req.decodedToken.userSQLId, "Logged in user interaction");
-                next();
-              }
-              done();
-            });
-          }
-        });
+        if (authenticationProvider == "anonymous") {
+          userEmail = "anonymous";
+          userName = "anonymous";
+        }
+        client.query(`INSERT INTO users (name, email, firebase_user_id, authentication_provider) 
+        VALUES ($1, $2, $3, $4) 
+        ON CONFLICT(firebase_user_id) DO UPDATE SET firebase_user_id=EXCLUDED.firebase_user_id RETURNING id;`,
+          [userName, userEmail, firebaseUserId, authenticationProvider], 
+          function (err, userSQLIdResult) {
+            done();
+            if (err) {
+              console.log('Error completing user id query task', err);
+              res.sendStatus(500);
+            } else {
+              // this adds the user's id from the database to the request to simplify future database queries
+              req.decodedToken.userSQLId = userSQLIdResult.rows[0].id;
+              logger.write(req.decodedToken.userSQLId, "User http interaction");
+              next();
+            }
+          });
       });
     })
       .catch(function (error) {
@@ -71,7 +54,6 @@ var tokenDecoder = function (req, res, next) {
 
 var noAnonymousUsers = function (req, res, next) {
   var authenticationProvider = req.decodedToken.provider_id;
-
   if (authenticationProvider == "anonymous") {
     res.status(403).send('Must be logged in to see private user data.')
   } else {
