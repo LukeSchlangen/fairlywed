@@ -8,7 +8,9 @@ app.controller("VendorDetailsController", function (VendorDetailsFactory, UserDa
     self.userData = UserDataFactory.userData;
     self.showAddNewSubvendorForm = false;
 
-    self.connectStripeAccount = StripeConnectFactory.connectStripeAccount;
+    StripeConnectFactory.getConnectStripeAccountUrl();
+
+    self.connectToStripeLink = StripeConnectFactory.connectToStripeLink;
 
     VendorDetailsFactory.stripeAuthorizationCheck();
 

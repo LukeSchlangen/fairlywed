@@ -100,7 +100,8 @@ router.post('/authorizeStripeAccount', function (req, res) {
                                                 });
                                         });
                                     } else {
-                                        console.log('Stripe livemode did not match environment. Environment is ', env, ' and livemode is ', stripeUserAuthenticationCredentials.livemode);
+                                        console.error('Stripe livemode did not match environment. Environment is ', env, ' and livemode is ', stripeUserAuthenticationCredentials.livemode);
+                                        res.sendStatus(403);
                                     }
                                 }
                             }
