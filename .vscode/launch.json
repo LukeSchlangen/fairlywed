@@ -18,6 +18,7 @@
             "request": "launch",
             "name": "Launch Program",
             "program": "${workspaceRoot}/server/app.js",
+            "preLaunchTask": "default",
             "cwd": "${workspaceRoot}"
         },
         {

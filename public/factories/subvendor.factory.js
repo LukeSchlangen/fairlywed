@@ -27,12 +27,13 @@ app.factory("SubvendorFactory", function ($http, AuthFactory, $stateParams, Vend
         });
     }
 
-    function getAvailabilityList() {
-        $http({
+    function getAvailabilityList(selectedDate) {
+        return $http({
             method: 'GET',
             url: '/subvendorDetailsData/availability',
             headers: {
-                subvendor_id: $stateParams.subvendorId
+                subvendor_id: $stateParams.subvendorId,
+                selected_date: selectedDate
             }
         }).then(function (response) {
             console.log('subvendor details factory returned: ', response.data);
@@ -56,9 +57,9 @@ app.factory("SubvendorFactory", function ($http, AuthFactory, $stateParams, Vend
             // Remove deleted images from imagesList that are not in the new response
             for (var i = subvendor.imagesList.length - 1; i >= 0; i--) {
                 var imageListItem = subvendor.imagesList[i];
-                if(!response.data.some(function(responseItem) {
+                if (!response.data.some(function (responseItem) {
                     return imageListItem.id == responseItem.id;
-                })){
+                })) {
                     subvendor.imagesList.splice(i, 1);
                 }
             }
@@ -71,8 +72,8 @@ app.factory("SubvendorFactory", function ($http, AuthFactory, $stateParams, Vend
             });
 
             //Find values that are in result2 but not in result1
-            var imagesInSubvendorImageListButNotInResponse = subvendor.imagesList.filter(function(obj) {
-                return !response.data.some(function(obj2) {
+            var imagesInSubvendorImageListButNotInResponse = subvendor.imagesList.filter(function (obj) {
+                return !response.data.some(function (obj2) {
                     return obj.id == obj2.id;
                 });
             });
@@ -118,7 +119,7 @@ app.factory("SubvendorFactory", function ($http, AuthFactory, $stateParams, Vend
         });
     }
 
-    function updateAvailability(availabilityToSave) {
+    function updateAvailability(availabilityToSave, updateCalendar) {
         $http({
             method: 'POST',
             url: '/subvendorDetailsData/upsertAvailability',
@@ -128,7 +129,9 @@ app.factory("SubvendorFactory", function ($http, AuthFactory, $stateParams, Vend
             data: availabilityToSave
         }).then(function (response) {
             console.log('subvendor details controller returned: ', response.data);
-            getAvailabilityList();
+            getAvailabilityList(availabilityToSave.day).then(function () {
+                updateCalendar();
+            });
         }).catch(function (err) {
             console.error('Error retreiving private user data: ', err);
         });

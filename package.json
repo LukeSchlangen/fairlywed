@@ -2,6 +2,9 @@
   "name": "fairlywed",
   "version": "1.0.0",
   "description": "",
+  "engines": {
+    "node": "7.9.0"
+  },
   "main": "index.js",
   "watch": {
     "start": "{public,server}/*.js"
