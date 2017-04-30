@@ -1,9 +1,10 @@
 var pool = require('../modules/pg-pool');
 
-function vendorSearch(req, res, orderBy, images, ratings, minRating) {
-    var searchObject = JSON.parse(req.query.search);
-    pool.connect(function (err, client, done) {
-        client.query(
+async function vendorSearch(searchObject, orderBy, ratings, minRating) {
+    try {
+
+        const client = await pool.connect();
+        const vendorQueryResult = await client.query(
             'SELECT COALESCE(subvendors.name, vendors.name) AS name, ' +
             'subvendors.id AS id, ' +
             'packages.name AS package, ' +
@@ -22,24 +23,22 @@ function vendorSearch(req, res, orderBy, images, ratings, minRating) {
             '	)) < (SELECT COALESCE(subvendors.travel_distance, vendors.travel_distance)) ' +
             'AND subvendor_availability.date_id = (SELECT id FROM calendar_dates WHERE day=$5) ' +
             (orderBy || '') + ' LIMIT 10 ',
-            [searchObject.vendorType, searchObject.package, searchObject.longitude, searchObject.latitude, searchObject.date],
-            function (err, vendorQueryResult) {
-                done();
-                if (err) {
-                    console.log('Error user data root GET SQL query task', err);
-                    res.sendStatus(500);
-                } else {
-                    // clean this up
-                    const subvendorsWithRatings = vendorQueryResult.rows.map((row) => {
-                        const ratingObject = ratings.filter(rating => rating.subvendor_id === row.id)[0]
-                        row.rating = ratingObject ? ratingObject.rating : minRating;
-                        return row;
-                    })
-                    var returnObject = images ? { images: images, subvendor: subvendorsWithRatings } : subvendorsWithRatings;
-                    res.send(returnObject);
-                }
-            });
-    });
+            [searchObject.vendorType, searchObject.package, searchObject.longitude, searchObject.latitude, searchObject.date])
+
+        client.release();
+
+        // clean this up
+        const subvendorsWithRatings = vendorQueryResult.rows.map((row) => {
+            const ratingObject = ratings.filter(rating => rating.subvendor_id === row.id)[0]
+            row.rating = ratingObject ? ratingObject.rating : minRating;
+            return row;
+        })
+
+        return subvendorsWithRatings;
+    } catch (e) {
+        console.log('Error user data root GET SQL query task', e);
+        throw e;
+    }
 }
 
 module.exports = vendorSearch;
