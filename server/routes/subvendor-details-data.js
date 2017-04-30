@@ -70,22 +70,23 @@ router.get('/packages', function (req, res) {
 router.get('/availability', function (req, res) {
     var userId = req.decodedToken.userSQLId;
     var subvendorId = req.headers.subvendor_id;
+    var selectedDate = pgFormatDate(req.headers.selected_date);
     pool.connect(function (err, client, done) {
         if (err) {
             console.log('Error connecting to database', err);
             res.sendStatus(500);
         } else {
-            client.query('SELECT subvendor_availability.id, day, status ' +
-                'FROM subvendor_availability ' +
-                'JOIN availability ON availability.id=subvendor_availability.availability_id AND subvendor_id =( ' +
-                '	SELECT subvendors.id ' +
-                '	FROM users_vendors  ' +
-                '	JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id ' +
-                '	JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=$2) ' +
-                'RIGHT OUTER JOIN calendar_dates ON calendar_dates.id=subvendor_availability.date_id ' +
-                'WHERE day >= (SELECT current_date - cast(extract(dow from current_date) as int)) AND day < (SELECT current_date - cast(extract(dow from current_date) as int)) + 21 ' +
-                'ORDER BY day;',
-                [userId, subvendorId],
+            client.query(`SELECT subvendor_availability.id, day, status  
+                FROM subvendor_availability  
+                JOIN availability ON availability.id=subvendor_availability.availability_id AND subvendor_id =(  
+                	SELECT subvendors.id  
+                	FROM users_vendors   
+                	JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id  
+                	JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=$2)  
+                RIGHT OUTER JOIN calendar_dates ON calendar_dates.id=subvendor_availability.date_id  
+                WHERE day >= (SELECT date_trunc('month', coalesce($3, current_date)::date)::date - cast(extract(dow from date_trunc('month', coalesce($3, current_date)::date)::date) as int)) AND day < (SELECT date_trunc('month', coalesce($3, current_date)::date)::date - cast(extract(dow from date_trunc('month', coalesce($3, current_date)::date)::date) as int)) + 42  
+                ORDER BY day;`,
+                [userId, subvendorId, selectedDate],
                 function (err, subvendorQueryResult) {
                     done();
                     if (err) {
@@ -153,7 +154,7 @@ router.post('/', function (req, res) {
                         console.log('Error vendor data INSERT SQL query task', err);
                         res.sendStatus(500);
                     } else {
-                        res.send({vendorId: newSubvendorResults.rows[0].parent_vendor_id, newSubvendorId: newSubvendorResults.rows[0].id});
+                        res.send({ vendorId: newSubvendorResults.rows[0].parent_vendor_id, newSubvendorId: newSubvendorResults.rows[0].id });
                     }
                 });
         }
@@ -335,5 +336,19 @@ router.put('/updateImage', function (req, res) {
         }
     });
 });
+
+function pgFormatDate(date) {
+    /* Via http://stackoverflow.com/questions/3605214/javascript-add-leading-zeroes-to-date */
+    function zeroPad(d) {
+        return ("0" + d).slice(-2)
+    }
+
+    if (date) {
+        var parsed = new Date(date)
+        return [parsed.getUTCFullYear(), zeroPad(parsed.getMonth() + 1), zeroPad(parsed.getDate())].join("-");
+    } else {
+        return null;
+    }
+}
 
 module.exports = router;

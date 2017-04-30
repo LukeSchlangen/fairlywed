@@ -3,7 +3,7 @@ app.controller("SubvendorAvailabilityDetailsController", function (SubvendorFact
 
     self.subvendor = SubvendorFactory.subvendor;
 
-    SubvendorFactory.getAvailabilityList();
+    SubvendorFactory.getAvailabilityList(new Date());
 
     self.isSaturday = function (dayToCheck) {
         dayToCheck = new Date(dayToCheck);
@@ -46,12 +46,24 @@ app.controller("SubvendorAvailabilityDetailsController", function (SubvendorFact
         self.msg.text = "You clicked " + $filter("date")(date, "MMM d, y h:mm:ss a Z");
     };
 
-    self.prevMonth = function (data) {
-        self.msg.text = "You clicked (prev) month " + data.month + ", " + data.year;
+    self.prevMonth = function (data, updateCalendar) {
+        self.msg.text = "You clicked (next) month " + data.month + ", " + data.year;
+
+        var firstOfMonth = new Date(data.year, data.month - 1, 1);
+
+        SubvendorFactory.getAvailabilityList(firstOfMonth).then(function () {
+            updateCalendar();
+        });
     };
 
-    self.nextMonth = function (data) {
+    self.nextMonth = function (data, updateCalendar) {
         self.msg.text = "You clicked (next) month " + data.month + ", " + data.year;
+
+        var firstOfMonth = new Date(data.year, data.month - 1, 1);
+
+        SubvendorFactory.getAvailabilityList(firstOfMonth).then(function () {
+            updateCalendar();
+        });
     };
 
     self.tooltips = true;
@@ -59,8 +71,9 @@ app.controller("SubvendorAvailabilityDetailsController", function (SubvendorFact
 
         // You would inject any HTML you wanted for
         // that particular date here.
-        console.log(date);
-        return self.msg.text;
+        // console.log(date);
+        // This is where to check each date and update available or unavailable based on result
+        return '<p>' + self.msg.text + '</p>';
 
         //     // You could also use an $http function directly.
         //     return $http.get("/some/external/api");

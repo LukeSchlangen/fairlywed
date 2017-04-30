@@ -287,8 +287,8 @@ angular.module("materialCalendar").directive("calendarMd", ["$compile", "$parse"
                 bootstrap();
             });
 
-            var handleCb = function (cb, data) {
-                (cb || angular.noop)(data);
+            var handleCb = function (cb, data, setData) {
+                (cb || angular.noop)(data, setData || angular.noop);
             };
 
             var dateFind = function (arr, date) {
@@ -322,8 +322,7 @@ angular.module("materialCalendar").directive("calendarMd", ["$compile", "$parse"
                     year: $scope.calendar.year,
                     month: $scope.calendar.month + 1
                 };
-                handleCb($scope.onPrevMonth, data);
-                setData();
+                handleCb($scope.onPrevMonth, data, setData);
             };
 
             $scope.next = function () {
@@ -332,8 +331,7 @@ angular.module("materialCalendar").directive("calendarMd", ["$compile", "$parse"
                     year: $scope.calendar.year,
                     month: $scope.calendar.month + 1
                 };
-                handleCb($scope.onNextMonth, data);
-                setData();
+                handleCb($scope.onNextMonth, data, setData);
             };
 
             $scope.handleDayClick = function (date) {

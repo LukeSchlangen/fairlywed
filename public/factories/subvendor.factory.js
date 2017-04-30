@@ -7,7 +7,7 @@ app.factory("SubvendorFactory", function ($http, AuthFactory, $stateParams, Vend
     function getAllLists() {
         getDetails();
         getPackagesList();
-        getAvailabilityList();
+        // getAvailabilityList();
         getImagesList();
     }
 
@@ -27,12 +27,13 @@ app.factory("SubvendorFactory", function ($http, AuthFactory, $stateParams, Vend
         });
     }
 
-    function getAvailabilityList() {
-        $http({
+    function getAvailabilityList(selectedDate) {
+        return $http({
             method: 'GET',
             url: '/subvendorDetailsData/availability',
             headers: {
-                subvendor_id: $stateParams.subvendorId
+                subvendor_id: $stateParams.subvendorId,
+                selected_date: selectedDate
             }
         }).then(function (response) {
             console.log('subvendor details factory returned: ', response.data);
