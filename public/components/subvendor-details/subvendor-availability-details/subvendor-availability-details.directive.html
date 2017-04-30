@@ -1,18 +1,16 @@
-<div class="availability-calendar">
-    <span ng-repeat="availability in vm.subvendor.availabilityList">
-        <md-button class="md-raised calendar-day" ng-attr-title="{{availability.status || 'unavailable'}}" 
-                ng-click="vm.toggleAvailability(availability)">
-            <div>{{availability.day | date:'EEE'}}</div>
-            <div hide-gt-sm>{{availability.day | date:'MMMM' | limitTo: 3}}</div>
-            <div>{{availability.day | date:'dd'}}</div>
-            <div hide-gt-sm ng-if="availability.status == 'available'">avlbl</div>
-            <div hide-gt-sm ng-if="availability.status == 'unavailable' || availability.status == null">unvbl</div>
-            <div hide-gt-sm ng-if="availability.status == 'booked'">bookd</div>
-            <div hide-xs hide-sm>{{ availability.status || 'unavailable' }}</div>
-        </md-button>
-        <span class="calendar-month" ng-if="vm.isSaturday(availability.day)" hide-sm hide-xs>
-            {{availability.day | date:'MMMM'}}
-            <br>
-        </span>
-    </span>
-</div>
+<calendar-md flex layout layout-fill
+  calendar-direction="vm.direction"
+  on-prev-month="vm.prevMonth"
+  on-next-month="vm.nextMonth"
+  on-day-click="vm.dayClick"
+  title-format="'MMMM y'"
+  ng-model='vm.selectedDate'
+  week-starts-on="vm.firstDayOfWeek"
+  tooltips="vm.tooltips"
+  day-format="vm.dayFormat"
+  day-label-format="'EEE'"
+  day-label-tooltip-format="'EEEE'"
+  day-tooltip-format="'fullDate'"
+  day-content="vm.setDayContent"
+  disable-future-selection="false"
+  initial-data-retrieval="vm.initialDataRetrieval"></calendar-md>
