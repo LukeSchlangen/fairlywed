@@ -17,24 +17,17 @@ router.get('/', async (req, res) => {
                 returnPhoto.liked = returnPhoto.liked || false;
                 return returnPhoto;
             })
-
             // this can be refactored to run at the same time as the other things
-            const likes = await saveLikes(photos, userId)
-
-
-
-            // get Latest info on Pref for user and get images
+            const likes = await saveLikes(photos, userId);
         } else {
             try {
                 const client = await pool.connect();
-
-                const hasDoneMatchmakerBeforeSQL = await client.query('SELECT EXISTS(SELECT 1 FROM matchmaker_run WHERE user_id=$1)',
-                    [userId])
+                const hasDoneMatchmakerBeforeSQL = await client.query('SELECT EXISTS(SELECT 1 FROM matchmaker_run WHERE user_id=$1)', [userId]);
                 client.release();
                 hasDoneMatchmakerBefore = hasDoneMatchmakerBeforeSQL.rows[0].exists;
             } catch (e) {
                 console.log('Error matchmaker_run SELECT SQL query task', e);
-                throw e
+                throw e;
             }
         }
         const getImageFunction = hasDoneMatchmakerBefore ? getImagesWithUserId : getRandomImages;
@@ -42,7 +35,7 @@ router.get('/', async (req, res) => {
 
         res.send({ images: images, subvendor: subvendorsWithRatings });
     } catch (e) {
-        console.log('error in matchmaker', e)
+        console.log('error in matchmaker', e);
         res.sendStatus(500);
     }
 });
@@ -86,7 +79,7 @@ async function getRandomImages() {
     }
 }
 
-async function getImagesWithUserId(req, res, userId) {
+async function getImagesWithUserId(userId) {
     var orderBy = simpleRanker.orderBy(userId);
     const client = await pool.connect();
 
