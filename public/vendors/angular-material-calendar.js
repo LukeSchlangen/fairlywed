@@ -365,9 +365,7 @@ angular.module("materialCalendar").directive("calendarMd", ["$compile", "$parse"
                     $parse($attrs.ngModel).assign($scope.$parent, angular.copy($scope.active));
                 }
 
-                handleCb($scope.onDayClick, angular.copy(date));
-
-                setData();
+                handleCb($scope.onDayClick, angular.copy(date), setData);
 
             };
 
