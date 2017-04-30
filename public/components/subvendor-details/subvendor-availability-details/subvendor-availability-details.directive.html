@@ -1,3 +1,24 @@
+vm.msg: {{vm.msg}}
+
+<calendar-md flex layout layout-fill
+  calendar-direction="vm.direction"
+  on-prev-month="vm.prevMonth"
+  on-next-month="vm.nextMonth"
+  on-day-click="vm.dayClick"
+  title-format="'MMMM y'"
+  ng-model='vm.selectedDate'
+  week-starts-on="vm.firstDayOfWeek"
+  data-start-month="8"
+  data-start-year="2014"
+  tooltips="vm.tooltips"
+  day-format="vm.dayFormat"
+  day-label-format="'EEE'"
+  day-label-tooltip-format="'EEEE'"
+  day-tooltip-format="'fullDate'"
+  day-content="vm.setDayContent"
+  disable-future-selection="false"></calendar-md>
+
+<!--
 <div class="availability-calendar">
     <span ng-repeat="availability in vm.subvendor.availabilityList">
         <md-button class="md-raised calendar-day" ng-attr-title="{{availability.status || 'unavailable'}}" 
@@ -15,4 +36,4 @@
             <br>
         </span>
     </span>
-</div>
+</div>-->
