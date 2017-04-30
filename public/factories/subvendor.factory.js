@@ -7,7 +7,7 @@ app.factory("SubvendorFactory", function ($http, AuthFactory, $stateParams, Vend
     function getAllLists() {
         getDetails();
         getPackagesList();
-        // getAvailabilityList();
+        getAvailabilityList();
         getImagesList();
     }
 

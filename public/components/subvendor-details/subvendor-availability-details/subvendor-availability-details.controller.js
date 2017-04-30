@@ -34,9 +34,6 @@ app.controller("SubvendorAvailabilityDetailsController", function (SubvendorFact
     // To select a single date, make sure the ngModel is not an array.
     self.selectedDate = null;
 
-    // If you want multi-date select, initialize it as an array.
-    self.selectedDate = '';
-
     self.firstDayOfWeek = 0; // First day of the week, 0 for Sunday, 1 for Monday, etc.
     self.setDirection = function (direction) {
         self.direction = direction;
@@ -59,24 +56,12 @@ app.controller("SubvendorAvailabilityDetailsController", function (SubvendorFact
         SubvendorFactory.updateAvailability(availability, updateCalendar);
     };
 
-    self.prevMonth = function (data, updateCalendar) {
+    self.prevMonth = function (data) {
         self.msg.text = "You clicked (next) month " + data.month + ", " + data.year;
-
-        var dayInMonth = new Date(data.year, data.month - 1, 1);
-
-        SubvendorFactory.getAvailabilityList(dayInMonth).then(function () {
-            updateCalendar();
-        });
     };
 
-    self.nextMonth = function (data, updateCalendar) {
+    self.nextMonth = function (data) {
         self.msg.text = "You clicked (next) month " + data.month + ", " + data.year;
-
-        var dayInMonth = new Date(data.year, data.month - 1, 1);
-
-        SubvendorFactory.getAvailabilityList(dayInMonth).then(function () {
-            updateCalendar();
-        });
     };
 
     self.tooltips = true;
