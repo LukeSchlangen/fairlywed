@@ -19,7 +19,7 @@ router.get('/', function (req, res) {
                         var stripeConnectVendorId = stripeConnectVendorIdResult.rows[0].vendor_id;
                     }
                     if (stripeConnectVendorId) {
-                        var redirectUrl = ['http://', req.get('Host'), '/#/account/vendor/details/', stripeConnectVendorId, '?', req.originalUrl.split("?").pop()].join('');
+                        var redirectUrl = [req.protocol, '://', req.get('Host'), '/#/account/vendor/details/', stripeConnectVendorId, '?', req.originalUrl.split("?").pop()].join('');
                         res.redirect(redirectUrl);
                     } else {
                         console.log('There was no vendor id to match the stripe state received');
