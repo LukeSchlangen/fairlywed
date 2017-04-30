@@ -81,6 +81,21 @@ app.controller("SubvendorAvailabilityDetailsController", function (SubvendorFact
 
     self.tooltips = true;
     self.setDayContent = function (date) {
-        return '<p>' + availabilityObjectFromDate(date).status + '</p>';
+
+        var fullStatusText = availabilityObjectFromDate(date).status;
+        var abreviatedStatusText = 'Unvbl';
+
+        if(fullStatusText == 'available') {
+            fullStatusText = 'Available';
+            abreviatedStatusText = 'Avlbl';
+        } else if(fullStatusText == 'booked') {
+            fullStatusText = 'Booked';
+            abreviatedStatusText = 'Bookd';
+        } else {
+            fullStatusText = 'Unavailable';
+        }
+        
+        return '<span hide-gt-md>' + abreviatedStatusText + '</span>' +
+            '<span hide-xs hide-sm hide-md>' + fullStatusText + '</span>';
     };
 });
