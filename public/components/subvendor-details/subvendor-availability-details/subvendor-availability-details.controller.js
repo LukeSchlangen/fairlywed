@@ -24,9 +24,6 @@ app.controller("SubvendorAvailabilityDetailsController", function (SubvendorFact
             && firstDay.getMonth() === secondDay.getMonth();
     }
 
-    self.msg = {};
-    self.msg.text = "This is a message!"
-
     self.dayFormat = "d";
 
     self.initialDataRetrieval = SubvendorFactory.getAvailabilityList;
@@ -41,8 +38,6 @@ app.controller("SubvendorAvailabilityDetailsController", function (SubvendorFact
     };
 
     self.dayClick = function (date, updateCalendar) {
-        self.msg.text = "You clicked " + $filter("date")(date, "MMM d, y h:mm:ss a Z");
-
         var availability = availabilityObjectFromDate(date);
         
         if (availability.status == 'booked') {
@@ -54,14 +49,6 @@ app.controller("SubvendorAvailabilityDetailsController", function (SubvendorFact
         }
 
         SubvendorFactory.updateAvailability(availability, updateCalendar);
-    };
-
-    self.prevMonth = function (data) {
-        self.msg.text = "You clicked (next) month " + data.month + ", " + data.year;
-    };
-
-    self.nextMonth = function (data) {
-        self.msg.text = "You clicked (next) month " + data.month + ", " + data.year;
     };
 
     self.tooltips = true;
