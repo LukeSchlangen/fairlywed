@@ -3,8 +3,6 @@ app.controller("SubvendorAvailabilityDetailsController", function (SubvendorFact
 
     self.subvendor = SubvendorFactory.subvendor;
 
-    SubvendorFactory.getAvailabilityList(new Date());
-
     function availabilityObjectFromDate(date) {
         var javascriptDate = new Date(date);
 
@@ -26,35 +24,12 @@ app.controller("SubvendorAvailabilityDetailsController", function (SubvendorFact
             && firstDay.getMonth() === secondDay.getMonth();
     }
 
-    self.isSaturday = function (dayToCheck) {
-        dayToCheck = new Date(dayToCheck);
-        return dayToCheck.getDay() == 6;
-    }
-
-    // self.toggleAvailability = function (availability) {
-
-    //     SubvendorFactory.subvendor.availabilityList
-
-
-
-    //     if (availability.status == 'booked') {
-    //         alert('This date has already been booked and cannot be made unavailable.')
-    //     } else if (availability.status == 'available') {
-    //         availability.status = 'unavailable';
-    //     } else {
-    //         availability.status = 'available';
-    //     }
-    //     SubvendorFactory.updateAvailability(availability);
-    // }
-
-
-
-
-
     self.msg = {};
     self.msg.text = "This is a message!"
 
     self.dayFormat = "d";
+
+    self.initialDataRetrieval = SubvendorFactory.getAvailabilityList;
 
     // To select a single date, make sure the ngModel is not an array.
     self.selectedDate = null;
@@ -106,22 +81,6 @@ app.controller("SubvendorAvailabilityDetailsController", function (SubvendorFact
 
     self.tooltips = true;
     self.setDayContent = function (date) {
-
-        // You would inject any HTML you wanted for
-        // that particular date here.
-        // console.log(date);
-        // This is where to check each date and update available or unavailable based on result
         return '<p>' + availabilityObjectFromDate(date).status + '</p>';
-
-        //     // You could also use an $http function directly.
-        //     return $http.get("/some/external/api");
-
-        //     // You could also use a promise.
-        //     var deferred = $q.defer();
-        //     $timeout(function() {
-        //         deferred.resolve("<p></p>");
-        //     }, 1000);
-        //     return deferred.promise;
-
     };
 });

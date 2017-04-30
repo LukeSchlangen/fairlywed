@@ -129,7 +129,7 @@ app.factory("SubvendorFactory", function ($http, AuthFactory, $stateParams, Vend
             data: availabilityToSave
         }).then(function (response) {
             console.log('subvendor details controller returned: ', response.data);
-            getAvailabilityList().then(function () {
+            getAvailabilityList(availabilityToSave.day).then(function () {
                 updateCalendar();
             });
         }).catch(function (err) {
