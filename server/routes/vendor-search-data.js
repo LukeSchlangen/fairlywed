@@ -4,9 +4,18 @@ var pool = require('../modules/pg-pool');
 var vendorSearch = require('../modules/vendor-search')
 var simpleRanker = require('../modules/simple-ranker')
 
-router.get('/', function (req, res) {
-  var userId = req.decodedToken.userSQLId;
-  simpleRanker.recommendedPhotographers(req, res, userId, null, vendorSearch);
+router.get('/', async (req, res) => {
+  try {
+    var userId = req.decodedToken.userSQLId;
+    const searchObject = JSON.parse(req.query.search);
+    var recommendedPhotographers = await simpleRanker.recommendedPhotographers(userId);
+    // vendorSearch(req, res, ...recommendedPhotographer
+    const subvendorsWithRatings = await vendorSearch(searchObject, recommendedPhotographers.orderBy, recommendedPhotographers.ratings, recommendedPhotographers.minRating);
+    res.send(subvendorsWithRatings);
+  } catch (e) {
+    console.log('Error in vendor search data', e);
+    res.sendStatus(500);
+  }
 });
 
 router.get('/subvendorProfile', function (req, res) {
