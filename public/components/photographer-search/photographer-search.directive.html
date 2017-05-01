@@ -1,15 +1,18 @@
-<md-input-container class="md-block" flex-gt-sm>
-    <label>Package</label>
-    <md-select ng-model="vm.search.parameters.package" ng-change="vm.updatePhotographersList()">
-        <md-option ng-repeat="package in vm.packages.list" ng-value="{{package.id}}">
-            {{package.name}}
-        </md-option>
-    </md-select>
-</md-input-container>
-<md-input-container>
-    <label>Date</label>
-    <md-datepicker type="date" id="date" name="date" ng-model="vm.search.parameters.date" placeholder="yyyy-MM-dd" ng-change="vm.updatePhotographersList()"
-        required></md-datepicker>
-</md-input-container>
+<div layout="row" flex>
+    <md-input-container class="md-block" flex="60">
+        <label>Package</label>
+        <md-select ng-model="vm.search.parameters.package" ng-change="vm.updatePhotographersList()">
+            <md-option ng-repeat="package in vm.packages.list" ng-value="{{package.id}}">
+                {{package.name}}
+            </md-option>
+        </md-select>
+    </md-input-container>
+    <span flex></span>
+    <md-input-container flex="35">
+        <label>Date</label>
+        <md-datepicker type="date" id="date" name="date" ng-model="vm.search.parameters.date" placeholder="yyyy-MM-dd" ng-change="vm.updatePhotographersList()"
+            required></md-datepicker>
+    </md-input-container>
+</div>
 <address-search-bar location="vm.search.parameters.location" longitude="vm.search.parameters.longitude" latitude="vm.search.parameters.latitude"
     update-list="vm.updatePhotographersList()"></address-search-bar>
