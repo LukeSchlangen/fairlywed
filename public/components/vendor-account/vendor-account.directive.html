@@ -44,7 +44,7 @@
 
                     <span ng-show="vm.vendors.list.length > 0">
                         <md-tabs class="main-toolbar">
-                            <md-tab label="{{vendor.name}}" ui-sref=".details({vendorId: vendor.id})" md-active="vm.isCurrentVendor(vendor.id)" ng-repeat="vendor in vm.vendors.list"></md-tab>
+                            <md-tab label="{{vendor.name}}" ui-sref=".details({vendorId: vendor.id})" md-active-nc="vm.isCurrentVendor(vendor.id)" ng-repeat="vendor in vm.vendors.list"></md-tab>
                         </md-tabs>
                         <md-card>
                             <md-card-content>
