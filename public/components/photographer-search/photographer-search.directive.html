@@ -6,13 +6,9 @@
         </md-option>
     </md-select>
 </md-input-container>
-
+    <div>vm.search.parameters {{vm.search.parameters}}</div>
 <div layout-gt-xs="row">
-    <md-input-container class="md-block" flex-gt-xs>
-        <label>Where is the wedding?</label>
-        <input id="searchTextField" type="text" size="50" placeholder="Address" autocomplete="on" runat="server" ng-init="vm.initialize()"
-            name="location" ng-model="vm.search.parameters.location">
-    </md-input-container>
+    <address-search-bar flex-gt-xs location="vm.search.parameters.location" longitude="vm.search.parameters.longitude" latitude="vm.search.parameters.latitude" update-list="vm.updatePhotographersList()"></address-search-bar>
 
     <md-input-container>
         <label>Date</label>

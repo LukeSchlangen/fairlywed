@@ -1,0 +1,12 @@
+<md-autocomplete md-no-cache="true" md-selected-item="vm.selectedItem" md-search-text-change="vm.search(vm.searchText)" md-selected-item-change="vm.updateCoordinates(vm.selectedItem)"
+    md-search-text="vm.searchText" md-items="item in vm.search(vm.searchText)" md-item-text="item.description" md-min-length="0" placeholder="Type your address">
+    <md-item-template>
+        <span md-highlight-text="vm.searchText" md-highlight-flags="^i">{{item.description}}</span>
+    </md-item-template>
+    <md-not-found>
+        <span  ng-show="vm.searchText.length > 0">No matches found for "{{vm.searchText}}".</span>
+        <span  ng-show="vm.searchText.length == 0">Start typing to find your address.</span>
+    </md-not-found>
+</md-autocomplete>
+
+{{location}} | {{latitude}} | {{longitude}}
