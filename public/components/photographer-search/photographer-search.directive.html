@@ -1,4 +1,3 @@
-<!--<span layout-gt-xs="row">-->
 <md-input-container class="md-block" flex-gt-sm>
     <label>Package</label>
     <md-select ng-model="vm.search.parameters.package" ng-change="vm.updatePhotographersList()">
@@ -12,9 +11,5 @@
     <md-datepicker type="date" id="date" name="date" ng-model="vm.search.parameters.date" placeholder="yyyy-MM-dd" ng-change="vm.updatePhotographersList()"
         required></md-datepicker>
 </md-input-container>
-<!--</span>-->
-<!--<div flex layout="column">-->
-    <div flex></div>
-    <address-search-bar location="vm.search.parameters.location" longitude="vm.search.parameters.longitude"
-        latitude="vm.search.parameters.latitude" update-list="vm.updatePhotographersList()"></address-search-bar>
-<div flex></div>
+<address-search-bar location="vm.search.parameters.location" longitude="vm.search.parameters.longitude" latitude="vm.search.parameters.latitude"
+    update-list="vm.updatePhotographersList()"></address-search-bar>
