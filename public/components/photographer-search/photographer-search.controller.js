@@ -5,19 +5,4 @@ app.controller("PhotographerSearchController", function (PhotographerSearchFacto
     self.updatePhotographersList = PhotographerSearchFactory.updatePhotographersList;
     self.updatePhotographersList(); // adds the parameters back to url on return to view
     PackagesFactory.getPackageList();
-    self.initialize = function () {
-        var input = document.getElementById('searchTextField');
-        var autocomplete = new google.maps.places.Autocomplete(input, {
-            componentRestrictions: { 'country': 'us' }
-        });
-        console.log("Initializing google maps");
-        google.maps.event.addListener(autocomplete, 'place_changed', function () {
-            var place = autocomplete.getPlace();
-            self.search.parameters.latitude = place.geometry.location.lat();
-            self.search.parameters.longitude = place.geometry.location.lng();
-            self.search.parameters.location = place.formatted_address;
-            $scope.$apply();
-            self.updatePhotographersList();
-        });
-    }
 });
