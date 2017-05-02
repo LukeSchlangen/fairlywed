@@ -81,6 +81,7 @@
   <script src="components/photographer-list/photographer-list.controller.js"></script>
   <script src="components/vendor-account/vendor-account.controller.js"></script>
   <script src="components/vendor-details/vendor-details.controller.js"></script>
+  <script src="components/address-search-bar/address-search-bar.controller.js"></script>
 
   <!-- Angular Directives - Should have a matching controller -->
   <script src="components/auth/auth.directive.js"></script>
@@ -88,6 +89,7 @@
   <script src="components/photographer-list/photographer-list.directive.js"></script>
   <script src="components/vendor-account/vendor-account.directive.js"></script>
   <script src="components/vendor-details/vendor-details.directive.js"></script>
+  <script src="components/address-search-bar/address-search-bar.directive.js"></script>
 
   <!-- Photographer Subvendor Details Angular Directives - Should be paired with matching controllers -->
   <script src="components/subvendor-details/subvendor-details.controller.js"></script>
@@ -149,6 +151,10 @@
       /*background-attachment: fixed;*/
       background-position: center center;
       background-size: cover;
+    }
+
+    md-virtual-repeat-container {
+      max-height: 250px !important;
     }
   </style>
 </head>
