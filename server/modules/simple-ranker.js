@@ -26,10 +26,10 @@ async function recommendedPhotographers(userId) {
         })
         var orderBy = photographersWithRating.length === 0 ? '' : `ORDER BY
         CASE ${photographersWithRating.map((photographer) => {
-                return `WHEN(
+                return ` WHEN(
                 subvendors.id  = ${photographer.subvendor_id})
                 THEN -${photographer.rating}`
-            })}
+            }).join(' ')}
         ELSE -${calculateRating(0, 1, total)} 
         END`
 

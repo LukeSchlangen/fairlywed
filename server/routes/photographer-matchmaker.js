@@ -62,6 +62,7 @@ async function saveLikes(photos, userId) {
             'INSERT INTO matchmaker_liked_photos (liked, subvendor_images_id, matchmaker_run_id)' +
             'VALUES (unnest($2::bool[]), UNNEST($3::int[]), (SELECT id FROM new_matchmaker_run_id));',
             [userId, likes, ids])
+        return true;
     } catch (e) {
         console.log('Error matchmaker_run INSERT SQL query task', e);
     }
