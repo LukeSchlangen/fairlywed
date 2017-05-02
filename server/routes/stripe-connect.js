@@ -24,6 +24,8 @@ router.get('/getConnectUrl', async (req, res) => {
     } catch (e) {
         console.log('Error vendor data GET SQL query task', err);
         res.sendStatus(500);
+    } finally {
+        client && client.release && client.release();
     }
 });
 
@@ -90,23 +92,22 @@ router.post('/authorizeStripeAccount', async (req, res) => {
                         console.log('Error adding stripe account to vendor', err);
                         throw e;
                     }
-
                 } else {
-                    client.release();
                     console.error('Stripe livemode did not match environment. Environment is ', env, ' and livemode is ', stripeUserAuthenticationCredentials.livemode);
                     res.sendStatus(403);
                 }
             }
         } else {
-            client.release();
             console.log('There was no vendor id to match the stripe state received');
             res.sendStatus(403);
         }
     } catch (e) {
-        client.release();
         console.log('Error in authorizeStripeAccount', e);
         res.sendStatus(500);
+    } finally {
+        client && client.release && client.release();
     }
+
 });
 
 
