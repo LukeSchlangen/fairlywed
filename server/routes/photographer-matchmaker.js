@@ -93,8 +93,6 @@ async function getImagesWithUserId(userId) {
         [userId, orderBy])
 
     client.release();
-    //I think this can be simultaneous to the images query
-
 
     return images.rows;
 }

@@ -71,7 +71,7 @@ router.post('/', async (req, res) => {
                     throw e;
                 }
             } catch (e) {
-                undoBooking('Error creating stripe charge', booking);
+                await undoBooking('Error creating stripe charge', booking);
                 console.log('Error creating stripe charge', e);
                 try {
                     var success = await client.query(`WITH charge_id_table AS (INSERT INTO stripe_charge_attempts (response_object, was_successful) VALUES ($2, FALSE) RETURNING id)
@@ -97,16 +97,16 @@ router.post('/', async (req, res) => {
 async function undoBooking(reasonForUndo, bookingToUndo) {
     try {
         const client = await pool.connect();
-        client.query(`UPDATE subvendor_availability 
+        const success = await client.query(`UPDATE subvendor_availability 
             SET availability_id=(SELECT id FROM availability WHERE status='available') 
             WHERE id=$1`, [bookingToUndo.subvendor_availability_id]);
         client.release();
+        return success;
         console.log('Booking created than undone due to ', reasonForUndo);
     } catch (e) {
         console.log('UNDO BOOKING FAILED!! Booking created than undone due to ', reasonForUndo, 'but undo failed meaning photographer may have been booked multiple times for the same date.');
-        res.sendStatus(500);
+        throw e;
     }
-    res.sendStatus(200);
 }
 
 module.exports = router;
