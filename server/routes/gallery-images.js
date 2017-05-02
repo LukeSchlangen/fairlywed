@@ -3,70 +3,60 @@ var router = express.Router();
 var pool = require('../modules/pg-pool');
 var bucket = require('../modules/google-storage-bucket');
 
-router.get('/', function (req, res) {
-    var subvendorId = req.headers.subvendor_id;
-    pool.connect(function (err, client, done) {
-        if (err) {
-            console.log('Error connecting to database', err);
-            res.sendStatus(500);
-        } else {
-            client.query('SELECT subvendor_images.id ' +
-                'FROM subvendor_images ' +
-                'WHERE subvendor_id=$1 AND is_public=TRUE AND is_in_gallery=TRUE AND is_active=TRUE;',
-                [subvendorId],
-                function (err, subvendorQueryResult) {
-                    done();
-                    if (err) {
-                        console.log('Error subvendor data GET SQL query task', err);
-                        res.sendStatus(500);
-                    } else {
-                        res.send(subvendorQueryResult.rows);
-                    }
-                });
-        }
-    });
+router.get('/', async (req, res) => {
+    try {
+        var subvendorId = req.headers.subvendor_id;
+        const client = await pool.connect();
+
+        const subvendorQueryResult = await client.query('SELECT subvendor_images.id ' +
+            'FROM subvendor_images ' +
+            'WHERE subvendor_id=$1 AND is_public=TRUE AND is_in_gallery=TRUE AND is_active=TRUE;',
+            [subvendorId]);
+        client.release();
+        res.send(subvendorQueryResult.rows);
+    }
+    catch (e) {
+        console.log('Error subvendor data GET SQL query task', err);
+        res.sendStatus(500);
+    }
 });
 
-router.get('/:imageId', function (req, res) {
-    var imageIdToRetrieve = req.params.imageId;
-    // Select all images with that id where subvendor is one that user has access to
-    pool.connect(function (err, client, done) {
-        client.query('SELECT subvendor_images.* ' +
+router.get('/:imageId', async (req, res) => {
+    try {
+        var imageIdToRetrieve = req.params.imageId;
+        // Select all images with that id where subvendor is one that user has access to
+        const client = await pool.connect();
+        const imageInfoResults = await client.query('SELECT subvendor_images.* ' +
             'FROM subvendor_images ' +
             'WHERE subvendor_images.id=$1 AND is_public=TRUE ' +
             'AND is_in_gallery=TRUE AND is_active=TRUE;',
-            [imageIdToRetrieve], function (err, imageInfoResults) {
-                done();
-                if (err) {
-                    console.log('error retrieving public image info', err)
-                    res.sendStatus(500);
-                } else {
-                    if (imageInfoResults.rows.length === 1) {
-                        var imageInfo = imageInfoResults.rows[0];
-                        var stream = bucket.file(imageInfo.id.toString()).createReadStream();
+            [imageIdToRetrieve]);
+        client.release();
 
-                        res.writeHead(200, { 'Content-Type': imageInfo.mime_type });
+        if (imageInfoResults.rows.length === 1) {
+            var imageInfo = imageInfoResults.rows[0];
+            var stream = bucket.file(imageInfo.id.toString()).createReadStream();
 
-                        stream.on('data', function (data) {
-                            res.write(data);
-                        });
+            res.writeHead(200, { 'Content-Type': imageInfo.mime_type });
 
-                        stream.on('error', function (err) {
-                            console.log('error reading stream', err);
-                        });
-
-                        stream.on('end', function () {
-                            res.end();
-                        });
-                    } else {
-                        res.status(404).send('image not found');
-                    }
-
-                }
+            stream.on('data', function (data) {
+                res.write(data);
             });
-    });
 
+            stream.on('error', function (err) {
+                console.log('error reading stream', err);
+            });
 
+            stream.on('end', function () {
+                res.end();
+            });
+        } else {
+            res.status(404).send('image not found');
+        }
+    } catch (e) {
+        console.log('error retrieving public image info', err)
+        res.sendStatus(500);
+    }
 });
 
 module.exports = router;
