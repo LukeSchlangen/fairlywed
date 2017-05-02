@@ -50,16 +50,16 @@ router.post('/authorizeStripeAccount', async (req, res) => {
         }
         if (stripeConnectVendorId) {
             try {
-            // Make /oauth/token endpoint POST request
-            var body = await request.post({
-                url: 'https://connect.stripe.com/oauth/token',
-                form: {
-                    grant_type: "authorization_code",
-                    client_id: process.env.STRIPE_CLIENT_ID,
-                    code: stripeConnectCode,
-                    client_secret: process.env.STRIPE_SECRET_KEY
-                }
-            });
+                // Make /oauth/token endpoint POST request
+                var body = await request.post({
+                    url: 'https://connect.stripe.com/oauth/token',
+                    form: {
+                        grant_type: "authorization_code",
+                        client_id: process.env.STRIPE_CLIENT_ID,
+                        code: stripeConnectCode,
+                        client_secret: process.env.STRIPE_SECRET_KEY
+                    }
+                });
             } catch (e) {
                 console.log('Error occurred in Stripe request post', e);
                 throw e;
@@ -76,7 +76,7 @@ router.post('/authorizeStripeAccount', async (req, res) => {
                 var env = process.env.NODE_ENV || 'development';
                 if ((env === 'production' && stripeUserAuthenticationCredentials.livemode) || (env === 'development' && !stripeUserAuthenticationCredentials.livemode)) {
                     try {
-                        var success = client.query('WITH stripe_account_id AS ( ' +
+                        var success = await client.query('WITH stripe_account_id AS ( ' +
                             '	INSERT INTO stripe_accounts (creator_user_id, stripe_user_id, stripe_refresh_user_token) ' +
                             '	VALUES ($1, $2, $3) ' +
                             '	RETURNING id ' +
@@ -84,13 +84,13 @@ router.post('/authorizeStripeAccount', async (req, res) => {
                             'UPDATE vendors SET stripe_account_id=(SELECT id FROM stripe_account_id) ' +
                             'WHERE id=$4;',
                             [userId, stripeUserAuthenticationCredentials.stripe_user_id, stripeUserAuthenticationCredentials.refresh_token, stripeConnectVendorId]);
-                            client.release();
-                            res.sendStatus(200);
+                        client.release();
+                        res.sendStatus(200);
                     } catch (e) {
                         console.log('Error adding stripe account to vendor', err);
                         throw e;
                     }
-                                
+
                 } else {
                     client.release();
                     console.error('Stripe livemode did not match environment. Environment is ', env, ' and livemode is ', stripeUserAuthenticationCredentials.livemode);
