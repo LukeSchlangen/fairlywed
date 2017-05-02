@@ -4,7 +4,7 @@
             <md-card>
                 <md-card-content>
                     <div layout="column" layout-align="center center">
-                        <div>To save your results, book a photographer, or become a phtographer, sign in above! To return home, click on </div>
+                        <div>To become a phtographer, sign in above! To return home, click on </div>
                         <div class="brand-font nav-brand" ui-sref="home.photographers">FairlyWed</div>
                         </div>
                 </md-card-content>
@@ -44,7 +44,7 @@
 
                     <span ng-show="vm.vendors.list.length > 0">
                         <md-tabs class="main-toolbar">
-                            <md-tab label="{{vendor.name}}" ui-sref=".details({vendorId: vendor.id})" md-active="vm.isCurrentVendor(vendor.id)" ng-repeat="vendor in vm.vendors.list"></md-tab>
+                            <md-tab label="{{vendor.name}}" ui-sref=".details({vendorId: vendor.id})" md-active-nc="vm.isCurrentVendor(vendor.id)" ng-repeat="vendor in vm.vendors.list"></md-tab>
                         </md-tabs>
                         <md-card>
                             <md-card-content>

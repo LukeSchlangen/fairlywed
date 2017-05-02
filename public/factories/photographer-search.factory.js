@@ -47,6 +47,7 @@ app.factory("PhotographerSearchFactory", function (PackagesFactory, $http, $stat
         console.log('$state is currently:', $state);
         console.log('newStateParameters:', newStateParameters)
         $state.transitionTo($state.current.name, newStateParameters, { notify: false });
+        updateCurrentSubvendorCurrentPackage();
     }
     // --------------------------------------------------------------- //
 

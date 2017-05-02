@@ -16,7 +16,7 @@
                         <label>Notes or Special Requests</label>
                         <input type="text" id="requests" name="requests" ng-model="vm.bookingDetails.requests" >
                     </md-input-container>
-                    <h3>{{vm.currentSubvendor.details.currentPackage.price | currency:"$":0}}</h3>
+                    <h3>{{vm.currentSubvendor.details.currentPackage.price ? (vm.currentSubvendor.details.currentPackage.price | currency:"$":0) : 'This photographer does not offer this package on this day for your location'}}</h3>
                     <md-button class="md-raised" type="submit">Book</button>
                 </form>
             </md-card-content>

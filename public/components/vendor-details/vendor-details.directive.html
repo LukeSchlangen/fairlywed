@@ -58,7 +58,7 @@
         </form>
         <span ng-show="vm.vendor.subvendorList.length > 0">
             <md-tabs class="main-toolbar">
-                <md-tab label="{{subvendor.name}}" ui-sref=".subvendor.details({subvendorId: subvendor.id})" md-active="vm.isCurrentSubvendor(subvendor.id)" ng-repeat="subvendor in vm.vendor.subvendorList"></md-tab>
+                <md-tab label="{{subvendor.name}}" ui-sref=".subvendor.details({subvendorId: subvendor.id})" md-active-nc="vm.isCurrentSubvendor(subvendor.id)" ng-repeat="subvendor in vm.vendor.subvendorList"></md-tab>
             </md-tabs>
 
             <div ui-view></div>
