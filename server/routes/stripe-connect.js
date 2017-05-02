@@ -13,7 +13,7 @@ router.get('/getConnectUrl', async (req, res) => {
             'WHERE users_vendors.user_id=$1 ' + // This line validates that the user is authorized to view this data
             'AND users_vendors.vendor_id=$2',
             [userId, vendorId])
-        var stripeConnectState = stripeConnectStateResult.rows[0] && stripeConnectStateResult.rows[0].stripe_connect_state ? stripeConnectStateResult.rows[0].stripe_connect_state : '';
+        var stripeConnectState = stripeConnectStateResult.rows[0] && (stripeConnectStateResult.rows[0].stripe_connect_state || '');
         var stripeUrl = process.env.STRIPE_AUTHORIZE_URL +
             '?response_type=' + process.env.STRIPE_RESPONSE_TYPE +
             '&client_id=' + process.env.STRIPE_CLIENT_ID +
