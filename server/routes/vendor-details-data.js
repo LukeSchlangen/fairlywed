@@ -17,7 +17,7 @@ router.get('/', async (req, res) => {
 
         res.send(subvendorQueryResult.rows[0]);
     } catch (e) {
-        console.log('Error vendor data GET SQL query task', err);
+        console.log('Error vendor data GET SQL query task', e);
         res.sendStatus(500);
     } finally {
         client && client.release && client.release();
@@ -64,7 +64,7 @@ router.put('/', async (req, res) => {
         client.release();
         res.sendStatus(200);
     } catch (e) {
-        console.log('Error subvendor data UPDATE SQL query task', err);
+        console.log('Error subvendor data UPDATE SQL query task', e);
         res.sendStatus(500);
     }
 });

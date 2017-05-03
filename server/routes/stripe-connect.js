@@ -22,7 +22,7 @@ router.get('/getConnectUrl', async (req, res) => {
             '&state=' + stripeConnectState;
         res.send({ stripeUrl: stripeUrl });
     } catch (e) {
-        console.log('Error vendor data GET SQL query task', err);
+        console.log('Error vendor data GET SQL query task', e);
         res.sendStatus(500);
     } finally {
         client && client.release && client.release();

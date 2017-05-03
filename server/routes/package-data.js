@@ -15,7 +15,7 @@ router.get('/', async (req, res) => {
         client.release();
         res.send({ packages: photographerQueryResult.rows });
     } catch (e) {
-        console.log('Error user data root GET SQL query task', err);
+        console.log('Error user data root GET SQL query task', e);
         res.sendStatus(500);
     }
 });
