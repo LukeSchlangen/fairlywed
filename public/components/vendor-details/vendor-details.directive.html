@@ -1,3 +1,7 @@
+<pre>
+{{vm | json}}
+</pre>
+
 <md-card>
     <md-card-content>
         <form layout layout-align="center" layout-padding>
@@ -23,9 +27,11 @@
                     </md-button>
                 </div>
                 <div>
-                    <md-button class="md-raised" ng-click="vm.updateDetails(vm.vendor.details)">
-                        Save Business Details for {{vm.vendor.details.name}}
+                    <!--<md-button class="md-raised" type="submit" ng-disabled="vm.vendorHasNotChanged()">-->
+                    <md-button class="md-raised" type="submit" ng-disabled="vm.vendorHasNotChanged()" ng-click="vm.updateDetails(vm.vendor.details)">
+                        Save Business Details
                     </md-button>
+                    <small>{{vm.vendorHasNotChanged() ? 'saved' : ''}}</small>
                 </div>
             </div>
         </form>

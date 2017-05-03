@@ -14,6 +14,11 @@ app.controller("VendorDetailsController", function (VendorDetailsFactory, UserDa
 
     VendorDetailsFactory.stripeAuthorizationCheck();
 
+    self.vendorHasNotChanged = function() {
+        var areTheyEqual = angular.equals(self.vendor.details, self.vendor.savedDetails);
+        return areTheyEqual;
+    }
+
     self.updateDetails = function (vendorDetailsToSave) {
         VendorDetailsFactory.updateDetails(vendorDetailsToSave);
     }
