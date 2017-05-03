@@ -2,33 +2,24 @@ var express = require('express');
 var router = express.Router();
 var pool = require('../modules/pg-pool');
 
-router.get('/', function (req, res) {
+router.get('/', async (req, res) => {
     var userId = req.decodedToken.userSQLId;
     var subvendorId = req.headers.subvendor_id;
-    pool.connect(function (err, client, done) {
-        if (err) {
-            console.log('Error connecting to database', err);
-            res.sendStatus(500);
-        } else {
-            client.query('SELECT subvendors.id AS subvendor_id, ' +
-                'subvendors.name AS name, ' +
-                'subvendors.is_active AS is_active ' +
-                'FROM users_vendors ' +
-                'JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id ' +
-                'JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=$2;',
-                [userId, subvendorId],
-                function (err, subvendorQueryResult) {
-                    done();
-                    if (err) {
-                        console.log('Error subvendor data GET SQL query task', err);
-                        res.sendStatus(500);
-                    } else {
-                        res.send(subvendorQueryResult.rows[0]);
-                    }
-                });
-
-        }
-    });
+    try {
+        var client = await pool.connect();
+        const subvendorQueryResult = await client.query('SELECT subvendors.id AS subvendor_id, ' +
+            'subvendors.name AS name, ' +
+            'subvendors.is_active AS is_active ' +
+            'FROM users_vendors ' +
+            'JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id ' +
+            'JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=$2;',
+            [userId, subvendorId]);
+        client.release();
+        res.send(subvendorQueryResult.rows[0]);
+    } catch (e) {
+        console.log('Error subvendor data GET SQL query task', err);
+        res.sendStatus(500);
+    }
 });
 
 router.get('/packages', function (req, res) {
