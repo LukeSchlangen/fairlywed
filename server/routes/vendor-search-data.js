@@ -21,7 +21,7 @@ router.get('/', async (req, res) => {
 router.get('/subvendorProfile', async (req, res) => {
   try {
     var searchObject = JSON.parse(req.query.search);
-    const client = await pool.connect();
+    var client = await pool.connect();
 
     // put these two things together either with a promise.all or in the sql
     const subvendorDetailsQueryResult = await client.query(

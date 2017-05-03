@@ -6,7 +6,7 @@ router.get('/', async (req, res) => {
     var userId = req.decodedToken.userSQLId;
     var subvendorId = req.headers.subvendor_id;
     try {
-        const client = await pool.connect();
+        var client = await pool.connect();
         const subvendorQueryResult = await client.query('SELECT subvendors.id AS subvendor_id, ' +
             'subvendors.name AS name, ' +
             'subvendors.is_active AS is_active ' +

@@ -6,7 +6,7 @@ function orderBy() {
 
 async function recommendedPhotographers(userId) {
     try {
-        const client = await pool.connect();
+        var client = await pool.connect();
 
         const recommendedPhotographers = await client.query(`select sum(CASE WHEN liked THEN 1 else 0 END) as likes, sum(CASE WHEN liked THEN 0 else 1 END) as dislikes, subvendor_id from matchmaker_liked_photos 
                 join matchmaker_run on matchmaker_run_id = matchmaker_run.id

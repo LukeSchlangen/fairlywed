@@ -86,7 +86,6 @@ router.post('/authorizeStripeAccount', async (req, res) => {
                             'UPDATE vendors SET stripe_account_id=(SELECT id FROM stripe_account_id) ' +
                             'WHERE id=$4;',
                             [userId, stripeUserAuthenticationCredentials.stripe_user_id, stripeUserAuthenticationCredentials.refresh_token, stripeConnectVendorId]);
-                        client.release();
                         res.sendStatus(200);
                     } catch (e) {
                         console.log('Error adding stripe account to vendor', err);

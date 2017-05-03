@@ -89,14 +89,15 @@ router.post('/', async (req, res) => {
     } catch (e) {
         console.log('error in booking', e);
         res.sendStatus(500);
+    } finally {
+        client && client.release && client.release();
     }
-    client.release();
     res.sendStatus(201);
 });
 
 async function undoBooking(reasonForUndo, bookingToUndo) {
     try {
-        const client = await pool.connect();
+        var client = await pool.connect();
         const success = await client.query(`UPDATE subvendor_availability 
             SET availability_id=(SELECT id FROM availability WHERE status='available') 
             WHERE id=$1`, [bookingToUndo.subvendor_availability_id]);

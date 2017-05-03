@@ -4,7 +4,7 @@ var pool = require('../modules/pg-pool');
 
 router.get('/', async (req, res) => {
     try {
-        const client = await pool.connect();
+        var client = await pool.connect();
         var stripeConnectState = req.query.state;
         const stripeConnectVendorIdResult = await client.query('SELECT vendor_id ' +
             'FROM users_vendors ' +

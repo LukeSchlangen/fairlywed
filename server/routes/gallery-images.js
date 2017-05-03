@@ -6,7 +6,7 @@ var bucket = require('../modules/google-storage-bucket');
 router.get('/', async (req, res) => {
     try {
         var subvendorId = req.headers.subvendor_id;
-        const client = await pool.connect();
+        var client = await pool.connect();
 
         const subvendorQueryResult = await client.query('SELECT subvendor_images.id ' +
             'FROM subvendor_images ' +
@@ -25,7 +25,7 @@ router.get('/:imageId', async (req, res) => {
     try {
         var imageIdToRetrieve = req.params.imageId;
         // Select all images with that id where subvendor is one that user has access to
-        const client = await pool.connect();
+        var client = await pool.connect();
         const imageInfoResults = await client.query('SELECT subvendor_images.* ' +
             'FROM subvendor_images ' +
             'WHERE subvendor_images.id=$1 AND is_public=TRUE ' +

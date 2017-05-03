@@ -6,7 +6,7 @@ router.get('/', async (req, res) => {
     try {
         var userId = req.decodedToken.userSQLId;
         var vendorId = req.headers.vendor_id;
-        const client = await pool.connect();
+        var client = await pool.connect();
 
         const subvendorQueryResult = await client.query('SELECT name, travel_distance, location_address, ST_X (location::geometry) AS longitude, ST_Y (location::geometry) AS latitude ' +
             'FROM vendors ' +
@@ -19,12 +19,14 @@ router.get('/', async (req, res) => {
     } catch (e) {
         console.log('Error vendor data GET SQL query task', err);
         res.sendStatus(500);
+    } finally {
+        client && client.release && client.release();
     }
 });
 
 router.get('/subvendorsList', async (req, res) => {
     try {
-        const client = await pool.connect();
+        var client = await pool.connect();
         var userId = req.decodedToken.userSQLId;
         var vendorId = req.headers.vendor_id;
         const subvendorQueryResult = await client.query('SELECT subvendors.id AS id, ' +
@@ -50,7 +52,7 @@ router.put('/', async (req, res) => {
         var vendorId = req.headers.vendor_id;
         var vendorDetails = req.body;
         var travelDistanceInMeters = parseInt(vendorDetails.travel_distance * 1609.34);
-        const client = await pool.connect();
+        var client = await pool.connect();
         const success = await client.query('UPDATE vendors ' +
             'SET name=$3, travel_distance=$4, location_address=$5, location=CAST(ST_SetSRID(ST_Point($6, $7),4326) AS geography) ' +
             'WHERE id = ( ' +

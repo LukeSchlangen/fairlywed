@@ -5,7 +5,7 @@ var pool = require('../modules/pg-pool');
 router.get('/', async (req, res) => {
     try {
         var vendorType = req.query.vendorType;
-        const client = await pool.connect();
+        var client = await pool.connect();
         const photographerQueryResult = await client.query(
             'SELECT packages.id, packages.name ' +
             'FROM packages ' +
