@@ -2,7 +2,7 @@ var pool = require('../modules/pg-pool');
 
 async function vendorSearch(searchObject, orderBy, ratings, minRating) {
     try {
-        const client = await pool.connect();
+        var client = await pool.connect();
         const vendorQueryResult = await client.query(
             'SELECT COALESCE(subvendors.name, vendors.name) AS name, ' +
             'subvendors.id AS id, ' +

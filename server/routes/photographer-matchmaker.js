@@ -21,7 +21,7 @@ router.get('/', async (req, res) => {
             const likes = await saveLikes(photos, userId);
         } else {
             try {
-                const client = await pool.connect();
+                var client = await pool.connect();
                 const hasDoneMatchmakerBeforeSQL = await client.query('SELECT EXISTS(SELECT 1 FROM matchmaker_run WHERE user_id=$1)', [userId]);
                 client.release();
                 hasDoneMatchmakerBefore = hasDoneMatchmakerBeforeSQL.rows[0].exists;
@@ -55,7 +55,7 @@ async function saveLikes(photos, userId) {
     try {
         var likes = photos.map((photo) => photo.liked);
         var ids = photos.map((photo) => photo.id);
-        const client = await pool.connect();
+        var client = await pool.connect();
 
         var success = await client.query('WITH new_matchmaker_run_id AS ( INSERT INTO matchmaker_run (user_id, prior_run_id) ' +
             'VALUES ($1, (SELECT id FROM matchmaker_run where user_id=$1 ORDER BY id DESC LIMIT 1)) RETURNING id) ' +
@@ -64,12 +64,15 @@ async function saveLikes(photos, userId) {
             [userId, likes, ids])
     } catch (e) {
         console.log('Error matchmaker_run INSERT SQL query task', e);
+    } finally {
+        client && client.release && client.release();
     }
+    return true;
 }
 
 async function getRandomImages() {
     try {
-        const client = await pool.connect();
+        var client = await pool.connect();
         const randomImages = await client.query('SELECT * FROM subvendor_images WHERE is_public=true AND is_active=true ORDER BY RANDOM() LIMIT 2');
         client.release();
         return randomImages.rows;
@@ -81,7 +84,7 @@ async function getRandomImages() {
 
 async function getImagesWithUserId(userId) {
     var orderBy = simpleRanker.orderBy(userId);
-    const client = await pool.connect();
+    var client = await pool.connect();
 
     const images = await client.query(`SELECT * FROM subvendor_images 
         left outer join (
@@ -92,8 +95,6 @@ async function getImagesWithUserId(userId) {
         [userId, orderBy])
 
     client.release();
-    //I think this can be simultaneous to the images query
-
 
     return images.rows;
 }
