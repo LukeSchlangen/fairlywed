@@ -13,17 +13,7 @@
     </md-content>
 </span>
 <span ng-if="vm.userData.isSignedIn" flex>
-    <md-content class="md-padding" layout-xs="column" layout="row">
-        <div flex layout="column">
-            <md-card>
-                <md-card-content>
-                    vm.accountCompletion.percentage: {{vm.accountCompletion.percentage}}
-                    <md-progress-linear md-mode="determinate"  value="{{vm.accountCompletion.percentage}}"></md-progress-linear>
-                    Next Up: {{vm.accountCompletion.nextTask}}
-                </md-card-content>
-            </md-card>
-        </div>
-    </md-content>
+    <account-completion></account-completion>
     <md-content class="md-padding" flex layout="column">
         <div flex layout="column">
             <md-card>
