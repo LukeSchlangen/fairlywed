@@ -6,6 +6,7 @@ app.controller("VendorAccountController", function (PackagesFactory, VendorAccou
     VendorAccountFactory.getVendorList();
     self.newVendor = {};
     self.showAddNewVendorForm = false;
+    self.accountCompletion = {percentage: 20};
 
     self.initialize = function () {
         var input = document.getElementById('vendorLocationTextField');
