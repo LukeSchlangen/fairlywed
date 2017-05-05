@@ -1,4 +1,4 @@
-app.factory("StripeConnectFactory", function ($http, $stateParams) {
+app.factory("StripeConnectFactory", function ($http, $stateParams, $state) {
 
     var connectToStripeLink = { url: '' };
 
@@ -33,6 +33,7 @@ app.factory("StripeConnectFactory", function ($http, $stateParams) {
             data: requestBody
         }).then(function () {
             console.log('Vendor', $stateParams.vendorId, ' is now connected to stripe');
+            $state.transitionTo($state.current.name, $stateParams);
         }).catch(function (err) {
             console.log('error connecting stripe account to database', err);
         });
