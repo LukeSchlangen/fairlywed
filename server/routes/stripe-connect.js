@@ -18,8 +18,7 @@ router.get('/getConnectUrl', async (req, res) => {
             '?response_type=' + process.env.STRIPE_RESPONSE_TYPE +
             '&client_id=' + process.env.STRIPE_CLIENT_ID +
             '&scope=' + process.env.STRIPE_SCOPE +
-            '&redirect_uri=' + process.env.STRIPE_REDIRECT_URI +
-            '&state=' + stripeConnectState;
+            '&redirect_uri=' + process.env.STRIPE_REDIRECT_URI
         res.send({ stripeUrl: stripeUrl });
     } catch (e) {
         console.log('Error vendor data GET SQL query task', e);

@@ -7,7 +7,7 @@
         <form layout layout-align="center" layout-padding>
             <div layout="column" flex>
                 <md-input-container class="md-block" flex-gt-xs>
-                    <label>Legal Name Of The Business</label>
+                    <label>Name Of The Business</label>
                     <input ng-model="vm.vendor.details.name">
                 </md-input-container>
                 <md-input-container class="md-block" flex-gt-xs>
@@ -19,26 +19,49 @@
                     <label>Distance, in Miles, You Are Willing To Travel For Free</label>
                     <input type="number" ng-model="vm.vendor.details.travel_distance">
                 </md-input-container>
-                <div>
-                    <p>Stripe allows you to accept credit card payments through FairlyWed. Clicking this button will take you
+                <div layout="row" ng-hide="vm.vendor.details.stripe_is_active">
+                    <p flex>Stripe allows you to accept credit card payments through FairlyWed. Clicking this button will take you
                         to Stripe to set up your account.</p>
-                    <md-button class="md-raised" ng-href="{{vm.connectToStripeLink.url}}">
+                    <md-button class="md-raised" ng-href="{{vm.connectToStripeLink.url}}&state={{vm.vendor.details.stripe_connect_state}}" layout="row"
+                        layout-align="center center">
                         Set up Account on Stripe
                     </md-button>
                 </div>
-                <div>
+                <div layout="row" layout-align="center center" flex>
                     <!--<md-button class="md-raised" type="submit" ng-disabled="vm.vendorHasNotChanged()">-->
-                    <md-button class="md-raised" type="submit" ng-disabled="vm.vendorHasNotChanged()" ng-click="vm.updateDetails(vm.vendor.details)">
+                    <md-button ng-href="{{vm.connectToStripeLink.url}}" ng-show="vm.vendor.details.stripe_is_active">
+                        Change Stripe Account
+                    </md-button>
+                    <span flex ng-show="vm.vendor.details.stripe_is_active"></span>
+                    <small>{{vm.vendorHasNotChanged() ? 'saved' : ''}}</small>
+                    <md-button class="md-raised md-padding" type="submit" ng-disabled="vm.vendorHasNotChanged()" ng-click="vm.updateDetails(vm.vendor.details)">
                         Save Business Details
                     </md-button>
-                    <small>{{vm.vendorHasNotChanged() ? 'saved' : ''}}</small>
                 </div>
             </div>
         </form>
     </md-card-content>
 </md-card>
 
-<md-card>
+<md-card ng-hide="vm.vendor.details.stripe_is_active || vm.doOtherStuffBeforeStripe">
+    <md-card-content>
+        <p flex>
+            If you want to show up on our site and start booking weddings, you will need to set up your Stripe account, but you want
+            to some fun stuff first (like adding some great wedding images), you can do that too.
+        </p>
+        <div layout="row" layout-align="center center" flex>
+            <md-button class="md-raised" ng-href="{{vm.connectToStripeLink.url}}&state={{vm.vendor.details.stripe_connect_state}}">
+                Set Up Stripe Account
+            </md-button>
+            <span flex></span>
+            <md-button class="md-raised" ng-click="vm.doOtherStuffBeforeStripe = true">
+                Do Other Fun Stuff First
+            </md-button>
+        </div>
+    </md-card-content>
+</md-card>
+
+<md-card ng-show="vm.vendor.details.stripe_is_active || vm.doOtherStuffBeforeStripe">
     <md-card-content>
         <div flex layout="row" ng-click="vm.showAddNewSubvendorForm = true" ng-hide="vm.vendor.subvendorList.length == 0 || vm.showAddNewSubvendorForm">
             <span flex></span>
@@ -48,11 +71,13 @@
         </div>
         <form layout layout-align="center" layout-padding ng-show="vm.vendor.subvendorList.length == 0 || vm.showAddNewSubvendorForm">
             <div layout="column" flex>
-                <p ng-show="vm.vendor.subvendorList.length == 0">Congratulations! You made it! Now that you have created a business on FairlyWed, how would you like to show
-                    up on the website? Maybe the name of your company is {{vm.vendor.details.name}}, but on the site, you
-                    would rather show up as {{vm.userData.details.displayName}} Wedding Photography.</p>
+                <p ng-show="vm.vendor.subvendorList.length == 0">
+                    <span ng-show="vm.vendor.details.stripe_is_active">Congratulations! You made it! You have created a business on FairlyWed! </span>
+                    How would you like to show up on the website? Maybe the name of your company is {{vm.vendor.details.name}}, but on the site, 
+                    you would rather show up as {{vm.userData.details.displayName}} Wedding Photography.
+                </p>
                 <md-input-container class="md-block" flex-gt-xs>
-                    <label>Photographer Name As It Will Show On The Site (e.g. {{vm.userData.details.displayName}} Photography)</label>
+                    <label>Photographer Name As It Will Show On The Site (e.g. {{vm.userData.details.displayName}} Wedding Photography)</label>
                     <input ng-model="vm.newSubvendor.name">
                 </md-input-container>
                 <div>
@@ -66,7 +91,6 @@
             <md-tabs class="main-toolbar">
                 <md-tab label="{{subvendor.name}}" ui-sref=".subvendor.details({subvendorId: subvendor.id})" md-active-nc="vm.isCurrentSubvendor(subvendor.id)" ng-repeat="subvendor in vm.vendor.subvendorList"></md-tab>
             </md-tabs>
-
             <div ui-view></div>
         </span>
     </md-card-content>
