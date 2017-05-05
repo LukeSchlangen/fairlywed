@@ -8,14 +8,18 @@ router.get('/', async (req, res) => {
         var vendorId = req.headers.vendor_id;
         var client = await pool.connect();
 
-        const subvendorQueryResult = await client.query('SELECT name, travel_distance, location_address, ST_X (location::geometry) AS longitude, ST_Y (location::geometry) AS latitude ' +
-            'FROM vendors ' +
-            'FULL OUTER JOIN users_vendors ON users_vendors.vendor_id=vendors.id ' +
-            'WHERE users_vendors.user_id=$1 ' + // This line validates that the user is authorized to view this data
-            'AND vendors.id=$2',
-            [userId, vendorId])
+        const vendorQueryResult = await client.query(`SELECT name, travel_distance, location_address, 
+            ST_X (location::geometry) AS longitude, ST_Y (location::geometry) AS latitude,
+            stripe_accounts.is_active AS stripe_is_active, 
+            users_vendors.stripe_connect_state
+            FROM vendors 
+            FULL OUTER JOIN users_vendors ON users_vendors.vendor_id=vendors.id 
+            LEFT OUTER JOIN stripe_accounts ON vendors.stripe_account_id=stripe_accounts.id
+            WHERE users_vendors.user_id=$1 
+            AND vendors.id=$2`,
+            [userId, vendorId]);
 
-        res.send(subvendorQueryResult.rows[0]);
+        res.send(vendorQueryResult.rows[0]);
     } catch (e) {
         console.log('Error vendor data GET SQL query task', e);
         res.sendStatus(500);
