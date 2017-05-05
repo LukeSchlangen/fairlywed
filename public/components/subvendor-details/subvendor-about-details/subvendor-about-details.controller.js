@@ -6,4 +6,9 @@ app.controller("SubvendorAboutDetailsController", function (SubvendorFactory) {
     SubvendorFactory.getDetails();
 
     self.updateDetails = SubvendorFactory.updateDetails;
+
+    self.subvendorHasNotChanged = function () {
+        var areTheyEqual = angular.equals(self.subvendor.details, self.subvendor.savedDetails);
+        return areTheyEqual;
+    }
 });

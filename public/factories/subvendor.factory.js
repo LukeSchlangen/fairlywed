@@ -97,6 +97,7 @@ app.factory("SubvendorFactory", function ($http, AuthFactory, $stateParams, Vend
         }).then(function (response) {
             console.log('subvendors controller returned: ', response.data);
             subvendor.details = response.data;
+            subvendor.savedDetails = angular.copy(subvendor.details);
         }).catch(function (err) {
             console.error('Error retreiving private user data: ', err);
             subvendor.details = {};

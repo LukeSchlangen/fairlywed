@@ -7,12 +7,13 @@ router.get('/', async (req, res) => {
     var subvendorId = req.headers.subvendor_id;
     try {
         var client = await pool.connect();
-        const subvendorQueryResult = await client.query('SELECT subvendors.id AS subvendor_id, ' +
-            'subvendors.name AS name, ' +
-            'subvendors.is_active AS is_active ' +
-            'FROM users_vendors ' +
-            'JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id ' +
-            'JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=$2;',
+        const subvendorQueryResult = await client.query(`SELECT subvendors.id AS subvendor_id, 
+            subvendors.name AS name, 
+            subvendors.description AS description, 
+            subvendors.is_active AS is_active 
+            FROM users_vendors 
+            JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id 
+            JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=$2;`,
             [userId, subvendorId]);
         client.release();
         res.send(subvendorQueryResult.rows[0]);
@@ -156,16 +157,16 @@ router.put('/', function (req, res) {
     var userId = req.decodedToken.userSQLId;
     var subvendorId = req.headers.subvendor_id;
     var subvendorDetails = req.body;
-    var travelDistanceInMeters = parseInt(subvendorDetails.travel_distance * 1609.34).toString();
+    // var travelDistanceInMeters = parseInt(subvendorDetails.travel_distance * 1609.34).toString(); Not asking user for this yet
     pool.connect(function (err, client, done) {
         client.query('UPDATE subvendors ' +
-            'SET name=$3, travel_distance=$4::int ' +
+            'SET name=$3, description=$4 ' +
             'WHERE id = ( ' +
             'SELECT subvendors.id ' +
             'FROM users_vendors ' +
             'JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id ' +
             'JOIN subvendors ON subvendors.parent_vendor_id=vendors.id AND subvendors.id=$2);',
-            [userId, subvendorId, subvendorDetails.name, travelDistanceInMeters],
+            [userId, subvendorId, subvendorDetails.name, subvendorDetails.description],
             function (err) {
                 done();
                 if (err) {
