@@ -189,7 +189,26 @@ router.post('/upsertPackage', function (req, res) {
             res.sendStatus(500);
         } else {
             // if the package already exists, update the package
-            if (packageObject.id) {
+            if ((isNaN(packageObject.price) || packageObject.price == "") && packageObject.id) {
+                client.query('DELETE FROM subvendors_packages ' +
+                    'WHERE id = ( ' +
+                    'SELECT subvendors_packages.id ' +
+                    'FROM users_vendors ' +
+                    'JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id ' +
+                    'JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=$2 ' +
+                    'JOIN subvendors_packages ON subvendors_packages.subvendor_id=subvendors.id ' +
+                    'WHERE subvendors_packages.id=$3);',
+                    [userId, subvendorId, packageObject.id],
+                    function (err) {
+                        done();
+                        if (err) {
+                            console.log('Error subvendor data UPDATE SQL query task', err);
+                            res.sendStatus(500);
+                        } else {
+                            res.sendStatus(200);
+                        }
+                    });
+            } else if (packageObject.id) {
                 client.query('UPDATE subvendors_packages ' +
                     'SET price=$4, is_active=$5 ' +
                     'WHERE id = ( ' +
@@ -209,7 +228,7 @@ router.post('/upsertPackage', function (req, res) {
                             res.sendStatus(200);
                         }
                     });
-            } else {
+            } else if (!isNaN(Number(packageObject.price)) && !packageObject.price == "") {
                 client.query('INSERT INTO subvendors_packages (subvendor_id, package_id, price, is_active)' +
                     'VALUES (' +
                     '    (SELECT subvendors.id  ' +
@@ -232,6 +251,8 @@ router.post('/upsertPackage', function (req, res) {
                             res.sendStatus(200);
                         }
                     });
+            } else {
+                res.status(400).send('A price is required in order to save a package');
             }
 
         }
