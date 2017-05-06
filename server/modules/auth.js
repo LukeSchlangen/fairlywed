@@ -23,7 +23,7 @@ var tokenDecoder = function (req, res, next) {
         client.query(`INSERT INTO users (name, email, firebase_user_id, authentication_provider) 
         VALUES ($1, $2, $3, $4) 
         ON CONFLICT(firebase_user_id) DO UPDATE SET firebase_user_id=EXCLUDED.firebase_user_id RETURNING id;`,
-          [userName, userEmail, firebaseUserId, authenticationProvider], 
+          [userName, userEmail, firebaseUserId, authenticationProvider],
           function (err, userSQLIdResult) {
             done();
             if (err) {
@@ -95,13 +95,28 @@ var linkPreviouslyAnonymousUser = function (req, res, next) {
                           console.log('Error connecting to database', err);
                           res.sendStatus(500);
                         } else {
-                          client.query('DELETE FROM users WHERE id=$1', [previousAnonymousFirebaseUserId], function (err) {
+                          client.query('UPDATE matchmaker_run SET user_id=$1 WHERE user_id=$2', [req.decodedToken.userSQLId, previousAnonymousFirebaseUserId], function (err) {
                             done();
                             if (err) {
-                              console.log('Error updating removing anonymous user from database', err);
+                              console.log('Error updating matchmaker_run in database', err);
                               res.sendStatus(500);
                             } else {
-                              next();
+                              pool.connect(function (err, client, done) {
+                                if (err) {
+                                  console.log('Error connecting to database', err);
+                                  res.sendStatus(500);
+                                } else {
+                                  client.query('DELETE FROM users WHERE id=$1', [previousAnonymousFirebaseUserId], function (err) {
+                                    done();
+                                    if (err) {
+                                      console.log('Error updating removing anonymous user from database', err);
+                                      res.sendStatus(500);
+                                    } else {
+                                      next();
+                                    }
+                                  });
+                                }
+                              });
                             }
                           });
                         }
