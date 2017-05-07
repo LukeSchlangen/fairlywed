@@ -66,18 +66,17 @@ var linkPreviouslyAnonymousUser = async (req, res, next) => {
     if (req.headers.previously_anonymous_id_token) {
       const [previousAnonymousUserDecodedToken, client] = await Promise.all([admin.auth().verifyIdToken(req.headers.previously_anonymous_id_token), pool.connect()]);
       const previousAnonymousFirebaseUserId = previousAnonymousUserDecodedToken.user_id || previousAnonymousUserDecodedToken.uid;
-      client.query(`WITH log_update AS (UPDATE logs SET user_id=$1 WHERE user_id=(SELECT id FROM users WHERE firebase_user_id=$2) RETURNING id), 
+      const success = await client.query(`WITH log_update AS (UPDATE logs SET user_id=$1 WHERE user_id=(SELECT id FROM users WHERE firebase_user_id=$2) RETURNING id), 
           matchmaker_run_update AS (UPDATE matchmaker_run SET user_id=$1 WHERE user_id=(SELECT id FROM users WHERE firebase_user_id=$2) RETURNING id)
           DELETE FROM users WHERE id=(SELECT id FROM users WHERE firebase_user_id=$2)`,
-          [req.decodedToken.userSQLId, previousAnonymousFirebaseUserId]);
-      client.release();
-      next();
-    } else {
-      next();
+        [req.decodedToken.userSQLId, previousAnonymousFirebaseUserId]);
     }
+    next();
   } catch (e) {
     console.log('error in linkPreviouslyAnonymousUser', e);
     res.sendStatus(500);
+  } finally {
+    client && client.release && client.release();
   }
 }
 
