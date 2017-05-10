@@ -121,6 +121,10 @@
     body {
       min-width: 670px !important;
     }
+
+    h1 {
+      margin-bottom: 0px;
+    }
     
     .brand-font {
       font-family: 'Tangerine', cursive;
@@ -155,12 +159,21 @@
     
     header {
       margin-top: -50px;
-      padding-top: 50px;
-      background-image: url("assets/background.jpg");
+      background-color: #FFFEEA;
+    }
+
+    .image-below-header {
       background-repeat: no-repeat;
-      /*background-attachment: fixed;*/
-      background-position: center center;
+      background-image: url("assets/background.jpg");
       background-size: cover;
+      background-position: right center;
+      height: 400px;
+    }
+
+    @media (max-width: 800px) {
+      .image-below-header {
+        height: 200px;
+      }
     }
     
     md-virtual-repeat-container {
