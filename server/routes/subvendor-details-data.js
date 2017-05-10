@@ -15,339 +15,263 @@ router.get('/', async (req, res) => {
             JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id 
             JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=$2;`,
             [userId, subvendorId]);
-        client.release();
         res.send(subvendorQueryResult.rows[0]);
     } catch (e) {
         console.log('Error subvendor data GET SQL query task', err);
         res.sendStatus(500);
+    } finally {
+        client && client.release && client.release();
     }
 });
 
-router.get('/packages', function (req, res) {
+router.get('/packages', async (req, res) => {
     var userId = req.decodedToken.userSQLId;
     var subvendorId = req.headers.subvendor_id;
-    pool.connect(function (err, client, done) {
-        if (err) {
-            console.log('Error connecting to database', err);
-            res.sendStatus(500);
-        } else {
-            client.query('SELECT subvendors_packages.id AS id, ' +
-                'packages.id AS package_id, ' +
-                'subvendors.id AS subvendor_id, ' +
-                'packages.name AS name, ' +
-                'subvendors_packages.price AS price, ' +
-                'subvendors_packages.is_active AS is_active ' +
-                'FROM users_vendors ' +
-                'JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id ' +
-                'JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=$2 ' +
-                'JOIN subvendors_packages ON subvendors_packages.subvendor_id=subvendors.id ' +
-                'RIGHT OUTER JOIN packages ON subvendors_packages.package_id=packages.id ' +
-                'WHERE packages.is_active=TRUE AND packages.vendortype_id=1 ' + // hard coded for photographers
-                'ORDER BY packages.id;',
-                [userId, subvendorId],
-                function (err, subvendorQueryResult) {
-                    done();
-                    if (err) {
-                        console.log('Error subvendor data GET SQL query task', err);
-                        res.sendStatus(500);
-                    } else {
-                        res.send({ packages: subvendorQueryResult.rows });
-                    }
-                });
-
-        }
-    });
+    try {
+        var client = await pool.connect();
+        const subvendorQueryResult = await client.query(`SELECT subvendors_packages.id AS id, 
+            packages.id AS package_id, 
+            subvendors.id AS subvendor_id, 
+            packages.name AS name, 
+            subvendors_packages.price AS price, 
+            subvendors_packages.is_active AS is_active 
+            FROM users_vendors 
+            JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id 
+            JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=$2 
+            JOIN subvendors_packages ON subvendors_packages.subvendor_id=subvendors.id 
+            RIGHT OUTER JOIN packages ON subvendors_packages.package_id=packages.id 
+            WHERE packages.is_active=TRUE AND packages.vendortype_id=1 
+            ORDER BY packages.id;`,
+            [userId, subvendorId]);
+        res.send({ packages: subvendorQueryResult.rows });
+    } catch (e) {
+        console.log('Error getting subvendor package data, GET SQL query task', err);
+        res.sendStatus(500);
+    } finally {
+        client && client.release && client.release();
+    }
 });
 
-router.get('/availability', function (req, res) {
+router.get('/availability', async (req, res) => {
     var userId = req.decodedToken.userSQLId;
     var subvendorId = req.headers.subvendor_id;
     var selectedDate = pgFormatDate(req.headers.selected_date);
-    pool.connect(function (err, client, done) {
-        if (err) {
-            console.log('Error connecting to database', err);
-            res.sendStatus(500);
-        } else {
-            client.query(`SELECT subvendor_availability.id, day, status  
-                FROM subvendor_availability  
-                JOIN availability ON availability.id=subvendor_availability.availability_id AND subvendor_id =(  
-                	SELECT subvendors.id  
-                	FROM users_vendors   
-                	JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id  
-                	JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=$2)  
-                RIGHT OUTER JOIN calendar_dates ON calendar_dates.id=subvendor_availability.date_id  
-                WHERE day >= (SELECT date_trunc('month', coalesce($3, current_date)::date)::date - cast(extract(dow from date_trunc('month', coalesce($3, current_date)::date)::date) as int)) AND day < (SELECT date_trunc('month', coalesce($3, current_date)::date)::date - cast(extract(dow from date_trunc('month', coalesce($3, current_date)::date)::date) as int)) + 42  
-                ORDER BY day;`,
-                [userId, subvendorId, selectedDate],
-                function (err, subvendorQueryResult) {
-                    done();
-                    if (err) {
-                        console.log('Error subvendor data GET SQL query task', err);
-                        res.sendStatus(500);
-                    } else {
-                        res.send(subvendorQueryResult.rows);
-                    }
-                });
-        }
-    });
+    try {
+        var client = await pool.connect();
+        const subvendorQueryResult = await client.query(`SELECT subvendor_availability.id, day, status  
+            FROM subvendor_availability  
+            JOIN availability ON availability.id=subvendor_availability.availability_id AND subvendor_id =(  
+                SELECT subvendors.id  
+                FROM users_vendors   
+                JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id  
+                JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=$2)  
+            RIGHT OUTER JOIN calendar_dates ON calendar_dates.id=subvendor_availability.date_id  
+            WHERE day >= (SELECT date_trunc('month', coalesce($3, current_date)::date)::date - cast(extract(dow from date_trunc('month', coalesce($3, current_date)::date)::date) as int)) AND day < (SELECT date_trunc('month', coalesce($3, current_date)::date)::date - cast(extract(dow from date_trunc('month', coalesce($3, current_date)::date)::date) as int)) + 42  
+            ORDER BY day;`,
+            [userId, subvendorId, selectedDate]);
+        res.send(subvendorQueryResult.rows);
+    } catch (e) {
+        console.log('Error getting subvendor package data, GET SQL query task', err);
+        res.sendStatus(500);
+    } finally {
+        client && client.release && client.release();
+    }
 });
 
-router.get('/images', function (req, res) {
+router.get('/images', async (req, res) => {
     var userId = req.decodedToken.userSQLId;
     var subvendorId = req.headers.subvendor_id;
-    pool.connect(function (err, client, done) {
-        if (err) {
-            console.log('Error connecting to database', err);
-            res.sendStatus(500);
-        } else {
-            client.query('SELECT subvendor_images.id, subvendor_images.is_public, ' +
-                'subvendor_images.is_in_gallery, subvendor_images.is_active ' +
-                'FROM subvendor_images ' +
-                'WHERE subvendor_id =( ' +
-                '	SELECT subvendors.id ' +
-                '	FROM users_vendors  ' +
-                '	JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id ' +
-                '	JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=$2 ' +
-                ') AND subvendor_images.is_active=TRUE;',
-                [userId, subvendorId],
-                function (err, subvendorQueryResult) {
-                    done();
-                    if (err) {
-                        console.log('Error subvendor data GET SQL query task', err);
-                        res.sendStatus(500);
-                    } else {
-                        res.send(subvendorQueryResult.rows);
-                    }
-                });
-        }
-    });
+    try {
+        var client = await pool.connect();
+        const subvendorQueryResult = await client.query(`SELECT subvendor_images.id, subvendor_images.is_public, 
+            subvendor_images.is_in_gallery, subvendor_images.is_active 
+            FROM subvendor_images 
+            WHERE subvendor_id =( 
+                SELECT subvendors.id 
+                FROM users_vendors  
+                JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id 
+                JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=$2 
+            ) AND subvendor_images.is_active=TRUE;`,
+            [userId, subvendorId]);
+        res.send(subvendorQueryResult.rows);
+    } catch (e) {
+        console.log('Error getting subvendor image data, GET SQL query task', err);
+        res.sendStatus(500);
+    } finally {
+        client && client.release && client.release();
+    }
 });
 
-router.post('/', function (req, res) {
+router.post('/', async (req, res) => {
     var userId = req.decodedToken.userSQLId;
     var vendorId = req.headers.vendor_id;
     var subvendor = req.body;
-    pool.connect(function (err, client, done) {
-        if (err) {
-            console.log('Error connecting to database', err);
-            res.sendStatus(500);
-        } else {
-            client.query('INSERT INTO subvendors (name, parent_vendor_id, vendortype_id) ' +
-                'VALUES ($3, ' +
-                '(SELECT vendors.id ' +
-                'FROM users_vendors ' +
-                'JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id ' +
-                'WHERE vendors.id=$2), ' +
-                '1) RETURNING id, parent_vendor_id; ', // -- hard coded for photographers
-                [userId, vendorId, subvendor.name],
-                function (err, newSubvendorResults) {
-                    done();
-                    if (err) {
-                        console.log('Error vendor data INSERT SQL query task', err);
-                        res.sendStatus(500);
-                    } else {
-                        res.send({ vendorId: newSubvendorResults.rows[0].parent_vendor_id, newSubvendorId: newSubvendorResults.rows[0].id });
-                    }
-                });
-        }
-    });
+    try {
+        var client = await pool.connect();
+        const newSubvendorResults = await client.query(`INSERT INTO subvendors (name, parent_vendor_id, vendortype_id) 
+            VALUES ($3, 
+            (SELECT vendors.id 
+            FROM users_vendors 
+            JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id 
+            WHERE vendors.id=$2), 
+            1) RETURNING id, parent_vendor_id;`, // -- hard coded for photographers
+            [userId, vendorId, subvendor.name]);
+        res.send({ vendorId: newSubvendorResults.rows[0].parent_vendor_id, newSubvendorId: newSubvendorResults.rows[0].id });
+    } catch (e) {
+        console.log('Error adding new subvendor data, POST SQL query task', err);
+        res.sendStatus(500);
+    } finally {
+        client && client.release && client.release();
+    }
 });
 
-router.put('/', function (req, res) {
+router.put('/', async (req, res) => {
     var userId = req.decodedToken.userSQLId;
     var subvendorId = req.headers.subvendor_id;
     var subvendorDetails = req.body;
     // var travelDistanceInMeters = parseInt(subvendorDetails.travel_distance * 1609.34).toString(); Not asking user for this yet
-    pool.connect(function (err, client, done) {
-        client.query('UPDATE subvendors ' +
-            'SET name=$3, description=$4 ' +
-            'WHERE id = ( ' +
-            'SELECT subvendors.id ' +
-            'FROM users_vendors ' +
-            'JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id ' +
-            'JOIN subvendors ON subvendors.parent_vendor_id=vendors.id AND subvendors.id=$2);',
-            [userId, subvendorId, subvendorDetails.name, subvendorDetails.description],
-            function (err) {
-                done();
-                if (err) {
-                    console.log('Error subvendor data UPDATE SQL query task', err);
-                    res.sendStatus(500);
-                } else {
-                    res.sendStatus(200);
-                }
-            });
-    });
+    try {
+        var client = await pool.connect();
+        const subvendorQueryResult = await client.query(`UPDATE subvendors 
+            SET name=$3, description=$4 
+            WHERE id = ( 
+            SELECT subvendors.id 
+            FROM users_vendors 
+            JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id 
+            JOIN subvendors ON subvendors.parent_vendor_id=vendors.id AND subvendors.id=$2);`,
+            [userId, subvendorId, subvendorDetails.name, subvendorDetails.description]);
+        res.sendStatus(200);
+    } catch (e) {
+        console.log('Error adding updating subvendor data, UPDATE SQL query task', err);
+        res.sendStatus(500);
+    } finally {
+        client && client.release && client.release();
+    }
 });
 
-router.post('/upsertPackage', function (req, res) {
+router.post('/upsertPackage', async (req, res) => {
     var userId = req.decodedToken.userSQLId;
     var subvendorId = req.headers.subvendor_id;
     var packageObject = req.body;
-    pool.connect(function (err, client, done) {
-        if (err) {
-            console.log('Error connecting to database', err);
-            res.sendStatus(500);
-        } else {
-            // if the package already exists, update the package
-            if ((isNaN(packageObject.price) || packageObject.price == "") && packageObject.id) {
-                client.query('DELETE FROM subvendors_packages ' +
-                    'WHERE id = ( ' +
-                    'SELECT subvendors_packages.id ' +
-                    'FROM users_vendors ' +
-                    'JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id ' +
-                    'JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=$2 ' +
-                    'JOIN subvendors_packages ON subvendors_packages.subvendor_id=subvendors.id ' +
-                    'WHERE subvendors_packages.id=$3);',
-                    [userId, subvendorId, packageObject.id],
-                    function (err) {
-                        done();
-                        if (err) {
-                            console.log('Error subvendor data UPDATE SQL query task', err);
-                            res.sendStatus(500);
-                        } else {
-                            res.sendStatus(200);
-                        }
-                    });
-            } else if (packageObject.id) {
-                client.query('UPDATE subvendors_packages ' +
-                    'SET price=$4, is_active=$5 ' +
-                    'WHERE id = ( ' +
-                    'SELECT subvendors_packages.id ' +
-                    'FROM users_vendors ' +
-                    'JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id ' +
-                    'JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=$2 ' +
-                    'JOIN subvendors_packages ON subvendors_packages.subvendor_id=subvendors.id ' +
-                    'WHERE subvendors_packages.id=$3);',
-                    [userId, subvendorId, packageObject.id, packageObject.price, !!packageObject.is_active],
-                    function (err) {
-                        done();
-                        if (err) {
-                            console.log('Error subvendor data UPDATE SQL query task', err);
-                            res.sendStatus(500);
-                        } else {
-                            res.sendStatus(200);
-                        }
-                    });
-            } else if (!isNaN(Number(packageObject.price)) && !packageObject.price == "") {
-                client.query('INSERT INTO subvendors_packages (subvendor_id, package_id, price, is_active)' +
-                    'VALUES (' +
-                    '    (SELECT subvendors.id  ' +
-                    '    FROM users_vendors ' +
-                    '    JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id ' +
-                    '    JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=$2), ' +
-                    '    (SELECT id ' +
-                    '    FROM packages ' +
-                    '    WHERE id=$3 AND vendortype_id=1), ' + // currently hard-coded for photographers
-                    '    $4, ' +
-                    '    $5' +
-                    ');',
-                    [userId, subvendorId, packageObject.package_id, packageObject.price, !!packageObject.is_active],
-                    function (err) {
-                        done();
-                        if (err) {
-                            console.log('Error vendor data INSERT SQL query task', err);
-                            res.sendStatus(500);
-                        } else {
-                            res.sendStatus(200);
-                        }
-                    });
-            } else {
-                res.status(400).send('A price is required in order to save a package');
-            }
+    try {
+        var client = await pool.connect();
+        if ((isNaN(packageObject.price) || packageObject.price == "") && packageObject.id) {
+            // if package was removed
+            await client.query(`DELETE FROM subvendors_packages 
+                WHERE id = ( 
+                SELECT subvendors_packages.id 
+                FROM users_vendors 
+                JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id 
+                JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=$2 
+                JOIN subvendors_packages ON subvendors_packages.subvendor_id=subvendors.id 
+                WHERE subvendors_packages.id=$3);`,
+                [userId, subvendorId, packageObject.id]);
+        } else if (packageObject.id) {
+            // if package was updated
+            await client.query(`UPDATE subvendors_packages 
+                SET price=$4, is_active=$5 
+                WHERE id = ( 
+                SELECT subvendors_packages.id 
+                FROM users_vendors 
+                JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id 
+                JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=$2 
+                JOIN subvendors_packages ON subvendors_packages.subvendor_id=subvendors.id 
+                WHERE subvendors_packages.id=$3)`,
+                [userId, subvendorId, packageObject.id, packageObject.price, !!packageObject.is_active]);
 
+        } else if (!isNaN(Number(packageObject.price)) && !packageObject.price == "") {
+            // new package was created
+            await client.query(`INSERT INTO subvendors_packages (subvendor_id, package_id, price, is_active)
+                VALUES (
+                    (SELECT subvendors.id  
+                    FROM users_vendors 
+                    JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id 
+                    JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=$2), 
+                    (SELECT id 
+                    FROM packages 
+                    WHERE id=$3 AND vendortype_id=1), 
+                    $4, 
+                    $5
+                );`,
+                [userId, subvendorId, packageObject.package_id, packageObject.price, !!packageObject.is_active]);
+        } else {
+            // attempt to create a new package, but price isn't valid
+            throw 'New package price was invalid: ' + packageObject.price;
         }
-    });
+        res.sendStatus(200);
+    } catch (e) {
+        console.log('Error adding updating subvendor data, UPDATE SQL query task', err);
+        res.sendStatus(500);
+    } finally {
+        client && client.release && client.release();
+    }
 });
 
-router.post('/upsertAvailability', function (req, res) {
+router.post('/upsertAvailability', async (req, res) => {
     var userId = req.decodedToken.userSQLId;
     var subvendorId = req.headers.subvendor_id;
     var availability = req.body;
-    pool.connect(function (err, client, done) {
-        if (err) {
-            console.log('Error connecting to database', err);
-            res.sendStatus(500);
+    try {
+        var client = await pool.connect();
+        if (availability.id) {
+            // if availability was updated
+            await client.query(`UPDATE subvendor_availability 
+                SET availability_id=(SELECT id FROM availability WHERE status=$4) 
+                WHERE id = ( 
+                SELECT subvendor_availability.id 
+                FROM users_vendors 
+                JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id 
+                JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=$2 
+                JOIN subvendor_availability ON subvendor_availability.subvendor_id=subvendors.id 
+                WHERE subvendor_availability.id=$3);`,
+                [userId, subvendorId, availability.id, availability.status]);
         } else {
-            // if the availability already exists, update the availability
-            if (availability.id) {
-                client.query('UPDATE subvendor_availability ' +
-                    'SET availability_id=(SELECT id FROM availability WHERE status=$4) ' +
-                    'WHERE id = ( ' +
-                    'SELECT subvendor_availability.id ' +
-                    'FROM users_vendors ' +
-                    'JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id ' +
-                    'JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=$2 ' +
-                    'JOIN subvendor_availability ON subvendor_availability.subvendor_id=subvendors.id ' +
-                    'WHERE subvendor_availability.id=$3);',
-                    [userId, subvendorId, availability.id, availability.status],
-                    function (err) {
-                        done();
-                        if (err) {
-                            console.log('Error subvendor data UPDATE SQL query task', err);
-                            res.sendStatus(500);
-                        } else {
-                            res.sendStatus(200);
-                        }
-                    });
-            } else {
-                client.query('INSERT INTO subvendor_availability (subvendor_id, date_id, availability_id) ' +
-                    'VALUES (' +
-                    '	(' +
-                    '	SELECT subvendors.id  ' +
-                    '	FROM users_vendors  ' +
-                    '	JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id ' +
-                    '	JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=$2 ' +
-                    '	), ' +
-                    '	(SELECT id FROM calendar_dates WHERE day=$3), ' +
-                    '	(SELECT id FROM availability WHERE status=$4) ' +
-                    ');',
-                    [userId, subvendorId, availability.day, availability.status],
-                    function (err) {
-                        done();
-                        if (err) {
-                            console.log('Error vendor data INSERT SQL query task', err);
-                            res.sendStatus(500);
-                        } else {
-                            res.sendStatus(200);
-                        }
-                    });
-            }
-
+            // if availability was added
+            await client.query(`INSERT INTO subvendor_availability (subvendor_id, date_id, availability_id) 
+                VALUES (
+                    (
+                    SELECT subvendors.id  
+                    FROM users_vendors  
+                    JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id 
+                    JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=$2 
+                    ), 
+                    (SELECT id FROM calendar_dates WHERE day=$3), 
+                    (SELECT id FROM availability WHERE status=$4) 
+                );`,
+                [userId, subvendorId, availability.day, availability.status]);
         }
-    });
+        res.sendStatus(200);
+    } catch (e) {
+        console.log('Error adding updating subvendor availability data, UPDATE SQL query task', err);
+        res.sendStatus(500);
+    } finally {
+        client && client.release && client.release();
+    }
 });
 
-router.put('/updateImage', function (req, res) {
+router.put('/updateImage', async (req, res) => {
     var userId = req.decodedToken.userSQLId;
     var subvendorId = req.headers.subvendor_id;
     var imageObject = req.body;
-    pool.connect(function (err, client, done) {
-        if (err) {
-            console.log('Error connecting to database', err);
-            res.sendStatus(500);
-        } else {
-            client.query('UPDATE subvendor_images ' +
-                'SET is_public=$4, is_in_gallery=$5, is_active=$6 ' +
-                'WHERE id = ( ' +
-                'SELECT subvendor_images.id ' +
-                'FROM users_vendors ' +
-                'JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id ' +
-                'JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=$2 ' +
-                'JOIN subvendor_images ON subvendor_images.subvendor_id=subvendors.id ' +
-                'WHERE subvendor_images.id=$3);',
-                [userId, subvendorId, imageObject.id, imageObject.is_public, imageObject.is_in_gallery, imageObject.is_active],
-                function (err) {
-                    done();
-                    if (err) {
-                        console.log('Error subvendor data UPDATE SQL query task', err);
-                        res.sendStatus(500);
-                    } else {
-                        res.sendStatus(200);
-                    }
-                });
-
-        }
-    });
+    try {
+        var client = await pool.connect();
+        await client.query(`UPDATE subvendor_images 
+            SET is_public=$4, is_in_gallery=$5, is_active=$6 
+            WHERE id = ( 
+            SELECT subvendor_images.id 
+            FROM users_vendors 
+            JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id 
+            JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=$2 
+            JOIN subvendor_images ON subvendor_images.subvendor_id=subvendors.id 
+            WHERE subvendor_images.id=$3);`,
+            [userId, subvendorId, imageObject.id, imageObject.is_public, imageObject.is_in_gallery, imageObject.is_active]);
+        res.sendStatus(200);
+    } catch (e) {
+        console.log('Error adding updating subvendor data, UPDATE SQL query task', err);
+        res.sendStatus(500);
+    } finally {
+        client && client.release && client.release();
+    }
 });
 
 function pgFormatDate(date) {
