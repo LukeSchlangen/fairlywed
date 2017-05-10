@@ -23,7 +23,7 @@ var tokenDecoder = function (req, res, next) {
         client.query(`INSERT INTO users (name, email, firebase_user_id, authentication_provider) 
         VALUES ($1, $2, $3, $4) 
         ON CONFLICT(firebase_user_id) DO UPDATE SET firebase_user_id=EXCLUDED.firebase_user_id RETURNING id;`,
-          [userName, userEmail, firebaseUserId, authenticationProvider], 
+          [userName, userEmail, firebaseUserId, authenticationProvider],
           function (err, userSQLIdResult) {
             done();
             if (err) {
@@ -61,62 +61,22 @@ var noAnonymousUsers = function (req, res, next) {
   }
 }
 
-var linkPreviouslyAnonymousUser = function (req, res, next) {
-  if (req.headers.previously_anonymous_id_token) {
-    admin.auth().verifyIdToken(req.headers.previously_anonymous_id_token).then(function (previousAnonymousUserDecodedToken) {
-      pool.connect(function (err, client, done) {
-        var previousAnonymousFirebaseUserId = previousAnonymousUserDecodedToken.user_id || previousAnonymousUserDecodedToken.uid;
-        client.query('SELECT id FROM users WHERE firebase_user_id=$1', [previousAnonymousFirebaseUserId], function (err, previousAnonymousUserSQLIdResult) {
-          done();
-          if (err) {
-            console.log('Error completing user id query task', err);
-            res.sendStatus(500);
-          } else {
-            if (previousAnonymousUserSQLIdResult.rows.length === 0) {
-              // If the anonymous user is not in the database, move on
-              next();
-            } else {
-              var previousAnonymousFirebaseUserId = previousAnonymousUserSQLIdResult.rows[0].id;
-              // Change all of the references to the anonymous user to the non-anonymous user
-              // TODO: SOME UPDATE QUERY to Change everything in the ranking table that Miles is creating
-              pool.connect(function (err, client, done) {
-                if (err) {
-                  console.log('Error connecting to database', err);
-                  res.sendStatus(500);
-                } else {
-                  client.query('UPDATE logs SET user_id=$1 WHERE user_id=$2', [req.decodedToken.userSQLId, previousAnonymousFirebaseUserId], function (err) {
-                    done();
-                    if (err) {
-                      console.log('Error updating logs in database', err);
-                      res.sendStatus(500);
-                    } else {
-                      pool.connect(function (err, client, done) {
-                        if (err) {
-                          console.log('Error connecting to database', err);
-                          res.sendStatus(500);
-                        } else {
-                          client.query('DELETE FROM users WHERE id=$1', [previousAnonymousFirebaseUserId], function (err) {
-                            done();
-                            if (err) {
-                              console.log('Error updating removing anonymous user from database', err);
-                              res.sendStatus(500);
-                            } else {
-                              next();
-                            }
-                          });
-                        }
-                      });
-                    }
-                  });
-                }
-              });
-            }
-          }
-        });
-      });
-    });
-  } else {
+var linkPreviouslyAnonymousUser = async (req, res, next) => {
+  try {
+    if (req.headers.previously_anonymous_id_token) {
+      const [previousAnonymousUserDecodedToken, client] = await Promise.all([admin.auth().verifyIdToken(req.headers.previously_anonymous_id_token), pool.connect()]);
+      const previousAnonymousFirebaseUserId = previousAnonymousUserDecodedToken.user_id || previousAnonymousUserDecodedToken.uid;
+      const success = await client.query(`WITH log_update AS (UPDATE logs SET user_id=$1 WHERE user_id=(SELECT id FROM users WHERE firebase_user_id=$2) RETURNING id), 
+          matchmaker_run_update AS (UPDATE matchmaker_run SET user_id=$1 WHERE user_id=(SELECT id FROM users WHERE firebase_user_id=$2) RETURNING id)
+          DELETE FROM users WHERE id=(SELECT id FROM users WHERE firebase_user_id=$2)`,
+        [req.decodedToken.userSQLId, previousAnonymousFirebaseUserId]);
+    }
     next();
+  } catch (e) {
+    console.log('error in linkPreviouslyAnonymousUser', e);
+    res.sendStatus(500);
+  } finally {
+    client && client.release && client.release();
   }
 }
 
