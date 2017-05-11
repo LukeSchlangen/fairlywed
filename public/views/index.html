@@ -35,6 +35,7 @@
   <!--Angular Material -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.1.3/angular-material.min.css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://cdn.materialdesignicons.com/1.9.32/css/materialdesignicons.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.1.3/angular-material.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.0/angular-animate.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.0/angular-aria.min.js"></script>
@@ -77,6 +78,7 @@
 
   <!-- Angular Controllers - Should have a matching directive -->
   <script src="components/auth/auth.controller.js"></script>
+  <script src="components/page-footer/page-footer.controller.js"></script>
   <script src="components/photographer-search/photographer-search.controller.js"></script>
   <script src="components/photographer-list/photographer-list.controller.js"></script>
   <script src="components/vendor-account/vendor-account.controller.js"></script>
@@ -85,6 +87,7 @@
 
   <!-- Angular Directives - Should have a matching controller -->
   <script src="components/auth/auth.directive.js"></script>
+  <script src="components/page-footer/page-footer.directive.js"></script>
   <script src="components/photographer-search/photographer-search.directive.js"></script>
   <script src="components/photographer-list/photographer-list.directive.js"></script>
   <script src="components/vendor-account/vendor-account.directive.js"></script>
@@ -166,11 +169,18 @@
     md-virtual-repeat-container {
       max-height: 250px !important;
     }
+
+    md-card {
+      margin-right: 0;
+      margin-left: 0;
+    }
     
     md-card.fw-toolbar {
       margin-top: 0;
-      margin-left: 0;
-      margin-right: 0;
+    }
+    
+    md-card.fw-footer {
+      margin-bottom: 0;
     }
   </style>
 </head>
@@ -182,6 +192,7 @@
   <span class="fw-move-to-back">
     <span ui-view></span>
   </span>
+  <page-footer></page-footer>
 </body>
 
 </html>
