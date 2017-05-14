@@ -120,42 +120,63 @@
   <script src="components/photographer-matchmaker/photographer-matchmaker.controller.js"></script>
   <script src="components/photographer-matchmaker/photographer-matchmaker.directive.js"></script>
 
+  <!--Find Compare Book Cards-->
+  <script src="components/find-compare-book-cards/find-compare-book-cards.controller.js"></script>
+  <script src="components/find-compare-book-cards/find-compare-book-cards.directive.js"></script>
+
+
   <style>
     body {
       min-width: 670px !important;
     }
-    
+
     .brand-font {
       font-family: 'Tangerine', cursive;
     }
-    
+
     .nav-brand {
       font-size: 300%;
       cursor: pointer;
     }
-    
+
     .availability-calendar {
       min-width: 540px !important;
     }
-    
+
     .calendar-day {
       width: 10%;
       min-width: 0px;
     }
-    
+
     .calendar-month {
       width: 10%;
       min-width: 40px !important;
     }
-    
+
     .fw-move-to-front {
       z-index: 100;
     }
-    
+
     .fw-move-to-back {
       z-index: 0;
     }
-    
+
+    .cards-icon {
+      font-size: 64px;
+      padding: 36px;
+    }
+
+    .cards-text {
+      padding-top: 36px;
+      padding-bottom: 36px;
+      padding-right: 24px;
+      padding-left: 24px
+    }
+
+    .cards-title {
+      padding: 36px;
+    }
+
     header {
       margin-top: -50px;
       padding-top: 50px;
@@ -165,7 +186,7 @@
       background-position: center center;
       background-size: cover;
     }
-    
+
     md-virtual-repeat-container {
       max-height: 250px !important;
     }
@@ -174,7 +195,7 @@
       margin-right: 0;
       margin-left: 0;
     }
-    
+
     md-card.fw-toolbar {
       margin-top: 0;
     }
