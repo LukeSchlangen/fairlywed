@@ -1,4 +1,4 @@
-app.factory("VendorAccountFactory", function ($http, AuthFactory, $state) {
+app.factory("VendorAccountFactory", function ($http, AuthFactory, $state, $stateParams) {
 
     var vendors = { list: [] };
 
@@ -11,6 +11,11 @@ app.factory("VendorAccountFactory", function ($http, AuthFactory, $state) {
         }).then(function (response) {
             console.log('Vendors factory returned: ', response.data.vendors);
             vendors.list = response.data.vendors;
+            if (!$stateParams.vendorId && vendors.list.length > 0) {
+                var newStateParams = angular.copy($stateParams);
+                newStateParams.vendorId = vendors.list[0].id;
+                $state.go('account.vendor.details', newStateParams);
+            }
         }).catch(function (err) {
             console.error('Error retreiving private user data: ', err);
             vendors.list = [];

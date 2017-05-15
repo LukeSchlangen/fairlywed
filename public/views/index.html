@@ -35,6 +35,7 @@
   <!--Angular Material -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.1.3/angular-material.min.css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://cdn.materialdesignicons.com/1.9.32/css/materialdesignicons.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.1.3/angular-material.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.0/angular-animate.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.0/angular-aria.min.js"></script>
@@ -77,6 +78,7 @@
 
   <!-- Angular Controllers - Should have a matching directive -->
   <script src="components/auth/auth.controller.js"></script>
+  <script src="components/page-footer/page-footer.controller.js"></script>
   <script src="components/photographer-search/photographer-search.controller.js"></script>
   <script src="components/photographer-list/photographer-list.controller.js"></script>
   <script src="components/vendor-account/vendor-account.controller.js"></script>
@@ -85,6 +87,7 @@
 
   <!-- Angular Directives - Should have a matching controller -->
   <script src="components/auth/auth.directive.js"></script>
+  <script src="components/page-footer/page-footer.directive.js"></script>
   <script src="components/photographer-search/photographer-search.directive.js"></script>
   <script src="components/photographer-list/photographer-list.directive.js"></script>
   <script src="components/vendor-account/vendor-account.directive.js"></script>
@@ -117,60 +120,101 @@
   <script src="components/photographer-matchmaker/photographer-matchmaker.controller.js"></script>
   <script src="components/photographer-matchmaker/photographer-matchmaker.directive.js"></script>
 
+  <!--Find Compare Book Cards-->
+  <script src="components/find-compare-book-cards/find-compare-book-cards.controller.js"></script>
+  <script src="components/find-compare-book-cards/find-compare-book-cards.directive.js"></script>
+
+
   <style>
     body {
       min-width: 670px !important;
     }
-    
+
+    h1 {
+      margin-bottom: 0px;
+    }
+
     .brand-font {
       font-family: 'Tangerine', cursive;
     }
-    
+
     .nav-brand {
       font-size: 300%;
       cursor: pointer;
     }
-    
+
     .availability-calendar {
       min-width: 540px !important;
     }
-    
+
     .calendar-day {
       width: 10%;
       min-width: 0px;
     }
-    
+
     .calendar-month {
       width: 10%;
       min-width: 40px !important;
     }
-    
+
     .fw-move-to-front {
       z-index: 100;
     }
-    
+
     .fw-move-to-back {
       z-index: 0;
     }
-    
+
+    .cards-icon {
+      font-size: 64px;
+      padding: 36px;
+    }
+
+    .cards-text {
+      padding-top: 36px;
+      padding-bottom: 36px;
+      padding-right: 24px;
+      padding-left: 24px
+    }
+
+    .cards-title {
+      padding: 36px;
+    }
+
     header {
       margin-top: -50px;
-      padding-top: 50px;
-      background-image: url("assets/background.jpg");
-      background-repeat: no-repeat;
-      /*background-attachment: fixed;*/
-      background-position: center center;
-      background-size: cover;
+      background-color: #FFFEEA;
     }
-    
+
+    .image-below-header {
+      background-repeat: no-repeat;
+      background-image: url("assets/background.jpg");
+      background-size: cover;
+      background-position: right center;
+      height: 400px;
+    }
+
+    @media (max-width: 800px) {
+      .image-below-header {
+        height: 200px;
+      }
+    }
+
     md-virtual-repeat-container {
       max-height: 250px !important;
     }
-    
+
+    md-card {
+      margin-right: 0;
+      margin-left: 0;
+    }
+
     md-card.fw-toolbar {
       margin-top: 0;
-      margin-left: 0;
-      margin-right: 0;
+    }
+    
+    md-card.fw-footer {
+      margin-bottom: 0;
     }
   </style>
 </head>
@@ -182,6 +226,7 @@
   <span class="fw-move-to-back">
     <span ui-view></span>
   </span>
+  <page-footer></page-footer>
 </body>
 
 </html>

@@ -26,6 +26,11 @@ app.factory("VendorDetailsFactory", function ($http, AuthFactory, $stateParams, 
         }).then(function (response) {
             console.log('subvendors controller returned: ', response.data);
             vendor.subvendorList = response.data.subvendors;
+            if (!$stateParams.subvendorId && vendor.subvendorList.length > 0) {
+                var newStateParams = angular.copy($stateParams);
+                newStateParams.subvendorId = vendor.subvendorList[0].id;
+                $state.go('account.vendor.details.subvendor.details.about', newStateParams);
+            }
         }).catch(function (err) {
             console.error('Error retreiving private user data: ', err);
             vendor.subvendorList = [];
