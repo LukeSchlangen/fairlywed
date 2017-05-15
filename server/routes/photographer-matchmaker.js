@@ -12,7 +12,7 @@ router.get('/', async (req, res) => {
         let hasDoneMatchmakerBefore = false;
         if (req.query.photos && req.query.photos.length > 0) {
             hasDoneMatchmakerBefore = true;
-            var photos = req.query.photos.map((photo) => {
+            var photos = objectToArrayCheck(req.query.photos).map((photo) => {
                 var returnPhoto = JSON.parse(photo);
                 returnPhoto.liked = returnPhoto.liked || false;
                 return returnPhoto;
@@ -23,11 +23,12 @@ router.get('/', async (req, res) => {
             try {
                 var client = await pool.connect();
                 const hasDoneMatchmakerBeforeSQL = await client.query('SELECT EXISTS(SELECT 1 FROM matchmaker_run WHERE user_id=$1)', [userId]);
-                client.release();
                 hasDoneMatchmakerBefore = hasDoneMatchmakerBeforeSQL.rows[0].exists;
             } catch (e) {
                 console.log('Error matchmaker_run SELECT SQL query task', e);
                 throw e;
+            } finally {
+                client && client.release && client.release();
             }
         }
         const getImageFunction = hasDoneMatchmakerBefore ? getImagesWithUserId : getRandomImages;
@@ -101,5 +102,15 @@ async function getImagesWithUserId(userId) {
 
 // console.log('Error matchmaker_run SELECT RANDOM SQL query task', err);
 
+function objectToArrayCheck(photos) {
+    if (typeof photos === 'array') {
+        return photos;
+    }
+    else if (typeof photos === 'string') {
+        return [photos]
+    } else {
+        throw new Error('Unknown type of photos passed in')
+    }
+}
 
 module.exports = router;
