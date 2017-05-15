@@ -78,6 +78,7 @@
 
   <!-- Angular Controllers - Should have a matching directive -->
   <script src="components/auth/auth.controller.js"></script>
+  <script src="components/page-footer/page-footer.controller.js"></script>
   <script src="components/photographer-search/photographer-search.controller.js"></script>
   <script src="components/photographer-list/photographer-list.controller.js"></script>
   <script src="components/vendor-account/vendor-account.controller.js"></script>
@@ -86,6 +87,7 @@
 
   <!-- Angular Directives - Should have a matching controller -->
   <script src="components/auth/auth.directive.js"></script>
+  <script src="components/page-footer/page-footer.directive.js"></script>
   <script src="components/photographer-search/photographer-search.directive.js"></script>
   <script src="components/photographer-list/photographer-list.directive.js"></script>
   <script src="components/vendor-account/vendor-account.directive.js"></script>
@@ -189,10 +191,17 @@
       max-height: 250px !important;
     }
 
+    md-card {
+      margin-right: 0;
+      margin-left: 0;
+    }
+
     md-card.fw-toolbar {
       margin-top: 0;
-      margin-left: 0;
-      margin-right: 0;
+    }
+    
+    md-card.fw-footer {
+      margin-bottom: 0;
     }
   </style>
 </head>
@@ -204,6 +213,7 @@
   <span class="fw-move-to-back">
     <span ui-view></span>
   </span>
+  <page-footer></page-footer>
 </body>
 
 </html>
