@@ -21,6 +21,7 @@ app.factory("SubvendorFactory", function ($http, AuthFactory, $stateParams, Vend
         }).then(function (response) {
             console.log('subvendor details factory returned: ', response.data);
             subvendor.packageList = response.data.packages;
+            checkAccountStatus();
         }).catch(function (err) {
             console.error('Error retreiving private user data: ', err);
             subvendor.packageList = [];
@@ -38,6 +39,7 @@ app.factory("SubvendorFactory", function ($http, AuthFactory, $stateParams, Vend
         }).then(function (response) {
             console.log('subvendor details factory returned: ', response.data);
             subvendor.availabilityList = response.data;
+            checkAccountStatus();
         }).catch(function (err) {
             console.error('Error retreiving private user data: ', err);
             subvendor.availabilityList = [];
@@ -97,6 +99,7 @@ app.factory("SubvendorFactory", function ($http, AuthFactory, $stateParams, Vend
         }).then(function (response) {
             console.log('subvendors controller returned: ', response.data);
             subvendor.details = response.data;
+            subvendor.savedDetails = angular.copy(subvendor.details);
         }).catch(function (err) {
             console.error('Error retreiving private user data: ', err);
             subvendor.details = {};
@@ -168,6 +171,35 @@ app.factory("SubvendorFactory", function ($http, AuthFactory, $stateParams, Vend
         }).catch(function (err) {
             console.error('Error retreiving private user data: ', err);
         });
+    }
+
+    function checkAccountStatus() {
+        subvendor.hasActivePackages = checkActivePackages(subvendor.packageList);
+        subvendor.hasFutureAvailability = checkAvailability(subvendor.availabilityList);
+    }
+
+    function checkActivePackages(packagesToCheck) {
+        var hasActivePackages = false;
+        if (packagesToCheck) {
+            packagesToCheck.forEach(function (packageToCheck) {
+                if (packageToCheck.is_active && packageToCheck.price) {
+                    hasActivePackages = true;
+                }
+            });
+        }
+        return hasActivePackages;
+    }
+
+    function checkAvailability(availabilityToCheck) {
+        var hasFutureAvailability = false;
+        if (availabilityToCheck) {
+            availabilityToCheck.forEach(function (availabilityToCheck) {
+                if (availabilityToCheck.status == 'available') {
+                    hasFutureAvailability = true;
+                }
+            });
+        }
+        return hasFutureAvailability;
     }
 
     return {
