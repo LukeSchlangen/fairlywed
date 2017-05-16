@@ -65,7 +65,6 @@ router.get('/availability', async (req, res) => {
                 FROM users_vendors   
                 JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id  
                 JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=$2)  
-            RIGHT OUTER JOIN calendar_dates ON calendar_dates.id=subvendor_availability.date_id  
             WHERE day >= (SELECT date_trunc('month', coalesce($3, current_date)::date)::date - cast(extract(dow from date_trunc('month', coalesce($3, current_date)::date)::date) as int)) AND day < (SELECT date_trunc('month', coalesce($3, current_date)::date)::date - cast(extract(dow from date_trunc('month', coalesce($3, current_date)::date)::date) as int)) + 42  
             ORDER BY day;`,
             [userId, subvendorId, selectedDate]);
@@ -235,7 +234,7 @@ router.post('/upsertAvailability', async (req, res) => {
                     JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id 
                     JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=$2 
                     ), 
-                    (SELECT id FROM calendar_dates WHERE day=$3), 
+                    day=$3, 
                     (SELECT id FROM availability WHERE status=$4) 
                 );`,
                 [userId, subvendorId, availability.day, availability.status]);
