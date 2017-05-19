@@ -212,33 +212,20 @@ router.post('/upsertAvailability', async (req, res) => {
     var availability = req.body;
     try {
         var client = await pool.connect();
-        if (availability.id) {
-            // if availability was updated
-            await client.query(`UPDATE subvendor_availability 
-                SET availability_id=(SELECT id FROM availability WHERE status=$4) 
-                WHERE id = ( 
-                SELECT subvendor_availability.id 
-                FROM users_vendors 
-                JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id 
-                JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=$2 
-                JOIN subvendor_availability ON subvendor_availability.subvendor_id=subvendors.id 
-                WHERE subvendor_availability.id=$3);`,
-                [userId, subvendorId, availability.id, availability.status]);
-        } else {
-            // if availability was added
-            await client.query(`INSERT INTO subvendor_availability (subvendor_id, date_id, availability_id) 
-                VALUES (
-                    (
-                    SELECT subvendors.id  
-                    FROM users_vendors  
-                    JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id 
-                    JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=$2 
-                    ), 
-                    day=$3, 
-                    (SELECT id FROM availability WHERE status=$4) 
-                );`,
-                [userId, subvendorId, availability.day, availability.status]);
-        }
+        await client.query(`WITH validated_subvendor AS (SELECT subvendors.id FROM users_vendors 
+            JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id 
+            JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=$2),
+            
+            availaibity_temp AS (SELECT id FROM availability WHERE status=$4)
+
+            INSERT INTO subvendor_availability (subvendor_id, day, availability_id)
+            VALUES (
+            (SELECT id FROM validated_subvendor), 
+            $3, 
+            (SELECT id FROM availaibity_temp))
+            ON CONFLICT (subvendor_id, day) DO UPDATE
+            SET availability_id = excluded.availability_id;`,
+            [userId, subvendorId, availability.day, availability.status]);
         res.sendStatus(200);
     } catch (e) {
         console.log('Error adding updating subvendor availability data, UPDATE SQL query task', err);

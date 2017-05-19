@@ -87,7 +87,6 @@ CREATE TABLE availability (
 );
 
 CREATE TABLE subvendor_availability (
-	id SERIAL,
 	subvendor_id INT NOT NULL REFERENCES subvendors,
 	day DATE NOT NULL,
     availability_id INT NOT NULL REFERENCES availability,
@@ -437,7 +436,7 @@ WHERE day >= (SELECT current_date - cast(extract(dow from current_date) as int))
 ORDER BY day;
 
 -- ADDING NEW AVAILABILITY
-INSERT INTO subvendor_availability (subvendor_id, date_id, availability_id)
+INSERT INTO subvendor_availability (subvendor_id, day, availability_id)
 VALUES (
 	(
 	SELECT subvendors.id  
