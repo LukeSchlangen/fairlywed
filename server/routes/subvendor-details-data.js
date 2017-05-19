@@ -224,7 +224,8 @@ router.post('/upsertAvailability', async (req, res) => {
             $3, 
             (SELECT id FROM availaibity_temp))
             ON CONFLICT (subvendor_id, day) DO UPDATE
-            SET availability_id = excluded.availability_id;`,
+            SET availability_id = excluded.availability_id 
+            WHERE subvendor_availability.availability_id != (SELECT id FROM availability WHERE status='booked');`,
             [userId, subvendorId, availability.day, availability.status]);
         res.sendStatus(200);
     } catch (e) {
