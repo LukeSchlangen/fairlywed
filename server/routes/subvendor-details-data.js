@@ -216,17 +216,18 @@ router.post('/upsertAvailability', async (req, res) => {
             JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id 
             JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=$2),
             
-            availaibity_temp AS (SELECT id FROM availability WHERE status=$4)
+            availaibity_temp AS (SELECT id FROM availability WHERE status=$3)
 
             INSERT INTO subvendor_availability (subvendor_id, day, availability_id)
             VALUES (
-            (SELECT id FROM validated_subvendor), 
-            $3, 
-            (SELECT id FROM availaibity_temp))
+                (SELECT id FROM validated_subvendor), 
+                $4, 
+                (SELECT id FROM availaibity_temp)
+            )
             ON CONFLICT (subvendor_id, day) DO UPDATE
             SET availability_id = excluded.availability_id 
             WHERE subvendor_availability.availability_id != (SELECT id FROM availability WHERE status='booked');`,
-            [userId, subvendorId, availability.day, availability.status]);
+            [userId, subvendorId, availability.status, availability.day]);
         res.sendStatus(200);
     } catch (e) {
         console.log('Error adding updating subvendor availability data, UPDATE SQL query task', err);

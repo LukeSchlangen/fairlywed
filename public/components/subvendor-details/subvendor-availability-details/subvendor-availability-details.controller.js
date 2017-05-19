@@ -6,8 +6,11 @@ app.controller("SubvendorAvailabilityDetailsController", function (SubvendorFact
     function availabilityObjectFromDate(date) {
         var javascriptDate = new Date(date);
 
-        var correspondingAvailability = {};
+        var correspondingAvailability = {
+            day: javascriptDate
+        };
 
+        // Searches to see if the date already exists, if it does, this will make it toggle correctly
         SubvendorFactory.subvendor.availabilityList.forEach(function (availability) {
             if (sameDay(javascriptDate, new Date(availability.day))) {
                 correspondingAvailability = availability;
