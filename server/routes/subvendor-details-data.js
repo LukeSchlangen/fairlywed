@@ -206,28 +206,42 @@ router.post('/upsertPackage', async (req, res) => {
     }
 });
 
+// This route accepts an availability to change that includes, the subvendorId, availabilityStatus, and the day of the availability
+// If an array is passed in for the availability, the upsert will update all of the dates, allowing for mass changes
 router.post('/upsertAvailability', async (req, res) => {
     var userId = req.decodedToken.userSQLId;
     var subvendorId = req.headers.subvendor_id;
     var availability = req.body;
-    try {
-        var client = await pool.connect();
-        await client.query(`WITH validated_subvendor AS (SELECT subvendors.id FROM users_vendors 
+    if (!availability.day.isArray) {
+        availability.day = [availability.day];
+    }
+
+    var queryArgumentsArray = [userId, subvendorId, availability.status];
+    var valuesToInsert = [];
+    for (var i=0; i < availability.day.length; i++) {
+        valuesToInsert.push( `(
+                    (SELECT id FROM validated_subvendor), 
+                    $` + (i + 4) + `, 
+                    (SELECT id FROM availaibity_temp)
+                )`);
+        queryArgumentsArray.push(availability.day[i]);
+    }
+    
+    var queryStatement = `WITH validated_subvendor AS (SELECT subvendors.id FROM users_vendors 
             JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id 
             JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=$2),
             
             availaibity_temp AS (SELECT id FROM availability WHERE status=$3)
 
             INSERT INTO subvendor_availability (subvendor_id, day, availability_id)
-            VALUES (
-                (SELECT id FROM validated_subvendor), 
-                $4, 
-                (SELECT id FROM availaibity_temp)
-            )
-            ON CONFLICT (subvendor_id, day) DO UPDATE
+            VALUES ` + valuesToInsert.join(',') + 
+            `ON CONFLICT (subvendor_id, day) DO UPDATE
             SET availability_id = excluded.availability_id 
-            WHERE subvendor_availability.availability_id != (SELECT id FROM availability WHERE status='booked');`,
-            [userId, subvendorId, availability.status, availability.day]);
+            WHERE subvendor_availability.availability_id != (SELECT id FROM availability WHERE status='booked');`
+
+    try {
+        var client = await pool.connect();
+        await client.query(queryStatement, queryArgumentsArray);
         res.sendStatus(200);
     } catch (e) {
         console.log('Error adding updating subvendor availability data, UPDATE SQL query task', err);
