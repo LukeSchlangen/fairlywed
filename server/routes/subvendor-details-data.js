@@ -237,7 +237,7 @@ router.post('/upsertAvailability', async (req, res) => {
             VALUES ` + valuesToInsert.join(',') + 
             `ON CONFLICT (subvendor_id, day) DO UPDATE
             SET availability_id = excluded.availability_id 
-            WHERE subvendor_availability.availability_id != (SELECT id FROM availability WHERE status='booked');`
+            WHERE subvendor_availability.availability_id != (SELECT id FROM availability WHERE status='booked');`;
 
     try {
         var client = await pool.connect();
