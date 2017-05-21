@@ -218,7 +218,8 @@ angular.module("materialCalendar").directive("calendarMd", ["$compile", "$parse"
             clearDataCacheOnLoad: "=?",
             disableFutureSelection: "=?",
             disableSelection: "=?",
-            initialDataRetrieval: "=?"
+            initialDataRetrieval: "=?",
+            setData: "="
         },
         link: function ($scope, $element, $attrs) {
 
@@ -444,6 +445,7 @@ angular.module("materialCalendar").directive("calendarMd", ["$compile", "$parse"
             window.data = $scope.data;
 
             var bootstrap = function () {
+                $scope.setData = setData;
                 init().then(function (contents) {
                     setTemplate(contents);
                     $scope.initialDataRetrieval().then(function () {

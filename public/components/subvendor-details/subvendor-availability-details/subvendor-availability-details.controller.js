@@ -40,7 +40,7 @@ app.controller("SubvendorAvailabilityDetailsController", function (SubvendorFact
         self.dayFormat = direction === "vertical" ? "EEEE, MMMM d" : "d";
     };
 
-    self.dayClick = function (date, updateCalendar) {
+    self.dayClick = function (date) {
         var availability = availabilityObjectFromDate(date);
         
         if (availability.status == 'booked') {
@@ -51,7 +51,7 @@ app.controller("SubvendorAvailabilityDetailsController", function (SubvendorFact
             availability.status = 'available';
         }
 
-        SubvendorFactory.updateAvailability(availability, updateCalendar);
+        SubvendorFactory.updateAvailability(availability, self.setData);
     };
 
     self.tooltips = true;
@@ -73,4 +73,25 @@ app.controller("SubvendorAvailabilityDetailsController", function (SubvendorFact
         return '<span hide-gt-md>' + abreviatedStatusText + '</span>' +
             '<span hide-xs hide-sm hide-md>' + fullStatusText + '</span>';
     };
+
+    // self.updateMultipleAvailabilities = function (dayOfWeek, status) {
+
+        var start = moment();
+        var end   = moment().add(2, 'years');
+        // var day   = 0;                    // Sunday
+
+        var availability = {
+            status: 'unavailable',
+            day: []  
+        };
+
+        var current = start.clone();
+
+        while (current.isBefore(end)) {
+            availability.day.push(current.clone());
+            current = current.add(7, 'days');
+        }
+
+        SubvendorFactory.updateAvailability(availability, self.setData);
+    // };
 });

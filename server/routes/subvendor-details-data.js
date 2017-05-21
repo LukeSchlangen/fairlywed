@@ -212,9 +212,9 @@ router.post('/upsertAvailability', async (req, res) => {
     var userId = req.decodedToken.userSQLId;
     var subvendorId = req.headers.subvendor_id;
     var availability = req.body;
-    if (!availability.day.isArray) {
-        availability.day = [availability.day];
-    }
+    // if (!availability.day.isArray) {
+    //     availability.day = [availability.day];
+    // }
 
     var queryArgumentsArray = [userId, subvendorId, availability.status];
     var valuesToInsert = [];
