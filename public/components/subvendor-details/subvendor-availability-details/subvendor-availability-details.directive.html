@@ -1,5 +1,6 @@
-<md-button class="md-raised">Available All Saturdays</md-button>
-<md-button class="md-raised">Available All Days</md-button>
+<md-button class="md-raised" ng-click="vm.updateMultipleAvailabilities('Saturday', 'available')">Available All Saturdays</md-button>
+<md-button class="md-raised" ng-click="vm.updateMultipleAvailabilities('Saturday', 'unavailable')">Unavailable All Saturdays</md-button>
+<!--<md-button class="md-raised">Available All Days</md-button>-->
 
 <calendar-md flex layout layout-fill
   calendar-direction="vm.direction"
@@ -17,4 +18,5 @@
   day-content="vm.setDayContent"
   set-data="vm.setData"
   disable-future-selection="false"
+  disable-past-selection="true"
   initial-data-retrieval="vm.initialDataRetrieval"></calendar-md>

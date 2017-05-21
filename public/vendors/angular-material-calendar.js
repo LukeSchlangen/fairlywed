@@ -217,6 +217,7 @@ angular.module("materialCalendar").directive("calendarMd", ["$compile", "$parse"
             noOfDays: "=?",
             clearDataCacheOnLoad: "=?",
             disableFutureSelection: "=?",
+            disablePastSelection: "=?",
             disableSelection: "=?",
             initialDataRetrieval: "=?",
             setData: "="
@@ -257,6 +258,7 @@ angular.module("materialCalendar").directive("calendarMd", ["$compile", "$parse"
             $scope.dayTooltipFormat = $scope.dayTooltipFormat || "fullDate";
             $scope.dayIdFormat = "dd-MM-yy";
             $scope.disableFutureSelection = $scope.disableFutureSelection || false;
+            $scope.disablePastSelection = $scope.disablePastSelection || false;
             $scope.disableSelection = $scope.disableSelection || false;
 
             $scope.sameMonth = function (date) {
@@ -274,6 +276,7 @@ angular.module("materialCalendar").directive("calendarMd", ["$compile", "$parse"
                 }
                 if ($scope.disableSelection) { return true; }
                 if ($scope.disableFutureSelection && date > new Date()) { return true; }
+                if ($scope.disablePastSelection && date < new Date()) { return true; }
                 return !$scope.sameMonth(date);
             };
 
@@ -289,8 +292,8 @@ angular.module("materialCalendar").directive("calendarMd", ["$compile", "$parse"
                 bootstrap();
             });
 
-            var handleCb = function (cb, data, setData) {
-                (cb || angular.noop)(data, setData || angular.noop);
+            var handleCb = function (cb, data) {
+                (cb || angular.noop)(data, $scope.setData || angular.noop);
             };
 
             var dateFind = function (arr, date) {
@@ -337,13 +340,17 @@ angular.module("materialCalendar").directive("calendarMd", ["$compile", "$parse"
                 var dayInMonth = new Date(data.year, data.month - 1, 1);
 
                 $scope.initialDataRetrieval(dayInMonth).then(function () {
-                    setData();
+                    $scope.setData();
                 });
             }
 
             $scope.handleDayClick = function (date) {
 
                 if ($scope.disableFutureSelection && date > new Date()) {
+                    return;
+                }
+
+                if ($scope.disablePastSelection && date < new Date()) {
                     return;
                 }
 
@@ -372,7 +379,7 @@ angular.module("materialCalendar").directive("calendarMd", ["$compile", "$parse"
                     $parse($attrs.ngModel).assign($scope.$parent, angular.copy($scope.active));
                 }
 
-                handleCb($scope.onDayClick, angular.copy(date), setData);
+                handleCb($scope.onDayClick, angular.copy(date), $scope.setData);
 
             };
 
@@ -436,7 +443,7 @@ angular.module("materialCalendar").directive("calendarMd", ["$compile", "$parse"
 
             };
 
-            var setData = function () {
+            $scope.setData = function () {
                 angular.forEach($scope.calendar.weeks, function (week) {
                     angular.forEach(week, getDayContent);
                 });
@@ -445,11 +452,10 @@ angular.module("materialCalendar").directive("calendarMd", ["$compile", "$parse"
             window.data = $scope.data;
 
             var bootstrap = function () {
-                $scope.setData = setData;
                 init().then(function (contents) {
                     setTemplate(contents);
                     $scope.initialDataRetrieval().then(function () {
-                        setData();
+                        $scope.setData();
                     });
                 });
             };

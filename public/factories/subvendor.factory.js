@@ -2,6 +2,8 @@ app.factory("SubvendorFactory", function ($http, AuthFactory, $stateParams, Vend
 
     var subvendor = { packageList: [], details: {}, imagesList: [] };
 
+    var previousAvailabilitySearchDate = new Date();
+
     AuthFactory.$onAuthStateChanged(getAllLists);
 
     function getAllLists() {
@@ -29,6 +31,11 @@ app.factory("SubvendorFactory", function ($http, AuthFactory, $stateParams, Vend
     }
 
     function getAvailabilityList(selectedDate) {
+        if (Array.isArray(selectedDate)) {
+            selectedDate = previousAvailabilitySearchDate;
+        } else {
+            previousAvailabilitySearchDate = selectedDate;
+        }        
         return $http({
             method: 'GET',
             url: '/subvendorDetailsData/availability',

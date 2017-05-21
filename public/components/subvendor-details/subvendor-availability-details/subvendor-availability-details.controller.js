@@ -74,18 +74,26 @@ app.controller("SubvendorAvailabilityDetailsController", function (SubvendorFact
             '<span hide-xs hide-sm hide-md>' + fullStatusText + '</span>';
     };
 
-    // self.updateMultipleAvailabilities = function (dayOfWeek, status) {
+    self.updateMultipleAvailabilities = function (dayOfWeek, updatedStatus) {
 
-        var start = moment();
-        var end   = moment().add(2, 'years');
-        // var day   = 0;                    // Sunday
+        // var start = moment();
+
+
+        var weekDayToFind = moment().day(dayOfWeek).weekday(); //change to searched day name
+
+        var startDate = moment(); //now or change to any date
+        while (startDate.weekday() !== weekDayToFind){ 
+            startDate = startDate.add(1, 'day'); 
+        }
+
+        var end = moment().add(2, 'years');
 
         var availability = {
-            status: 'unavailable',
+            status: updatedStatus,
             day: []  
         };
 
-        var current = start.clone();
+        var current = startDate.clone();
 
         while (current.isBefore(end)) {
             availability.day.push(current.clone());
@@ -93,5 +101,5 @@ app.controller("SubvendorAvailabilityDetailsController", function (SubvendorFact
         }
 
         SubvendorFactory.updateAvailability(availability, self.setData);
-    // };
+    };
 });
