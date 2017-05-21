@@ -86,17 +86,11 @@ CREATE TABLE availability (
 	status VARCHAR(500) NOT NULL
 );
 
-CREATE TABLE calendar_dates (
-	id SERIAL PRIMARY KEY,
-	day DATE
-);
-
 CREATE TABLE subvendor_availability (
-	id SERIAL,
 	subvendor_id INT NOT NULL REFERENCES subvendors,
-	date_id INT NOT NULL REFERENCES calendar_dates,
+	day DATE NOT NULL,
     availability_id INT NOT NULL REFERENCES availability,
-	PRIMARY KEY(subvendor_id, date_id)
+	PRIMARY KEY(subvendor_id, day)
 );
 
 CREATE TABLE stripe_charge_attempts (
@@ -227,31 +221,12 @@ DO
 $do$
 BEGIN 
 FOR i IN -100..400 LOOP
-	WITH new_calendar_date_id AS (
-		INSERT INTO calendar_dates (day) 
-		VALUES ((CURRENT_DATE) + i) 
-		RETURNING id
-	) 
-   INSERT INTO subvendor_availability (subvendor_id, date_id, availability_id)
-   VALUES (1, (SELECT id FROM new_calendar_date_id), 2),
-   (4, (SELECT id FROM new_calendar_date_id), 2);
+   INSERT INTO subvendor_availability (subvendor_id, day, availability_id)
+   VALUES (1, (CURRENT_DATE) + i, 2),
+   (4, (CURRENT_DATE) + i, 2);
 END LOOP;
 END
 $do$;
-
-
--- ALTERNATIVE WITHOUT MOCK DATA
--- DO
--- $do$
--- BEGIN 
--- FOR i IN -100..400 LOOP
--- 	WITH new_calendar_date_id AS (
--- 		INSERT INTO calendar_dates (day) 
--- 		VALUES ((CURRENT_DATE) + i) 
--- 		RETURNING id;
--- END LOOP;
--- END
--- $do$;
 
 -----------------------------------------------------------------------------------
 
@@ -347,7 +322,7 @@ AND (SELECT ST_Distance(
 		(SELECT COALESCE(subvendors.location, vendors.location)),
 		(CAST(ST_SetSRID(ST_Point(-93.26501080000003, 44.977753),4326) As geography))
 	)) < (SELECT COALESCE(subvendors.travel_distance, vendors.travel_distance)) 
-AND subvendor_availability.date_id = (SELECT id FROM calendar_dates WHERE day='2017-12-12') 
+AND subvendor_availability.day = '2017-12-12'
 LIMIT 10;
 
 -- Select all packages for a specific subvender
@@ -457,12 +432,11 @@ JOIN availability ON availability.id=subvendor_availability.availability_id AND 
 	FROM users_vendors  
 	JOIN vendors ON users_vendors.user_id=1 AND vendors.id=users_vendors.vendor_id
 	JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=4) -- MAKING SURE USER HAS ACCESS
-RIGHT OUTER JOIN calendar_dates ON calendar_dates.id=subvendor_availability.date_id 
 WHERE day >= (SELECT current_date - cast(extract(dow from current_date) as int)) AND day < (SELECT current_date - cast(extract(dow from current_date) as int)) + 365 
 ORDER BY day;
 
 -- ADDING NEW AVAILABILITY
-INSERT INTO subvendor_availability (subvendor_id, date_id, availability_id)
+INSERT INTO subvendor_availability (subvendor_id, day, availability_id)
 VALUES (
 	(
 	SELECT subvendors.id  
@@ -470,7 +444,7 @@ VALUES (
 	JOIN vendors ON users_vendors.user_id=1 AND vendors.id=users_vendors.vendor_id
 	JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=6
 	), 
-	(SELECT id FROM calendar_dates WHERE day='2018-03-03'), 
+	'2018-03-03', 
 	(SELECT id FROM availability WHERE status='available')
 );
 

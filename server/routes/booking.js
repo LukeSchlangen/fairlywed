@@ -22,9 +22,7 @@ router.post('/', async (req, res) => {
                 // This will need to return the photographer's price for the given package
                 `WITH subvendor_pricing_info AS (SELECT price, subvendors_packages.subvendor_id, subvendors_packages.package_id, subvendor_availability.date_id, stripe_accounts.id AS stripe_account_id, stripe_accounts.stripe_user_id, vendors.id AS vendor_id, subvendor_availability.id AS subvendor_availability_id FROM subvendors 
                 JOIN subvendor_availability ON 
-                subvendor_availability.date_id=(
-                SELECT id FROM calendar_dates WHERE day=$2::date
-                ) 
+                subvendor_availability.day=$2::date 
                 AND subvendors.id=$7
                 AND subvendors.id=subvendor_availability.subvendor_id
                 AND availability_id=(SELECT id FROM availability WHERE status='available')
