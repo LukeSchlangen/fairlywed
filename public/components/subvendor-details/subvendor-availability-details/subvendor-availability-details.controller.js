@@ -7,7 +7,8 @@ app.controller("SubvendorAvailabilityDetailsController", function (SubvendorFact
         var javascriptDate = new Date(date);
 
         var correspondingAvailability = {
-            day: javascriptDate
+            day: javascriptDate,
+            status: 'unavailable'
         };
 
         // Searches to see if the date already exists, if it does, this will make it toggle correctly

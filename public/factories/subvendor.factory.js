@@ -31,10 +31,10 @@ app.factory("SubvendorFactory", function ($http, AuthFactory, $stateParams, Vend
     }
 
     function getAvailabilityList(selectedDate) {
-        if (Array.isArray(selectedDate)) {
-            selectedDate = previousAvailabilitySearchDate;
-        } else {
+        if (selectedDate instanceof Date) {
             previousAvailabilitySearchDate = selectedDate;
+        } else {
+            selectedDate = previousAvailabilitySearchDate;
         }        
         return $http({
             method: 'GET',
@@ -48,7 +48,7 @@ app.factory("SubvendorFactory", function ($http, AuthFactory, $stateParams, Vend
             subvendor.availabilityList = response.data;
             checkAccountStatus();
         }).catch(function (err) {
-            console.error('Error retreiving private user data: ', err);
+            console.error('Error retreiving subvendor availability data: ', err);
             subvendor.availabilityList = [];
         });
     }

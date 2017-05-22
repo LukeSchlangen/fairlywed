@@ -58,11 +58,11 @@ router.get('/availability', async (req, res) => {
     var selectedDate = pgFormatDate(req.headers.selected_date);
     try {
         var client = await pool.connect();
-        const subvendorQueryResult = await client.query(`SELECT subvendor_availability.id, day, status  
+        const subvendorQueryResult = await client.query(`SELECT day, status  
             FROM subvendor_availability  
             JOIN availability ON availability.id=subvendor_availability.availability_id AND subvendor_id =(  
                 SELECT subvendors.id  
-                FROM users_vendors   
+                FROM users_vendors 
                 JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id  
                 JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=$2)  
             WHERE day >= (SELECT date_trunc('month', coalesce($3, current_date)::date)::date - cast(extract(dow from date_trunc('month', coalesce($3, current_date)::date)::date) as int)) AND day < (SELECT date_trunc('month', coalesce($3, current_date)::date)::date - cast(extract(dow from date_trunc('month', coalesce($3, current_date)::date)::date) as int)) + 42  
