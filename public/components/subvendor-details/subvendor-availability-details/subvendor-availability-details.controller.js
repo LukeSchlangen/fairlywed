@@ -13,19 +13,12 @@ app.controller("SubvendorAvailabilityDetailsController", function (SubvendorFact
 
         // Searches to see if the date already exists, if it does, this will make it toggle correctly
         SubvendorFactory.subvendor.availabilityList.forEach(function (availability) {
-            if (sameDay(javascriptDate, new Date(availability.day))) {
+            if (pgFormatDate(javascriptDate) == availability.day.substr(0, 10)) {
                 correspondingAvailability = availability;
             }
         });
 
         return correspondingAvailability;
-
-    }
-
-    function sameDay(firstDay, secondDay) {
-        return firstDay.getFullYear() === secondDay.getFullYear()
-            && firstDay.getDate() === secondDay.getDate()
-            && firstDay.getMonth() === secondDay.getMonth();
     }
 
     self.dayFormat = "d";
@@ -43,7 +36,7 @@ app.controller("SubvendorAvailabilityDetailsController", function (SubvendorFact
 
     self.dayClick = function (date) {
         var availability = availabilityObjectFromDate(date);
-        
+
         if (availability.status == 'booked') {
             alert('This date has already been booked and cannot be made unavailable.')
         } else if (availability.status == 'available') {
@@ -61,16 +54,16 @@ app.controller("SubvendorAvailabilityDetailsController", function (SubvendorFact
         var fullStatusText = availabilityObjectFromDate(date).status;
         var abreviatedStatusText = 'Unvbl';
 
-        if(fullStatusText == 'available') {
+        if (fullStatusText == 'available') {
             fullStatusText = 'Available';
             abreviatedStatusText = 'Avlbl';
-        } else if(fullStatusText == 'booked') {
+        } else if (fullStatusText == 'booked') {
             fullStatusText = 'Booked';
             abreviatedStatusText = 'Bookd';
         } else {
             fullStatusText = 'Unavailable';
         }
-        
+
         return '<span hide-gt-md>' + abreviatedStatusText + '</span>' +
             '<span hide-xs hide-sm hide-md>' + fullStatusText + '</span>';
     };
@@ -83,15 +76,15 @@ app.controller("SubvendorAvailabilityDetailsController", function (SubvendorFact
         var weekDayToFind = moment().day(dayOfWeek).weekday(); //change to searched day name
 
         var startDate = moment(); //now or change to any date
-        while (startDate.weekday() !== weekDayToFind){ 
-            startDate = startDate.add(1, 'day'); 
+        while (startDate.weekday() !== weekDayToFind) {
+            startDate = startDate.add(1, 'day');
         }
 
         var end = moment().add(2, 'years');
 
         var availability = {
             status: updatedStatus,
-            day: []  
+            day: []
         };
 
         var current = startDate.clone();
@@ -103,4 +96,20 @@ app.controller("SubvendorAvailabilityDetailsController", function (SubvendorFact
 
         SubvendorFactory.updateAvailability(availability, self.setData);
     };
+
+
+
+    function pgFormatDate(date) {
+        /* Via http://stackoverflow.com/questions/3605214/javascript-add-leading-zeroes-to-date */
+        function zeroPad(d) {
+            return ("0" + d).slice(-2)
+        }
+
+        if (date) {
+            var parsed = new Date(date)
+            return [parsed.getUTCFullYear(), zeroPad(parsed.getMonth() + 1), zeroPad(parsed.getDate())].join("-");
+        } else {
+            return null;
+        }
+    }
 });
