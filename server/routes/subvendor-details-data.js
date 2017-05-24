@@ -224,6 +224,7 @@ router.post('/upsertAvailability', async (req, res) => {
                     $` + (i + 4) + `, 
                     (SELECT id FROM availaibity_temp)
                 )`);
+        console.log('Availability to upsert was', availability.day[i], ', the actual upserted was ', pgFormatDate(availability.day[i]))
         queryArgumentsArray.push(pgFormatDate(availability.day[i]));
     }
     
