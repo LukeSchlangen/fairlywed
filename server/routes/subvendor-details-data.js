@@ -218,16 +218,15 @@ router.post('/upsertAvailability', async (req, res) => {
 
     var queryArgumentsArray = [userId, subvendorId, availability.status];
     var valuesToInsert = [];
-    for (var i=0; i < availability.day.length; i++) {
-        valuesToInsert.push( `(
+    for (var i = 0; i < availability.day.length; i++) {
+        valuesToInsert.push(`(
                     (SELECT id FROM validated_subvendor), 
                     $` + (i + 4) + `, 
                     (SELECT id FROM availaibity_temp)
                 )`);
-        console.log('Availability to upsert was', availability.day[i], ', the actual upserted was ', pgFormatDate(availability.day[i]))
         queryArgumentsArray.push(pgFormatDate(availability.day[i]));
     }
-    
+
     var queryStatement = `WITH validated_subvendor AS (SELECT subvendors.id FROM users_vendors 
             JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id 
             JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=$2),
@@ -235,8 +234,9 @@ router.post('/upsertAvailability', async (req, res) => {
             availaibity_temp AS (SELECT id FROM availability WHERE status=$3)
 
             INSERT INTO subvendor_availability (subvendor_id, day, availability_id)
-            VALUES ` + valuesToInsert.join(',') + 
-            `ON CONFLICT (subvendor_id, day) DO UPDATE
+            VALUES ` +
+        valuesToInsert.join(',') +
+        `ON CONFLICT (subvendor_id, day) DO UPDATE
             SET availability_id = excluded.availability_id 
             WHERE subvendor_availability.availability_id != (SELECT id FROM availability WHERE status='booked');`;
 
