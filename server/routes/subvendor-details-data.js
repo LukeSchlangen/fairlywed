@@ -224,7 +224,7 @@ router.post('/upsertAvailability', async (req, res) => {
                     $` + (i + 4) + `, 
                     (SELECT id FROM availaibity_temp)
                 )`);
-        queryArgumentsArray.push(availability.day[i]);
+        queryArgumentsArray.push(pgFormatDate(availability.day[i]));
     }
     
     var queryStatement = `WITH validated_subvendor AS (SELECT subvendors.id FROM users_vendors 
