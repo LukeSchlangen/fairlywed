@@ -44,7 +44,7 @@ router.get('/subvendorProfile', async (req, res) => {
       '		(SELECT COALESCE(subvendors.location, vendors.location)),' +
       '		(CAST(ST_SetSRID(ST_Point($2, $3),4326) As geography))' +
       '	)) < (SELECT COALESCE(subvendors.travel_distance, vendors.travel_distance)) ' +
-      'AND subvendor_availability.date_id = (SELECT id FROM calendar_dates WHERE day=$4) ' +
+      'AND subvendor_availability.day=$4 ' +
       'LIMIT 10;',
       [searchObject.subvendorId, searchObject.longitude, searchObject.latitude, searchObject.date])
     client.release();

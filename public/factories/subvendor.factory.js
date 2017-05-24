@@ -2,6 +2,8 @@ app.factory("SubvendorFactory", function ($http, AuthFactory, $stateParams, Vend
 
     var subvendor = { packageList: [], details: {}, imagesList: [] };
 
+    var previousAvailabilitySearchDate = new Date();
+
     AuthFactory.$onAuthStateChanged(getAllLists);
 
     function getAllLists() {
@@ -29,6 +31,11 @@ app.factory("SubvendorFactory", function ($http, AuthFactory, $stateParams, Vend
     }
 
     function getAvailabilityList(selectedDate) {
+        if (selectedDate instanceof Date) {
+            previousAvailabilitySearchDate = selectedDate;
+        } else {
+            selectedDate = previousAvailabilitySearchDate;
+        }        
         return $http({
             method: 'GET',
             url: '/subvendorDetailsData/availability',
@@ -41,7 +48,7 @@ app.factory("SubvendorFactory", function ($http, AuthFactory, $stateParams, Vend
             subvendor.availabilityList = response.data;
             checkAccountStatus();
         }).catch(function (err) {
-            console.error('Error retreiving private user data: ', err);
+            console.error('Error retreiving subvendor availability data: ', err);
             subvendor.availabilityList = [];
         });
     }

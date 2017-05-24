@@ -58,14 +58,13 @@ router.get('/availability', async (req, res) => {
     var selectedDate = pgFormatDate(req.headers.selected_date);
     try {
         var client = await pool.connect();
-        const subvendorQueryResult = await client.query(`SELECT subvendor_availability.id, day, status  
+        const subvendorQueryResult = await client.query(`SELECT day, status  
             FROM subvendor_availability  
             JOIN availability ON availability.id=subvendor_availability.availability_id AND subvendor_id =(  
                 SELECT subvendors.id  
-                FROM users_vendors   
+                FROM users_vendors 
                 JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id  
                 JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=$2)  
-            RIGHT OUTER JOIN calendar_dates ON calendar_dates.id=subvendor_availability.date_id  
             WHERE day >= (SELECT date_trunc('month', coalesce($3, current_date)::date)::date - cast(extract(dow from date_trunc('month', coalesce($3, current_date)::date)::date) as int)) AND day < (SELECT date_trunc('month', coalesce($3, current_date)::date)::date - cast(extract(dow from date_trunc('month', coalesce($3, current_date)::date)::date) as int)) + 42  
             ORDER BY day;`,
             [userId, subvendorId, selectedDate]);
@@ -207,39 +206,43 @@ router.post('/upsertPackage', async (req, res) => {
     }
 });
 
+// This route accepts an availability to change that includes, the subvendorId, availabilityStatus, and the day of the availability
+// If an array is passed in for the availability, the upsert will update all of the dates, allowing for mass changes
 router.post('/upsertAvailability', async (req, res) => {
     var userId = req.decodedToken.userSQLId;
     var subvendorId = req.headers.subvendor_id;
     var availability = req.body;
+    if (!Array.isArray(availability.day)) {
+        availability.day = [availability.day];
+    }
+
+    var queryArgumentsArray = [userId, subvendorId, availability.status];
+    var valuesToInsert = [];
+    for (var i = 0; i < availability.day.length; i++) {
+        valuesToInsert.push(`(
+                    (SELECT id FROM validated_subvendor), 
+                    $` + (i + 4) + `, 
+                    (SELECT id FROM availaibity_temp)
+                )`);
+        queryArgumentsArray.push(pgFormatDate(availability.day[i]));
+    }
+
+    var queryStatement = `WITH validated_subvendor AS (SELECT subvendors.id FROM users_vendors 
+            JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id 
+            JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=$2),
+            
+            availaibity_temp AS (SELECT id FROM availability WHERE status=$3)
+
+            INSERT INTO subvendor_availability (subvendor_id, day, availability_id)
+            VALUES ` +
+        valuesToInsert.join(',') +
+        `ON CONFLICT (subvendor_id, day) DO UPDATE
+            SET availability_id = excluded.availability_id 
+            WHERE subvendor_availability.availability_id != (SELECT id FROM availability WHERE status='booked');`;
+
     try {
         var client = await pool.connect();
-        if (availability.id) {
-            // if availability was updated
-            await client.query(`UPDATE subvendor_availability 
-                SET availability_id=(SELECT id FROM availability WHERE status=$4) 
-                WHERE id = ( 
-                SELECT subvendor_availability.id 
-                FROM users_vendors 
-                JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id 
-                JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=$2 
-                JOIN subvendor_availability ON subvendor_availability.subvendor_id=subvendors.id 
-                WHERE subvendor_availability.id=$3);`,
-                [userId, subvendorId, availability.id, availability.status]);
-        } else {
-            // if availability was added
-            await client.query(`INSERT INTO subvendor_availability (subvendor_id, date_id, availability_id) 
-                VALUES (
-                    (
-                    SELECT subvendors.id  
-                    FROM users_vendors  
-                    JOIN vendors ON users_vendors.user_id=$1 AND vendors.id=users_vendors.vendor_id 
-                    JOIN subvendors ON vendors.id=subvendors.parent_vendor_id AND subvendors.id=$2 
-                    ), 
-                    (SELECT id FROM calendar_dates WHERE day=$3), 
-                    (SELECT id FROM availability WHERE status=$4) 
-                );`,
-                [userId, subvendorId, availability.day, availability.status]);
-        }
+        await client.query(queryStatement, queryArgumentsArray);
         res.sendStatus(200);
     } catch (e) {
         console.log('Error adding updating subvendor availability data, UPDATE SQL query task', err);
