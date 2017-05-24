@@ -23,9 +23,10 @@ app.controller("SubvendorAvailabilityDetailsController", function (SubvendorFact
     }
 
     function sameDay(firstDay, secondDay) {
-        return firstDay.getFullYear() === secondDay.getFullYear()
+        var isSameDay = firstDay.getFullYear() === secondDay.getFullYear()
             && firstDay.getDate() === secondDay.getDate()
             && firstDay.getMonth() === secondDay.getMonth();
+        return isSameDay;
     }
 
     self.dayFormat = "d";
