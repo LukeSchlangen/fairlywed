@@ -100,16 +100,14 @@ async function getImagesWithUserId(userId) {
     return images.rows;
 }
 
-// console.log('Error matchmaker_run SELECT RANDOM SQL query task', err);
-
 function objectToArrayCheck(photos) {
-    if (typeof photos === 'array') {
+    if (Array.isArray(photos)) {
         return photos;
     }
     else if (typeof photos === 'string') {
-        return [photos]
+        return [photos];
     } else {
-        throw new Error('Unknown type of photos passed in')
+        throw new Error('Unknown type of photos passed in. photos is typeof ' + typeof photos);
     }
 }
 
