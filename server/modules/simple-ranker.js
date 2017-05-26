@@ -5,10 +5,10 @@ function orderBy() {
 }
 
 async function recommendedPhotographers(userId) {
+    var client = await pool.connect();
     try {
-        var client = await pool.connect();
 
-        const recommendedPhotographers = await client.query(`select sum(CASE WHEN liked THEN 1 else 0 END) as likes, sum(CASE WHEN liked THEN 0 else 1 END) as dislikes, subvendor_id from matchmaker_liked_photos 
+        var recommendedPhotographers = await client.query(`select sum(CASE WHEN liked THEN 1 else 0 END) as likes, sum(CASE WHEN liked THEN 0 else 1 END) as dislikes, subvendor_id from matchmaker_liked_photos 
                 join matchmaker_run on matchmaker_run_id = matchmaker_run.id
                 join subvendor_images on matchmaker_liked_photos.subvendor_images_id = subvendor_images.id 
                 where matchmaker_run.user_id = $1
@@ -20,7 +20,7 @@ async function recommendedPhotographers(userId) {
         var total = recommendedPhotographers.rows.reduce((acc, row) => {
             return acc + parseInt(row.likes) + parseInt(row.dislikes);
         }, 0)
-        const photographersWithRating = recommendedPhotographers.rows.map((row) => {
+        var photographersWithRating = recommendedPhotographers.rows.map((row) => {
             row.rating = calculateRating(parseInt(row.likes), parseInt(row.dislikes), total);
             return row;
         })
@@ -45,9 +45,9 @@ async function recommendedPhotographers(userId) {
 }
 
 function calculateRating(likes, dislikes, total) {
-    const min = 50 / (total + 1);
-    const max = 100 - 50 / (total + 1);
-    const rating = likes / (likes + dislikes) * 100;
+    var min = 50 / (total + 1);
+    var max = 100 - 50 / (total + 1);
+    var rating = likes / (likes + dislikes) * 100;
     if (rating > max)
         return max;
     else if (rating < min)

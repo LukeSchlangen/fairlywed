@@ -7,10 +7,10 @@ var simpleRanker = require('../modules/simple-ranker')
 router.get('/', async (req, res) => {
   try {
     var userId = req.decodedToken.userSQLId;
-    const searchObject = JSON.parse(req.query.search);
+    var searchObject = JSON.parse(req.query.search);
     var recommendedPhotographers = await simpleRanker.recommendedPhotographers(userId);
     // vendorSearch(req, res, ...recommendedPhotographer
-    const subvendorsWithRatings = await vendorSearch(searchObject, recommendedPhotographers.orderBy, recommendedPhotographers.ratings, recommendedPhotographers.minRating);
+    var subvendorsWithRatings = await vendorSearch(searchObject, recommendedPhotographers.orderBy, recommendedPhotographers.ratings, recommendedPhotographers.minRating);
     res.send(subvendorsWithRatings);
   } catch (e) {
     console.log('Error in vendor search data', e);
@@ -19,18 +19,18 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/subvendorProfile', async (req, res) => {
+  var client = await pool.connect();
   try {
     var searchObject = JSON.parse(req.query.search);
-    var client = await pool.connect();
 
     // put these two things together either with a promise.all or in the sql
-    const subvendorDetailsQueryResult = await client.query(
+    var subvendorDetailsQueryResult = await client.query(
       'SELECT subvendors.* ' +
       'FROM subvendors ' +
       'WHERE subvendors.id=$1',
       [searchObject.subvendorId]);
 
-    const subvendorPackagesQueryResult = await client.query('SELECT packages.id AS id, ' +
+    var subvendorPackagesQueryResult = await client.query('SELECT packages.id AS id, ' +
       'packages.name AS package, ' +
       'subvendors_packages.price, ' +
       'ST_Distance((SELECT COALESCE(subvendors.location, vendors.location)), CAST(ST_SetSRID(ST_Point($2, $3),4326) As geography)) AS distance ' +

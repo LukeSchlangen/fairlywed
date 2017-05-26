@@ -8,7 +8,7 @@ var vendorSearch = require('../modules/vendor-search');
 router.get('/', async (req, res) => {
     try {
         var userId = req.decodedToken.userSQLId;
-        const searchObject = JSON.parse(req.query.search);
+        var searchObject = JSON.parse(req.query.search);
         let hasDoneMatchmakerBefore = false;
         if (req.query.photos && req.query.photos.length > 0) {
             hasDoneMatchmakerBefore = true;
@@ -18,11 +18,11 @@ router.get('/', async (req, res) => {
                 return returnPhoto;
             })
             // this can be refactored to run at the same time as the other things
-            const likes = await saveLikes(photos, userId);
+            var likes = await saveLikes(photos, userId);
         } else {
+            var client = await pool.connect();
             try {
-                var client = await pool.connect();
-                const hasDoneMatchmakerBeforeSQL = await client.query('SELECT EXISTS(SELECT 1 FROM matchmaker_run WHERE user_id=$1)', [userId]);
+                var hasDoneMatchmakerBeforeSQL = await client.query('SELECT EXISTS(SELECT 1 FROM matchmaker_run WHERE user_id=$1)', [userId]);
                 hasDoneMatchmakerBefore = hasDoneMatchmakerBeforeSQL.rows[0].exists;
             } catch (e) {
                 console.log('Error matchmaker_run SELECT SQL query task', e);
@@ -31,8 +31,8 @@ router.get('/', async (req, res) => {
                 client && client.release && client.release();
             }
         }
-        const getImageFunction = hasDoneMatchmakerBefore ? getImagesWithUserId : getRandomImages;
-        const [images, subvendorsWithRatings] = await Promise.all([getImageFunction(userId), getSubvendorsWithRating(userId, searchObject)]);
+        var getImageFunction = hasDoneMatchmakerBefore ? getImagesWithUserId : getRandomImages;
+        var [images, subvendorsWithRatings] = await Promise.all([getImageFunction(userId), getSubvendorsWithRating(userId, searchObject)]);
 
         res.send({ images: images, subvendor: subvendorsWithRatings });
     } catch (e) {
@@ -47,16 +47,16 @@ router.get('/', async (req, res) => {
 // })
 
 async function getSubvendorsWithRating(userId, searchObject) {
-    const recommendedPhotographers = await simpleRanker.recommendedPhotographers(userId);
-    const subvendorsWithRatings = await vendorSearch(searchObject, recommendedPhotographers.orderBy, recommendedPhotographers.ratings, recommendedPhotographers.minRating);
+    var recommendedPhotographers = await simpleRanker.recommendedPhotographers(userId);
+    var subvendorsWithRatings = await vendorSearch(searchObject, recommendedPhotographers.orderBy, recommendedPhotographers.ratings, recommendedPhotographers.minRating);
     return subvendorsWithRatings;
 }
 
 async function saveLikes(photos, userId) {
+    var client = await pool.connect();
     try {
         var likes = photos.map((photo) => photo.liked);
         var ids = photos.map((photo) => photo.id);
-        var client = await pool.connect();
 
         var success = await client.query('WITH new_matchmaker_run_id AS ( INSERT INTO matchmaker_run (user_id, prior_run_id) ' +
             'VALUES ($1, (SELECT id FROM matchmaker_run where user_id=$1 ORDER BY id DESC LIMIT 1)) RETURNING id) ' +
@@ -72,9 +72,9 @@ async function saveLikes(photos, userId) {
 }
 
 async function getRandomImages() {
+    var client = await pool.connect();
     try {
-        var client = await pool.connect();
-        const randomImages = await client.query('SELECT * FROM subvendor_images WHERE is_public=true AND is_active=true ORDER BY RANDOM() LIMIT 2');
+        var randomImages = await client.query('SELECT * FROM subvendor_images WHERE is_public=true AND is_active=true ORDER BY RANDOM() LIMIT 2');
         client.release();
         return randomImages.rows;
     } catch (e) {
@@ -87,7 +87,7 @@ async function getImagesWithUserId(userId) {
     var orderBy = simpleRanker.orderBy(userId);
     var client = await pool.connect();
 
-    const images = await client.query(`SELECT * FROM subvendor_images 
+    var images = await client.query(`SELECT * FROM subvendor_images 
         left outer join (
         select subvendor_images_id  from matchmaker_liked_photos join matchmaker_run on matchmaker_run_id = matchmaker_run.id where matchmaker_run.user_id = $1
         ) as joined_matchmaker on subvendor_images.id=joined_matchmaker.subvendor_images_id 
