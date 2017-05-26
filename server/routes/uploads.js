@@ -12,8 +12,6 @@ var multer = Multer({
 
 // Process the file upload and upload to Google Cloud Storage.
 router.post('/', multer.single('file'), (req, res) => {
-  console.log('req.body', req.body);
-  console.log('req.file', req.file);
   if (!req.file) {
     res.status(400).send('No file uploaded.');
     return;
@@ -48,7 +46,6 @@ router.post('/', multer.single('file'), (req, res) => {
           });
 
           blobStream.on('finish', () => {
-            console.log('The image has been successfully uploaded to google cloud storage');
             client.query('UPDATE subvendor_images SET is_active=TRUE WHERE id = $1', [newImageId], function(err) {
               if (err) {
                 console.log('error updating is_active status of new image:', err);
