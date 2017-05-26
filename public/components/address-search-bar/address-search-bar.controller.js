@@ -46,4 +46,6 @@ app.controller("AddressSearchBarController", function (PhotographerSearchFactory
             });
         }
     }
+
+    self.searchText = $scope.location;
 });
