@@ -4,6 +4,7 @@ var pool = require('../modules/pg-pool');
 var stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 router.post('/', async (req, res) => {
+    var client = await pool.connect();
     try {
         var userSubmittedPrice = req.body.price;
         var locationName = req.body.location;
@@ -15,12 +16,11 @@ router.post('/', async (req, res) => {
         var time = new Date(req.body.time);
         var subvendorId = req.body.subvendorId;
         var stripeToken = req.body.stripeToken;
-        var client = await pool.connect();
         try {
             var bookingResults = await client.query(
                 // insert booking if photographer is listed as available for that date
                 // This will need to return the photographer's price for the given package
-                `WITH subvendor_pricing_info AS (SELECT price, subvendors_packages.subvendor_id, subvendors_packages.package_id, subvendor_availability.date_id, stripe_accounts.id AS stripe_account_id, stripe_accounts.stripe_user_id, vendors.id AS vendor_id, subvendor_availability.id AS subvendor_availability_id FROM subvendors 
+                `WITH subvendor_pricing_info AS (SELECT price, subvendors_packages.subvendor_id, subvendors_packages.package_id, subvendor_availability.day, stripe_accounts.id AS stripe_account_id, stripe_accounts.stripe_user_id, vendors.id AS vendor_id FROM subvendors 
                 JOIN subvendor_availability ON 
                 subvendor_availability.day=$2::date 
                 AND subvendors.id=$7
@@ -33,11 +33,11 @@ router.post('/', async (req, res) => {
                     )) < (SELECT COALESCE(subvendors.travel_distance, vendors.travel_distance))
                 JOIN subvendors_packages ON subvendors.id = subvendors_packages.subvendor_id AND subvendors_packages.package_id=$1 
                 JOIN stripe_accounts ON vendors.stripe_account_id=stripe_accounts.id),
-                        
+
                 booking_temp_table AS (INSERT INTO bookings (package_id, time, requests, location_name, location, price, subvendor_id, client_user_id, vendor_id, stripe_account_id)
                 VALUES ((SELECT package_id FROM subvendor_pricing_info), $2::timestamptz, $3, $8, CAST(ST_SetSRID(ST_Point($4, $5),4326) AS geography), (SELECT price FROM subvendor_pricing_info), (SELECT subvendor_id FROM subvendor_pricing_info), $6, (SELECT vendor_id FROM subvendor_pricing_info), (SELECT stripe_account_id FROM subvendor_pricing_info)) RETURNING id),
 
-                temp_throwaway AS (UPDATE subvendor_availability SET availability_id=(SELECT id FROM availability WHERE status='booked') WHERE id=(SELECT subvendor_availability_id FROM subvendor_pricing_info) RETURNING id)
+                temp_throwaway AS (UPDATE subvendor_availability SET availability_id=(SELECT id FROM availability WHERE status='booked') WHERE day=$2::date AND subvendor_id=$7)
 
                 SELECT *, (SELECT id FROM booking_temp_table) AS booking_id FROM subvendor_pricing_info;`,
                 [packageId, time, requests, longitude, latitude, clientUserId, subvendorId, locationName]);
@@ -94,14 +94,14 @@ router.post('/', async (req, res) => {
 });
 
 async function undoBooking(reasonForUndo, bookingToUndo) {
+    var client = await pool.connect();
     try {
-        var client = await pool.connect();
-        const success = await client.query(`UPDATE subvendor_availability 
+        var success = await client.query(`UPDATE subvendor_availability 
             SET availability_id=(SELECT id FROM availability WHERE status='available') 
             WHERE id=$1`, [bookingToUndo.subvendor_availability_id]);
         client.release();
-        return success;
         console.log('Booking created than undone due to ', reasonForUndo);
+        return success;
     } catch (e) {
         console.log('UNDO BOOKING FAILED!! Booking created than undone due to ', reasonForUndo, 'but undo failed meaning photographer may have been booked multiple times for the same date.');
         throw e;

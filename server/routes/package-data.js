@@ -3,10 +3,10 @@ var router = express.Router();
 var pool = require('../modules/pg-pool');
 
 router.get('/', async (req, res) => {
+    var client = await pool.connect();
     try {
         var vendorType = req.query.vendorType;
-        var client = await pool.connect();
-        const photographerQueryResult = await client.query(
+        var photographerQueryResult = await client.query(
             'SELECT packages.id, packages.name ' +
             'FROM packages ' +
             'JOIN subvendortypes ON packages.vendortype_id = subvendortypes.id ' +

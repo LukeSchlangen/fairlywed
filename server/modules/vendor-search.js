@@ -1,9 +1,9 @@
 var pool = require('../modules/pg-pool');
 
 async function vendorSearch(searchObject, orderBy, ratings, minRating) {
+    var client = await pool.connect();
     try {
-        var client = await pool.connect();
-        const vendorQueryResult = await client.query(
+        var vendorQueryResult = await client.query(
             'SELECT COALESCE(subvendors.name, vendors.name) AS name, ' +
             'subvendors.id AS id, ' +
             'packages.name AS package, ' +
@@ -29,8 +29,8 @@ async function vendorSearch(searchObject, orderBy, ratings, minRating) {
         client.release();
 
         // clean this up
-        const subvendorsWithRatings = vendorQueryResult.rows.map((row) => {
-            const ratingObject = ratings.filter(rating => rating.subvendor_id === row.id)[0]
+        var subvendorsWithRatings = vendorQueryResult.rows.map((row) => {
+            var ratingObject = ratings.filter(rating => rating.subvendor_id === row.id)[0]
             row.rating = ratingObject ? ratingObject.rating : minRating;
             return row;
         })

@@ -4,11 +4,11 @@ var pool = require('../modules/pg-pool');
 var request = require('request-promise');
 
 router.get('/getConnectUrl', async (req, res) => {
+    var client = await pool.connect();
     try {
-        var client = await pool.connect();
         var userId = req.decodedToken.userSQLId;
         var vendorId = req.headers.vendor_id;
-        const stripeConnectStateResult = await client.query('SELECT stripe_connect_state ' +
+        var stripeConnectStateResult = await client.query('SELECT stripe_connect_state ' +
             'FROM users_vendors ' +
             'WHERE users_vendors.user_id=$1 ' + // This line validates that the user is authorized to view this data
             'AND users_vendors.vendor_id=$2',
@@ -29,8 +29,8 @@ router.get('/getConnectUrl', async (req, res) => {
 });
 
 router.post('/authorizeStripeAccount', async (req, res) => {
+    var client = await pool.connect();
     try {
-        var client = await pool.connect();
         var userId = req.decodedToken.userSQLId;
         var vendorId = req.body.vendor_id;
         var stripeConnectState = req.body.stripe_state;

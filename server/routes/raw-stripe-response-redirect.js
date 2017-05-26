@@ -3,10 +3,10 @@ var router = express.Router();
 var pool = require('../modules/pg-pool');
 
 router.get('/', async (req, res) => {
+    var client = await pool.connect();
     try {
-        var client = await pool.connect();
         var stripeConnectState = req.query.state;
-        const stripeConnectVendorIdResult = await client.query('SELECT vendor_id ' +
+        var stripeConnectVendorIdResult = await client.query('SELECT vendor_id ' +
             'FROM users_vendors ' +
             'WHERE stripe_connect_state=$1;',
             [stripeConnectState])
