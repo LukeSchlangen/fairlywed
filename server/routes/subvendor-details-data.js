@@ -5,9 +5,9 @@ var pool = require('../modules/pg-pool');
 router.get('/', async (req, res) => {
     var userId = req.decodedToken.userSQLId;
     var subvendorId = req.headers.subvendor_id;
+    var client = await pool.connect();
     try {
-        var client = await pool.connect();
-        const subvendorQueryResult = await client.query(`SELECT subvendors.id AS subvendor_id, 
+        var subvendorQueryResult = await client.query(`SELECT subvendors.id AS subvendor_id, 
             subvendors.name AS name, 
             subvendors.description AS description, 
             subvendors.is_active AS is_active 
@@ -27,9 +27,9 @@ router.get('/', async (req, res) => {
 router.get('/packages', async (req, res) => {
     var userId = req.decodedToken.userSQLId;
     var subvendorId = req.headers.subvendor_id;
+    var client = await pool.connect();
     try {
-        var client = await pool.connect();
-        const subvendorQueryResult = await client.query(`SELECT subvendors_packages.id AS id, 
+        var subvendorQueryResult = await client.query(`SELECT subvendors_packages.id AS id, 
             packages.id AS package_id, 
             subvendors.id AS subvendor_id, 
             packages.name AS name, 
@@ -56,9 +56,9 @@ router.get('/availability', async (req, res) => {
     var userId = req.decodedToken.userSQLId;
     var subvendorId = req.headers.subvendor_id;
     var selectedDate = pgFormatDate(req.headers.selected_date);
+    var client = await pool.connect();
     try {
-        var client = await pool.connect();
-        const subvendorQueryResult = await client.query(`SELECT day, status  
+        var subvendorQueryResult = await client.query(`SELECT day, status  
             FROM subvendor_availability  
             JOIN availability ON availability.id=subvendor_availability.availability_id AND subvendor_id =(  
                 SELECT subvendors.id  
@@ -80,9 +80,9 @@ router.get('/availability', async (req, res) => {
 router.get('/images', async (req, res) => {
     var userId = req.decodedToken.userSQLId;
     var subvendorId = req.headers.subvendor_id;
+    var client = await pool.connect();
     try {
-        var client = await pool.connect();
-        const subvendorQueryResult = await client.query(`SELECT subvendor_images.id, subvendor_images.is_public, 
+        var subvendorQueryResult = await client.query(`SELECT subvendor_images.id, subvendor_images.is_public, 
             subvendor_images.is_in_gallery, subvendor_images.is_active 
             FROM subvendor_images 
             WHERE subvendor_id =( 
@@ -105,9 +105,9 @@ router.post('/', async (req, res) => {
     var userId = req.decodedToken.userSQLId;
     var vendorId = req.headers.vendor_id;
     var subvendor = req.body;
+    var client = await pool.connect();
     try {
-        var client = await pool.connect();
-        const newSubvendorResults = await client.query(`INSERT INTO subvendors (name, parent_vendor_id, vendortype_id) 
+        var newSubvendorResults = await client.query(`INSERT INTO subvendors (name, parent_vendor_id, vendortype_id) 
             VALUES ($3, 
             (SELECT vendors.id 
             FROM users_vendors 
@@ -129,9 +129,9 @@ router.put('/', async (req, res) => {
     var subvendorId = req.headers.subvendor_id;
     var subvendorDetails = req.body;
     // var travelDistanceInMeters = parseInt(subvendorDetails.travel_distance * 1609.34).toString(); Not asking user for this yet
+    var client = await pool.connect();
     try {
-        var client = await pool.connect();
-        const subvendorQueryResult = await client.query(`UPDATE subvendors 
+        var subvendorQueryResult = await client.query(`UPDATE subvendors 
             SET name=$3, description=$4 
             WHERE id = ( 
             SELECT subvendors.id 
@@ -152,8 +152,8 @@ router.post('/upsertPackage', async (req, res) => {
     var userId = req.decodedToken.userSQLId;
     var subvendorId = req.headers.subvendor_id;
     var packageObject = req.body;
+    var client = await pool.connect();
     try {
-        var client = await pool.connect();
         if ((isNaN(packageObject.price) || packageObject.price == "") && packageObject.id) {
             // if package was removed
             await client.query(`DELETE FROM subvendors_packages 
@@ -240,8 +240,8 @@ router.post('/upsertAvailability', async (req, res) => {
             SET availability_id = excluded.availability_id 
             WHERE subvendor_availability.availability_id != (SELECT id FROM availability WHERE status='booked');`;
 
+    var client = await pool.connect();
     try {
-        var client = await pool.connect();
         await client.query(queryStatement, queryArgumentsArray);
         res.sendStatus(200);
     } catch (e) {
@@ -256,8 +256,8 @@ router.put('/updateImage', async (req, res) => {
     var userId = req.decodedToken.userSQLId;
     var subvendorId = req.headers.subvendor_id;
     var imageObject = req.body;
+    var client = await pool.connect();
     try {
-        var client = await pool.connect();
         await client.query(`UPDATE subvendor_images 
             SET is_public=$4, is_in_gallery=$5, is_active=$6 
             WHERE id = ( 

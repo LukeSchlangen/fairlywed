@@ -2,8 +2,8 @@ var express = require('express');
 var router = express.Router();
 var pool = require('../modules/pg-pool');
 var bucket = require('../modules/google-storage-bucket');
-const Multer = require('multer');
-const multer = Multer({
+var Multer = require('multer');
+var multer = Multer({
   storage: Multer.memoryStorage(),
   limits: {
     fileSize: 5 * 1024 * 1024 // no larger than 5mb, you can change as needed.
@@ -39,8 +39,8 @@ router.post('/', multer.single('file'), (req, res) => {
         } else {
           var newImageId = imageId.rows[0].id.toString();
           // Create a new blob in the bucket and upload the file data.
-          const blob = bucket.file(newImageId);
-          const blobStream = blob.createWriteStream();
+          var blob = bucket.file(newImageId);
+          var blobStream = blob.createWriteStream();
 
           blobStream.on('error', (err) => {
             console.log('error', err);

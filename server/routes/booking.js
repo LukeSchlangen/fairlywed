@@ -4,6 +4,7 @@ var pool = require('../modules/pg-pool');
 var stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 router.post('/', async (req, res) => {
+    var client = await pool.connect();
     try {
         var userSubmittedPrice = req.body.price;
         var locationName = req.body.location;
@@ -15,7 +16,6 @@ router.post('/', async (req, res) => {
         var time = new Date(req.body.time);
         var subvendorId = req.body.subvendorId;
         var stripeToken = req.body.stripeToken;
-        var client = await pool.connect();
         try {
             var bookingResults = await client.query(
                 // insert booking if photographer is listed as available for that date
@@ -94,14 +94,14 @@ router.post('/', async (req, res) => {
 });
 
 async function undoBooking(reasonForUndo, bookingToUndo) {
+    var client = await pool.connect();
     try {
-        var client = await pool.connect();
-        const success = await client.query(`UPDATE subvendor_availability 
+        var success = await client.query(`UPDATE subvendor_availability 
             SET availability_id=(SELECT id FROM availability WHERE status='available') 
             WHERE id=$1`, [bookingToUndo.subvendor_availability_id]);
         client.release();
-        return success;
         console.log('Booking created than undone due to ', reasonForUndo);
+        return success;
     } catch (e) {
         console.log('UNDO BOOKING FAILED!! Booking created than undone due to ', reasonForUndo, 'but undo failed meaning photographer may have been booked multiple times for the same date.');
         throw e;

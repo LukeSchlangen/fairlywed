@@ -4,11 +4,11 @@ var pool = require('../modules/pg-pool');
 var bucket = require('../modules/google-storage-bucket');
 
 router.get('/', async (req, res) => {
+    var client = await pool.connect();
     try {
         var subvendorId = req.headers.subvendor_id;
-        var client = await pool.connect();
 
-        const subvendorQueryResult = await client.query('SELECT subvendor_images.id ' +
+        var subvendorQueryResult = await client.query('SELECT subvendor_images.id ' +
             'FROM subvendor_images ' +
             'WHERE subvendor_id=$1 AND is_public=TRUE AND is_in_gallery=TRUE AND is_active=TRUE;',
             [subvendorId]);
@@ -22,11 +22,11 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/:imageId', async (req, res) => {
+    var client = await pool.connect();
     try {
         var imageIdToRetrieve = req.params.imageId;
         // Select all images with that id where subvendor is one that user has access to
-        var client = await pool.connect();
-        const imageInfoResults = await client.query('SELECT subvendor_images.* ' +
+        var imageInfoResults = await client.query('SELECT subvendor_images.* ' +
             'FROM subvendor_images ' +
             'WHERE subvendor_images.id=$1 AND is_public=TRUE ' +
             'AND is_in_gallery=TRUE AND is_active=TRUE;',
