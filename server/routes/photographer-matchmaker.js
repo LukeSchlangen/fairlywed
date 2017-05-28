@@ -77,22 +77,22 @@ async function getMatchmakerImages(userId, searchObject) {
 
         AND subvendor_id = ANY (SELECT subvendors.id
             FROM subvendors JOIN subvendortypes ON subvendors.vendortype_id = subvendortypes.id  
-            AND subvendortypes.name=$3  
+            AND subvendortypes.name=$2  
             JOIN vendors ON vendors.id = subvendors.parent_vendor_id  
             JOIN stripe_accounts ON vendors.stripe_account_id=stripe_accounts.id AND stripe_accounts.is_active=TRUE  
             JOIN subvendors_packages ON subvendors.id = subvendors_packages.subvendor_id  
-            AND subvendors_packages.package_id=$4  
+            AND subvendors_packages.package_id=$3  
             JOIN packages ON subvendors_packages.package_id = packages.id  
             JOIN subvendor_availability ON subvendor_availability.subvendor_id = subvendors.id  
-            AND day=$7  
-            AND subvendor_availability.availability_id = (SELECT id FROM availability WHERE status=$8)  
+            AND day=$6  
+            AND subvendor_availability.availability_id = (SELECT id FROM availability WHERE status=$7)  
             WHERE (SELECT ST_Distance( 
             		(SELECT COALESCE(subvendors.location, vendors.location)), 
-            		(CAST(ST_SetSRID(ST_Point($5, $6),4326) As geography)) 
+            		(CAST(ST_SetSRID(ST_Point($4, $5),4326) As geography)) 
             	)) < (SELECT COALESCE(subvendors.travel_distance, vendors.travel_distance))) 
 
-        ORDER BY $2 limit 2;`,
-        [userId, orderBy, searchObject.vendorType, searchObject.package, searchObject.longitude, searchObject.latitude, searchObject.date, 'available']);
+        ORDER BY ` + orderBy + `limit 2;`,
+        [userId, searchObject.vendorType, searchObject.package, searchObject.longitude, searchObject.latitude, searchObject.date, 'available']);
 
     client.release();
 
