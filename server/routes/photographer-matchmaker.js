@@ -31,8 +31,7 @@ router.get('/', async (req, res) => {
                 client && client.release && client.release();
             }
         }
-        var getImageFunction = hasDoneMatchmakerBefore ? getImagesWithUserId : getRandomImages;
-        var [images, subvendorsWithRatings] = await Promise.all([getImageFunction(userId), getSubvendorsWithRating(userId, searchObject)]);
+        var [images, subvendorsWithRatings] = await Promise.all([getMatchmakerImages(userId, searchObject), getSubvendorsWithRating(userId, searchObject)]);
 
         res.send({ images: images, subvendor: subvendorsWithRatings });
     } catch (e) {
@@ -40,11 +39,6 @@ router.get('/', async (req, res) => {
         res.sendStatus(500);
     }
 });
-// // change this
-// router.get('/runTrainer', function (req, res) {
-//     neuralNetwork.train();
-//     res.send(200)
-// })
 
 async function getSubvendorsWithRating(userId, searchObject) {
     var recommendedPhotographers = await simpleRanker.recommendedPhotographers(userId);
@@ -71,19 +65,7 @@ async function saveLikes(photos, userId) {
     return true;
 }
 
-async function getRandomImages() {
-    var client = await pool.connect();
-    try {
-        var randomImages = await client.query('SELECT * FROM subvendor_images WHERE is_public=true AND is_active=true ORDER BY RANDOM() LIMIT 2');
-        client.release();
-        return randomImages.rows;
-    } catch (e) {
-        console.log('Error matchmaker_run SELECT RANDOM SQL query task', e);
-        throw e
-    }
-}
-
-async function getImagesWithUserId(userId) {
+async function getMatchmakerImages(userId, searchObject) {
     var orderBy = simpleRanker.orderBy(userId);
     var client = await pool.connect();
 
@@ -91,9 +73,26 @@ async function getImagesWithUserId(userId) {
         left outer join (
         select subvendor_images_id  from matchmaker_liked_photos join matchmaker_run on matchmaker_run_id = matchmaker_run.id where matchmaker_run.user_id = $1
         ) as joined_matchmaker on subvendor_images.id=joined_matchmaker.subvendor_images_id 
-        WHERE is_public=true AND is_active=true and joined_matchmaker.subvendor_images_id is null
+        WHERE is_public=true AND is_active=true AND is_in_gallery=true AND joined_matchmaker.subvendor_images_id is null
+
+        AND subvendor_id = ANY (SELECT subvendors.id
+            FROM subvendors JOIN subvendortypes ON subvendors.vendortype_id = subvendortypes.id  
+            AND subvendortypes.name=$3  
+            JOIN vendors ON vendors.id = subvendors.parent_vendor_id  
+            JOIN stripe_accounts ON vendors.stripe_account_id=stripe_accounts.id AND stripe_accounts.is_active=TRUE  
+            JOIN subvendors_packages ON subvendors.id = subvendors_packages.subvendor_id  
+            AND subvendors_packages.package_id=$4  
+            JOIN packages ON subvendors_packages.package_id = packages.id  
+            JOIN subvendor_availability ON subvendor_availability.subvendor_id = subvendors.id  
+            AND day=$7  
+            AND subvendor_availability.availability_id = (SELECT id FROM availability WHERE status=$8)  
+            WHERE (SELECT ST_Distance( 
+            		(SELECT COALESCE(subvendors.location, vendors.location)), 
+            		(CAST(ST_SetSRID(ST_Point($5, $6),4326) As geography)) 
+            	)) < (SELECT COALESCE(subvendors.travel_distance, vendors.travel_distance))) 
+
         ORDER BY $2 limit 2;`,
-        [userId, orderBy])
+        [userId, orderBy, searchObject.vendorType, searchObject.package, searchObject.longitude, searchObject.latitude, searchObject.date, 'available']);
 
     client.release();
 
