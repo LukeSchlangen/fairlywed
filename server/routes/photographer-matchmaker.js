@@ -9,27 +9,13 @@ router.get('/', async (req, res) => {
     try {
         var userId = req.decodedToken.userSQLId;
         var searchObject = JSON.parse(req.query.search);
-        let hasDoneMatchmakerBefore = false;
         if (req.query.photos && req.query.photos.length > 0) {
-            hasDoneMatchmakerBefore = true;
             var photos = objectToArrayCheck(req.query.photos).map((photo) => {
                 var returnPhoto = JSON.parse(photo);
                 returnPhoto.liked = returnPhoto.liked || false;
                 return returnPhoto;
-            })
-            // this can be refactored to run at the same time as the other things
+            });
             var likes = await saveLikes(photos, userId);
-        } else {
-            var client = await pool.connect();
-            try {
-                var hasDoneMatchmakerBeforeSQL = await client.query('SELECT EXISTS(SELECT 1 FROM matchmaker_run WHERE user_id=$1)', [userId]);
-                hasDoneMatchmakerBefore = hasDoneMatchmakerBeforeSQL.rows[0].exists;
-            } catch (e) {
-                console.log('Error matchmaker_run SELECT SQL query task', e);
-                throw e;
-            } finally {
-                client && client.release && client.release();
-            }
         }
         var [images, subvendorsWithRatings] = await Promise.all([getMatchmakerImages(userId, searchObject), getSubvendorsWithRating(userId, searchObject)]);
 
@@ -91,7 +77,7 @@ async function getMatchmakerImages(userId, searchObject) {
             		(CAST(ST_SetSRID(ST_Point($4, $5),4326) As geography)) 
             	)) < (SELECT COALESCE(subvendors.travel_distance, vendors.travel_distance))) 
 
-        ORDER BY ` + orderBy + `limit 2;`,
+        ORDER BY ` + ( orderBy || `RANDOM()` ) + `limit 2;`,
         [userId, searchObject.vendorType, searchObject.package, searchObject.longitude, searchObject.latitude, searchObject.date, 'available']);
 
     client.release();
