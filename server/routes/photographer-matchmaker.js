@@ -28,7 +28,7 @@ router.get('/', async (req, res) => {
 
 async function getSubvendorsWithRating(userId, searchObject) {
     var recommendedPhotographers = await simpleRanker.recommendedPhotographers(userId);
-    var subvendorsWithRatings = await vendorSearch(searchObject, recommendedPhotographers.orderBy, recommendedPhotographers.ratings, recommendedPhotographers.minRating);
+    var subvendorsWithRatings = await vendorSearch(searchObject, recommendedPhotographers.orderBy, recommendedPhotographers.ratings);
     return subvendorsWithRatings;
 }
 

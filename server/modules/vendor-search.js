@@ -31,9 +31,9 @@ async function vendorSearch(searchObject, orderBy, ratings, minRating) {
         // clean this up
         var subvendorsWithRatings = vendorQueryResult.rows.map((row) => {
             var ratingObject = ratings.filter(rating => rating.subvendor_id === row.id)[0]
-            row.rating = ratingObject ? ratingObject.rating : minRating;
+            row.rating = ratingObject ? ratingObject.rating : 50;
             return row;
-        })
+        });
         return subvendorsWithRatings;
 
     } catch (e) {
