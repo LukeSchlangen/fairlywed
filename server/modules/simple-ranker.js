@@ -17,16 +17,12 @@ async function recommendedPhotographers(userId) {
 
         client.release();
 
-        // var total = recommendedPhotographers.rows.reduce((acc, row) => {
-        //     return acc + parseInt(row.likes) + parseInt(row.dislikes);
-        // }, 0)
         var photographersWithRating = recommendedPhotographers.rows.map((row) => {
             var likes = parseInt(row.likes);
             var dislikes = parseInt(row.dislikes);
-            var total = likes + dislikes;
-            row.rating = calculateRating(likes, dislikes, total);
+            row.rating = calculateRating(likes, dislikes);
             return row;
-        })
+        });
         var orderBy = photographersWithRating.length === 0 ? '' : `ORDER BY
         CASE ${photographersWithRating.map((photographer) => {
                 return ` WHEN(
@@ -46,7 +42,8 @@ async function recommendedPhotographers(userId) {
     }
 }
 
-function calculateRating(likes, dislikes, total) {
+function calculateRating(likes, dislikes) {
+    var total = likes + dislikes;
     var min = 50 / (total + 1);
     var max = 100 - 50 / (total + 1);
     var rating = likes / (likes + dislikes) * 100;
@@ -60,7 +57,8 @@ function calculateRating(likes, dislikes, total) {
 
 var simpleRanker = {
     orderBy: orderBy,
-    recommendedPhotographers: recommendedPhotographers
+    recommendedPhotographers: recommendedPhotographers,
+    defaultRanking: 50
 }
 
 module.exports = simpleRanker;
