@@ -29,7 +29,7 @@ async function recommendedPhotographers(userId) {
                 subvendors.id  = ${photographer.subvendor_id})
                 THEN -${photographer.rating}`
             }).join(' ')}
-        ELSE -${calculateRating(1, 1, 2)} 
+        ELSE -${calculateRating(1, 1)} 
         END`
 
         return {

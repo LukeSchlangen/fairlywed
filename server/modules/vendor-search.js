@@ -28,12 +28,13 @@ async function vendorSearch(searchObject, orderBy, ratings) {
 
         client.release();
 
-        // clean this up
+        // Adds ratings previously found in ratings array (passed in above) and adds them to the subvendors returned
         var subvendorsWithRatings = vendorQueryResult.rows.map((row) => {
-            var ratingObject = ratings.filter(rating => rating.subvendor_id === row.id)[0]
+            var ratingObject = ratings.filter(rating => rating.subvendor_id === row.id)[0]; // find subvendor with matching id and use that rating
             row.rating = ratingObject ? ratingObject.rating : 50; // default rating is 50
             return row;
         });
+
         return subvendorsWithRatings;
 
     } catch (e) {
