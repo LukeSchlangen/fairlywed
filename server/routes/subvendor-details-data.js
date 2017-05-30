@@ -17,7 +17,7 @@ router.get('/', async (req, res) => {
             [userId, subvendorId]);
         res.send(subvendorQueryResult.rows[0]);
     } catch (e) {
-        console.log('Error subvendor data GET SQL query task', err);
+        console.log('Error subvendor data GET SQL query task', e);
         res.sendStatus(500);
     } finally {
         client && client.release && client.release();
@@ -45,7 +45,7 @@ router.get('/packages', async (req, res) => {
             [userId, subvendorId]);
         res.send({ packages: subvendorQueryResult.rows });
     } catch (e) {
-        console.log('Error getting subvendor package data, GET SQL query task', err);
+        console.log('Error getting subvendor package data, GET SQL query task', e);
         res.sendStatus(500);
     } finally {
         client && client.release && client.release();
@@ -70,7 +70,7 @@ router.get('/availability', async (req, res) => {
             [userId, subvendorId, selectedDate]);
         res.send(subvendorQueryResult.rows);
     } catch (e) {
-        console.log('Error getting subvendor package data, GET SQL query task', err);
+        console.log('Error getting subvendor package data, GET SQL query task', e);
         res.sendStatus(500);
     } finally {
         client && client.release && client.release();
@@ -94,7 +94,7 @@ router.get('/images', async (req, res) => {
             [userId, subvendorId]);
         res.send(subvendorQueryResult.rows);
     } catch (e) {
-        console.log('Error getting subvendor image data, GET SQL query task', err);
+        console.log('Error getting subvendor image data, GET SQL query task', e);
         res.sendStatus(500);
     } finally {
         client && client.release && client.release();
@@ -117,7 +117,7 @@ router.post('/', async (req, res) => {
             [userId, vendorId, subvendor.name]);
         res.send({ vendorId: newSubvendorResults.rows[0].parent_vendor_id, newSubvendorId: newSubvendorResults.rows[0].id });
     } catch (e) {
-        console.log('Error adding new subvendor data, POST SQL query task', err);
+        console.log('Error adding new subvendor data, POST SQL query task', e);
         res.sendStatus(500);
     } finally {
         client && client.release && client.release();
@@ -141,7 +141,7 @@ router.put('/', async (req, res) => {
             [userId, subvendorId, subvendorDetails.name, subvendorDetails.description]);
         res.sendStatus(200);
     } catch (e) {
-        console.log('Error adding updating subvendor data, UPDATE SQL query task', err);
+        console.log('Error adding updating subvendor data, UPDATE SQL query task', e);
         res.sendStatus(500);
     } finally {
         client && client.release && client.release();
@@ -199,7 +199,7 @@ router.post('/upsertPackage', async (req, res) => {
         }
         res.sendStatus(200);
     } catch (e) {
-        console.log('Error adding updating subvendor data, UPDATE SQL query task', err);
+        console.log('Error adding updating subvendor data, UPDATE SQL query task', e);
         res.sendStatus(500);
     } finally {
         client && client.release && client.release();
@@ -245,7 +245,7 @@ router.post('/upsertAvailability', async (req, res) => {
         await client.query(queryStatement, queryArgumentsArray);
         res.sendStatus(200);
     } catch (e) {
-        console.log('Error adding updating subvendor availability data, UPDATE SQL query task', err);
+        console.log('Error adding updating subvendor availability data, UPDATE SQL query task', e);
         res.sendStatus(500);
     } finally {
         client && client.release && client.release();
@@ -270,7 +270,7 @@ router.put('/updateImage', async (req, res) => {
             [userId, subvendorId, imageObject.id, imageObject.is_public, imageObject.is_in_gallery, imageObject.is_active]);
         res.sendStatus(200);
     } catch (e) {
-        console.log('Error adding updating subvendor data, UPDATE SQL query task', err);
+        console.log('Error adding updating subvendor data, UPDATE SQL query task', e);
         res.sendStatus(500);
     } finally {
         client && client.release && client.release();
