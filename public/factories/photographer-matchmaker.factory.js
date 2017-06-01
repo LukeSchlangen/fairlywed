@@ -1,6 +1,10 @@
-app.factory("PhotographerMatchmakerFactory", ["PhotographerSearchFactory", "$http", function (PhotographerSearchFactory, $http) {
+app.factory("PhotographerMatchmakerFactory", ["PhotographerSearchFactory", "$http", "AuthFactory", function (PhotographerSearchFactory, $http, AuthFactory) {
     var search = PhotographerSearchFactory.search;
     var photos = { list: [] };
+
+    AuthFactory.$onAuthStateChanged(getPhotos);
+    PhotographerSearchFactory.$onSearchParametersChanged(getPhotos);
+    
     function getPhotos() {
         if (search.parameters.package && search.parameters.longitude && search.parameters.latitude) {
                 search.parameters.vendorType = 'photographer';
@@ -32,8 +36,3 @@ app.factory("PhotographerMatchmakerFactory", ["PhotographerSearchFactory", "$htt
         getPhotos: getPhotos,
     };
 }]);
-
-//  response.data.map(function (photoDetails) {
-//                 photoDetails.liked = -1;
-//                 return photoDetails;
-//             });
