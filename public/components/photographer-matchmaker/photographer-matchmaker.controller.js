@@ -1,8 +1,6 @@
-app.controller("PhotographerMatchmakerController", ["PhotographerSearchFactory", "PhotographerMatchmakerFactory", "AuthFactory",
-    function (PhotographerSearchFactory, PhotographerMatchmakerFactory, AuthFactory) {
+app.controller("PhotographerMatchmakerController", ["PhotographerMatchmakerFactory",
+    function (PhotographerMatchmakerFactory) {
         var self = this;
-
-        AuthFactory.$onAuthStateChanged(PhotographerMatchmakerFactory.getPhotos);
 
         self.photos = PhotographerMatchmakerFactory.photos;
         self.clickPhotos = function (photoId) {

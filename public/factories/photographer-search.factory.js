@@ -4,6 +4,7 @@ app.factory("PhotographerSearchFactory", function (PackagesFactory, $http, $stat
 
     var packages = { list: [] };
     var photographers = { list: [] };
+    var functionsToExecuteOnSearchChange = [];
 
     // -- SETTING DEFAULT VALUES FOR SEARCH OR GETTING THEM FROM STATE PARAMETERS ROUTING -- //
     var search = {};
@@ -48,6 +49,7 @@ app.factory("PhotographerSearchFactory", function (PackagesFactory, $http, $stat
         console.log('newStateParameters:', newStateParameters)
         $state.transitionTo($state.current.name, newStateParameters, { notify: false });
         updateCurrentSubvendorCurrentPackage();
+        executeSearchChangedFunctions();
     }
     // --------------------------------------------------------------- //
 
@@ -98,12 +100,23 @@ app.factory("PhotographerSearchFactory", function (PackagesFactory, $http, $stat
         }
     }
 
+    function onSearchParametersChanged (functionToExecuteOnSearchChange) {
+        functionsToExecuteOnSearchChange.push(functionToExecuteOnSearchChange);
+    }
+
+    function executeSearchChangedFunctions() {
+        functionsToExecuteOnSearchChange.forEach(function(individualFunction) {
+            individualFunction();
+        });
+    }
+
     return {
         packages: packages,
         photographers: photographers,
         updatePhotographersList: updatePhotographersList,
         currentSubvendor: currentSubvendor,
         getSubvendorProfileDetails: getSubvendorProfileDetails,
-        search: search
+        search: search,
+        $onSearchParametersChanged: onSearchParametersChanged
     };
 });
