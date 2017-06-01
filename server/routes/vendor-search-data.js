@@ -9,8 +9,7 @@ router.get('/', async (req, res) => {
     var userId = req.decodedToken.userSQLId;
     var searchObject = JSON.parse(req.query.search);
     var recommendedPhotographers = await simpleRanker.recommendedPhotographers(userId);
-    // vendorSearch(req, res, ...recommendedPhotographer
-    var subvendorsWithRatings = await vendorSearch(searchObject, recommendedPhotographers.orderBy, recommendedPhotographers.ratings, recommendedPhotographers.minRating);
+    var subvendorsWithRatings = await vendorSearch(searchObject, recommendedPhotographers.orderBy, recommendedPhotographers.ratings);
     res.send(subvendorsWithRatings);
   } catch (e) {
     console.log('Error in vendor search data', e);
