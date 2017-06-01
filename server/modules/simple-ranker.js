@@ -13,30 +13,28 @@ async function recommendedPhotographers(userId) {
                 join subvendor_images on matchmaker_liked_photos.subvendor_images_id = subvendor_images.id 
                 where matchmaker_run.user_id = $1
                 group by subvendor_id, matchmaker_run.user_id;`,
-            [userId])
+            [userId]);
 
         client.release();
 
-        var total = recommendedPhotographers.rows.reduce((acc, row) => {
-            return acc + parseInt(row.likes) + parseInt(row.dislikes);
-        }, 0)
         var photographersWithRating = recommendedPhotographers.rows.map((row) => {
-            row.rating = calculateRating(parseInt(row.likes), parseInt(row.dislikes), total);
+            var likes = parseInt(row.likes);
+            var dislikes = parseInt(row.dislikes);
+            row.rating = calculateRating(likes, dislikes);
             return row;
-        })
+        });
         var orderBy = photographersWithRating.length === 0 ? '' : `ORDER BY
         CASE ${photographersWithRating.map((photographer) => {
                 return ` WHEN(
                 subvendors.id  = ${photographer.subvendor_id})
                 THEN -${photographer.rating}`
             }).join(' ')}
-        ELSE -${calculateRating(0, 1, total)} 
+        ELSE -${calculateRating(1, 1)} 
         END`
 
         return {
             orderBy: orderBy,
-            ratings: photographersWithRating,
-            minRating: calculateRating(0, 1, total)
+            ratings: photographersWithRating
         }
     } catch (e) {
         console.log('Error getting training data SQL query task', e);
@@ -44,7 +42,8 @@ async function recommendedPhotographers(userId) {
     }
 }
 
-function calculateRating(likes, dislikes, total) {
+function calculateRating(likes, dislikes) {
+    var total = likes + dislikes;
     var min = 50 / (total + 1);
     var max = 100 - 50 / (total + 1);
     var rating = likes / (likes + dislikes) * 100;
@@ -58,7 +57,8 @@ function calculateRating(likes, dislikes, total) {
 
 var simpleRanker = {
     orderBy: orderBy,
-    recommendedPhotographers: recommendedPhotographers
+    recommendedPhotographers: recommendedPhotographers,
+    defaultRanking: 50
 }
 
 module.exports = simpleRanker;

@@ -1,6 +1,6 @@
 var pool = require('../modules/pg-pool');
 
-async function vendorSearch(searchObject, orderBy, ratings, minRating) {
+async function vendorSearch(searchObject, orderBy, ratings) {
     var client = await pool.connect();
     try {
         var vendorQueryResult = await client.query(
@@ -28,12 +28,13 @@ async function vendorSearch(searchObject, orderBy, ratings, minRating) {
 
         client.release();
 
-        // clean this up
+        // Adds ratings previously found in ratings array (passed in above) and adds them to the subvendors returned
         var subvendorsWithRatings = vendorQueryResult.rows.map((row) => {
-            var ratingObject = ratings.filter(rating => rating.subvendor_id === row.id)[0]
-            row.rating = ratingObject ? ratingObject.rating : minRating;
+            var ratingObject = ratings.filter(rating => rating.subvendor_id === row.id)[0]; // find subvendor with matching id and use that rating
+            row.rating = ratingObject ? ratingObject.rating : 50; // default rating is 50
             return row;
-        })
+        });
+
         return subvendorsWithRatings;
 
     } catch (e) {
