@@ -1,7 +1,7 @@
 var pool = require('../modules/pg-pool');
 
 function orderBy() {
-    return 'RANDOM()'
+    return 'subvendor_id, RANDOM()'
 }
 
 async function recommendedPhotographers(userId) {
