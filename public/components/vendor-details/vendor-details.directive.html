@@ -19,7 +19,7 @@
                     <label>Distance, in Miles, You Are Willing To Travel For Free</label>
                     <input type="number" ng-model="vm.vendor.details.travel_distance">
                 </md-input-container>
-                <div layout="row" ng-hide="vm.vendor.details.stripe_is_active">
+                <div layout="column" layout-gt-xs="row" ng-hide="vm.vendor.details.stripe_is_active">
                     <p flex>Stripe allows you to accept credit card payments through FairlyWed. Clicking this button will take you
                         to Stripe to set up your account.</p>
                     <md-button class="md-raised" ng-href="{{vm.connectToStripeLink.url}}&state={{vm.vendor.details.stripe_connect_state}}" layout="row"
@@ -27,7 +27,7 @@
                         Set up Account on Stripe
                     </md-button>
                 </div>
-                <div layout="row" layout-align="center center" flex>
+                <div layout="column" layout-gt-xs="row" layout-align="center center" flex>
                     <!--<md-button class="md-raised" type="submit" ng-disabled="vm.vendorHasNotChanged()">-->
                     <md-button ng-href="{{vm.connectToStripeLink.url}}" ng-show="vm.vendor.details.stripe_is_active">
                         Change Stripe Account
@@ -49,7 +49,7 @@
             If you want to show up on our site and start booking weddings, you will need to set up your Stripe account, but you want
             to some fun stuff first (like adding some great wedding images), you can do that too.
         </p>
-        <div layout="row" layout-align="center center" flex>
+        <div layout="column" layout-gt-xs="row" layout-align="center center" flex>
             <md-button class="md-raised" ng-href="{{vm.connectToStripeLink.url}}&state={{vm.vendor.details.stripe_connect_state}}">
                 Set Up Stripe Account
             </md-button>
