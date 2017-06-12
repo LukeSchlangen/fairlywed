@@ -16,8 +16,8 @@
         <md-card>
             <md-card-content>
                 <p>Oh no! This photographer doesn't have any images uploaded yet.</p>
-                <p>If you are this photographer, you can <a ui-sref="account.vendor">go here</a> to upload images.</p>
-                <p>Make sure you check the box to add them to your gallery!</p>
+                <p>If you are the owner of this page, you can <a ui-sref="account.vendor.details.subvendor.details.images({subvendorId: vm.currentSubvendor.details.id, vendorId: vm.currentSubvendor.details.parent_vendor_id })">go here</a> to upload images.</p>
+                <p>Make sure you check the boxes to add them to your public gallery!</p>
             </md-card-content>
         </md-card> 
     </md-content>
