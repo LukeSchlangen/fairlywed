@@ -1,6 +1,9 @@
-app.config(function ($stateProvider, $urlRouterProvider, $mdThemingProvider, StripeCheckoutProvider) {
+app.config(function ($stateProvider, $urlRouterProvider, $mdThemingProvider, StripeCheckoutProvider, $locationProvider) {
 
     StripeCheckoutProvider.defaults(stripeConfig);
+    
+    $locationProvider.hashPrefix(''); // by default '!'
+    $locationProvider.html5Mode(true);
 
     $urlRouterProvider.otherwise(function ($injector) {
 
@@ -13,6 +16,8 @@ app.config(function ($stateProvider, $urlRouterProvider, $mdThemingProvider, Str
     });
 
     $urlRouterProvider.when('', '/home/photographers');
+    $urlRouterProvider.when('/', '/home/photographers');
+    $urlRouterProvider.when('/home', '/home/photographers');
     $urlRouterProvider.when('/account', '/account/vendor');
     $urlRouterProvider.when('/photographers/:subvendorId', '/photographers/:subvendorId/about');
     $urlRouterProvider.when('/account/vendor/details/:vendorId/subvendor/details/:subvendorId', '/account/vendor/details/:vendorId/subvendor/details/:subvendorId/about');
