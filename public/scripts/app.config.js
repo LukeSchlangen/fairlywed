@@ -16,6 +16,8 @@ app.config(function ($stateProvider, $urlRouterProvider, $mdThemingProvider, Str
     });
 
     $urlRouterProvider.when('', '/home/photographers');
+    $urlRouterProvider.when('/', '/home/photographers');
+    $urlRouterProvider.when('/home', '/home/photographers');
     $urlRouterProvider.when('/account', '/account/vendor');
     $urlRouterProvider.when('/photographers/:subvendorId', '/photographers/:subvendorId/about');
     $urlRouterProvider.when('/account/vendor/details/:vendorId/subvendor/details/:subvendorId', '/account/vendor/details/:vendorId/subvendor/details/:subvendorId/about');
