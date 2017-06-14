@@ -3,4 +3,5 @@ app.controller("PhotographerProfileGalleryController", function (PublicImagesFac
     PhotographerSearchFactory.getSubvendorProfileDetails();
     PublicImagesFactory.updateImagesList();
     self.images = PublicImagesFactory.images;
+    self.currentSubvendor = PhotographerSearchFactory.currentSubvendor;
 });
