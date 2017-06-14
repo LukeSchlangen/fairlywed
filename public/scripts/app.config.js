@@ -2,8 +2,8 @@ app.config(function ($stateProvider, $urlRouterProvider, $mdThemingProvider, Str
 
     StripeCheckoutProvider.defaults(stripeConfig);
     
-    $locationProvider.hashPrefix(''); // by default '!'
-    $locationProvider.html5Mode(true);
+    // $locationProvider.hashPrefix(''); // by default '!'
+    // $locationProvider.html5Mode(true);
 
     $urlRouterProvider.otherwise(function ($injector) {
 

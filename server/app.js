@@ -54,12 +54,12 @@ app.use("/stripeConnect", auth.tokenDecoder, auth.noAnonymousUsers, auth.linkPre
 
 app.use('/uploads', auth.tokenDecoder, auth.noAnonymousUsers, auth.linkPreviouslyAnonymousUser, uploads);
 
-/* This catches all requests and returns the index, in case someone lands on a page that is not the index
-It seems like this may innappropriately stop some 404 requests from being delivered and deliver the index instead, 
-but haven't found it to be happenning */
-app.get('/*', function (req, res) {
-  res.sendFile(path.resolve('./dist/public/views/index.html'));
-});
+// /* This catches all requests and returns the index, in case someone lands on a page that is not the index
+// It seems like this may innappropriately stop some 404 requests from being delivered and deliver the index instead, 
+// but haven't found it to be happenning */
+// app.get('/*', function (req, res) {
+//   res.sendFile(path.resolve('./dist/public/views/index.html'));
+// });
 
 /* Starts the server */
 app.listen(portDecision, function () {
