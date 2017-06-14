@@ -36,35 +36,32 @@ app.use('/galleryImages', galleryImages);
 
 app.use('/rawStripeResponse', rawStripeResponseRedirect);
 
-// Decodes the token in the request header and attaches the decoded token to req.decodedToken on the request.
-app.use(auth.tokenDecoder);
-app.use("/vendorSearchData", vendorSearchData);
-app.use('/matchmaker', photographerMatchmaker);
+/* Anonymous auth is ok for these routes, created for matchmaking/image comparison
+This is used for tracking a user while they are not logged in
+and then that tracking can be saved to the user after they log in */
+app.use("/vendorSearchData", auth.tokenDecoder, vendorSearchData);
+app.use('/matchmaker', auth.tokenDecoder, photographerMatchmaker);
+app.use("/anonymousUserData", auth.tokenDecoder, anonymousUserData);
 
-// Anonymous auth is ok for these routes, created for matchmaking/image comparison
-// This is used for tracking a user while they are not logged in
-// and then that tracking can be saved to the user after they log in
-app.use("/anonymousUserData", anonymousUserData);
+/* These routes must be protected with authentication, so the middleware is listed here. */
+app.use('/booking', auth.tokenDecoder, auth.noAnonymousUsers, auth.linkPreviouslyAnonymousUser, booking);
+app.use("/userData", auth.tokenDecoder, auth.noAnonymousUsers, auth.linkPreviouslyAnonymousUser, userData);
+app.use("/vendorAccountData", auth.tokenDecoder, auth.noAnonymousUsers, auth.linkPreviouslyAnonymousUser, vendorAccountData);
+app.use("/vendorDetailsData", auth.tokenDecoder, auth.noAnonymousUsers, auth.linkPreviouslyAnonymousUser, vendorDetailsData);
+app.use("/subvendorDetailsData", auth.tokenDecoder, auth.noAnonymousUsers, auth.linkPreviouslyAnonymousUser, subvendorDetailsData);
 
+app.use("/stripeConnect", auth.tokenDecoder, auth.noAnonymousUsers, auth.linkPreviouslyAnonymousUser, stripeConnect);
 
-// Routes that need an actual user account (not an anonymous user), should go below here
-app.use(auth.noAnonymousUsers);
+app.use('/uploads', auth.tokenDecoder, auth.noAnonymousUsers, auth.linkPreviouslyAnonymousUser, uploads);
 
-// This app.use checks if the user is newly not-anonymous (just logged in)
-// and updates all of the database records pointing to the anonymous user to point to the not-anonymous user
-app.use(auth.linkPreviouslyAnonymousUser);
+/* This catches all requests and returns the index, in case someone lands on a page that is not the index
+It seems like this may innappropriately stop some 404 requests from being delivered and deliver the index instead, 
+but haven't found it to be happenning */
+app.get('/*', function (req, res) {
+  res.sendFile(path.resolve('./dist/public/views/index.html'));
+});
 
-/* Whatever you do below this is protected by your authentication. */
-app.use('/booking', booking);
-app.use("/userData", userData);
-app.use("/vendorAccountData", vendorAccountData);
-app.use("/vendorDetailsData", vendorDetailsData);
-app.use("/subvendorDetailsData", subvendorDetailsData);
-
-app.use("/stripeConnect", stripeConnect);
-
-app.use('/uploads', uploads);
-
+/* Starts the server */
 app.listen(portDecision, function () {
   console.log("Listening on port: ", portDecision);
 });
