@@ -18,6 +18,7 @@ var photographerMatchmaker = require('./routes/photographer-matchmaker')
 var enfoceSSL = require('./modules/enforce-ssl');
 var stripeConnect = require('./routes/stripe-connect');
 var rawStripeResponseRedirect = require('./routes/raw-stripe-response-redirect');
+var vendorPermissionsInvitation = require('./routes/vendor-permissions-invitation');
 
 var uploads = require('./routes/uploads');
 var portDecision = process.env.PORT || 5000;
@@ -49,6 +50,7 @@ app.use("/userData", auth.tokenDecoder, auth.noAnonymousUsers, auth.linkPrevious
 app.use("/vendorAccountData", auth.tokenDecoder, auth.noAnonymousUsers, auth.linkPreviouslyAnonymousUser, vendorAccountData);
 app.use("/vendorDetailsData", auth.tokenDecoder, auth.noAnonymousUsers, auth.linkPreviouslyAnonymousUser, vendorDetailsData);
 app.use("/subvendorDetailsData", auth.tokenDecoder, auth.noAnonymousUsers, auth.linkPreviouslyAnonymousUser, subvendorDetailsData);
+app.use("/vendorPermissionsInvitation", auth.tokenDecoder, auth.noAnonymousUsers, auth.linkPreviouslyAnonymousUser, vendorPermissionsInvitation);
 
 app.use("/stripeConnect", auth.tokenDecoder, auth.noAnonymousUsers, auth.linkPreviouslyAnonymousUser, stripeConnect);
 

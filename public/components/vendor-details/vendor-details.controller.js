@@ -1,4 +1,4 @@
-app.controller("VendorDetailsController", function (VendorDetailsFactory, UserDataFactory, $stateParams, $scope, StripeConnectFactory) {
+app.controller("VendorDetailsController", function (VendorDetailsFactory, UserDataFactory, $stateParams, $scope, StripeConnectFactory, VendorInvitationFactory) {
     var self = this;
 
     VendorDetailsFactory.getDetails();
@@ -7,12 +7,23 @@ app.controller("VendorDetailsController", function (VendorDetailsFactory, UserDa
     self.vendor = VendorDetailsFactory.vendor;
     self.userData = UserDataFactory.userData;
     self.showAddNewSubvendorForm = false;
+    self.showVendorInvitation = false;
+    self.vendorInvitation = VendorInvitationFactory.vendorInvitation;
 
     StripeConnectFactory.getConnectStripeAccountUrl();
 
     self.connectToStripeLink = StripeConnectFactory.connectToStripeLink;
 
     VendorDetailsFactory.stripeAuthorizationCheck();
+
+    self.shareWithBusinessPartner = function() {
+        if (self.showVendorInvitation) {
+            self.showVendorInvitation = false;
+        } else {
+            self.showVendorInvitation = true;
+            VendorInvitationFactory.createVendorInvitation();
+        }
+    }
 
     self.vendorHasNotChanged = function() {
         var areTheyEqual = angular.equals(self.vendor.details, self.vendor.savedDetails);
