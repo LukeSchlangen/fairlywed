@@ -27,12 +27,19 @@
                         Set up Account on Stripe
                     </md-button>
                 </div>
+                <div layout="column" layout-align="center center" flex ng-if="vm.showVendorInvitation && vm.vendorInvitation">
+                    Share this link with your business partner: 
+                    <br> 
+                    <pre>{{vm.vendorInvitation.details.invitationUrl}}</pre>
+                </div>
                 <div layout="column" layout-gt-xs="row" layout-align="center center" flex>
-                    <!--<md-button class="md-raised" type="submit" ng-disabled="vm.vendorHasNotChanged()">-->
+                    <md-button ng-click="vm.shareWithBusinessPartner()">
+                        Add Business Partner
+                    </md-button>
                     <md-button ng-href="{{vm.connectToStripeLink.url}}" ng-show="vm.vendor.details.stripe_is_active">
                         Change Stripe Account
                     </md-button>
-                    <span flex ng-show="vm.vendor.details.stripe_is_active"></span>
+                    <span flex></span>
                     <small>{{vm.vendorHasNotChanged() ? 'saved' : ''}}</small>
                     <md-button class="md-raised md-padding" type="submit" ng-disabled="vm.vendorHasNotChanged()" ng-click="vm.updateDetails(vm.vendor.details)">
                         Save Business Details

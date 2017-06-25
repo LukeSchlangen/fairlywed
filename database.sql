@@ -12,12 +12,13 @@ CREATE TABLE users (
 	email VARCHAR(200) NOT NULL,
 	firebase_user_id VARCHAR(500) UNIQUE NOT NULL,
 	authentication_provider VARCHAR(500) NOT NULL,
+	created_at TIMESTAMP DEFAULT NOW() NOT NULL,
 	is_active BOOLEAN DEFAULT TRUE NOT NULL
 );
 
 CREATE TABLE logs (
 	id SERIAL PRIMARY KEY,
-	time TIMESTAMP DEFAULT NOW() NOT NULL,
+	created_at TIMESTAMP DEFAULT NOW() NOT NULL,
 	action VARCHAR(200) NOT NULL,
 	user_id INT NOT NULL REFERENCES users
 );
@@ -27,6 +28,7 @@ CREATE TABLE stripe_accounts (
 	creator_user_id INT NOT NULL REFERENCES users,
 	stripe_user_id VARCHAR(100) NOT NULL,
 	stripe_refresh_user_token  VARCHAR(100) NOT NULL,
+	created_at TIMESTAMP DEFAULT NOW() NOT NULL,
 	is_active BOOLEAN DEFAULT TRUE NOT NULL
 );
 
@@ -37,6 +39,7 @@ CREATE TABLE vendors (
 	location geography NOT NULL,
 	travel_distance INT DEFAULT 16093 NOT NULL, -- Default to 10 mile radius, stored in meters
 	stripe_account_id INT REFERENCES stripe_accounts,
+	created_at TIMESTAMP DEFAULT NOW() NOT NULL,
 	is_active BOOLEAN DEFAULT TRUE NOT NULL
 );
 
@@ -45,12 +48,26 @@ CREATE TABLE users_vendors (
 	user_id INT NOT NULL REFERENCES users,
 	vendor_id INT NOT NULL REFERENCES vendors,
 	stripe_connect_state VARCHAR(100) DEFAULT md5(random()::text) NOT NULL,
+	created_at TIMESTAMP DEFAULT NOW() NOT NULL,
 	PRIMARY KEY(user_id, vendor_id)
+);
+
+CREATE TABLE vendor_invitations (
+	id SERIAL,
+	inviter_user_id INT NOT NULL REFERENCES users,
+	vendor_id INT NOT NULL REFERENCES vendors,
+	invitee_email VARCHAR(200),
+	invitation_token VARCHAR(100) DEFAULT md5(random()::text) NOT NULL,
+	created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+	accepted_at TIMESTAMP,
+	accepted_by_user_id INT REFERENCES users,
+	is_active BOOLEAN DEFAULT TRUE NOT NULL
 );
 
 CREATE TABLE subvendortypes (
 	id SERIAL PRIMARY KEY,
-	name VARCHAR(500) NOT NULL
+	name VARCHAR(500) NOT NULL,
+	created_at TIMESTAMP DEFAULT NOW() NOT NULL
 );
 
 CREATE TABLE subvendors (
@@ -62,6 +79,7 @@ CREATE TABLE subvendors (
 	description VARCHAR(2000),
 	parent_vendor_id INT NOT NULL REFERENCES vendors,
 	vendortype_id INT NOT NULL REFERENCES subvendortypes,
+	created_at TIMESTAMP DEFAULT NOW() NOT NULL,
 	is_active BOOLEAN DEFAULT TRUE NOT NULL
 );
 
@@ -69,6 +87,7 @@ CREATE TABLE packages(
 	id SERIAL PRIMARY KEY,
 	vendortype_id INT NOT NULL REFERENCES subvendortypes,
 	name VARCHAR(500) UNIQUE NOT NULL,
+	created_at TIMESTAMP DEFAULT NOW() NOT NULL,
 	is_active BOOLEAN DEFAULT TRUE NOT NULL
 );
 
@@ -77,25 +96,29 @@ CREATE TABLE subvendors_packages (
 	subvendor_id INT NOT NULL REFERENCES subvendors,
 	package_id INT NOT NULL REFERENCES packages,
 	price INT CHECK (price > 100 AND price <100000),
+	created_at TIMESTAMP DEFAULT NOW() NOT NULL,
 	is_active BOOLEAN DEFAULT TRUE NOT NULL,
 	PRIMARY KEY(subvendor_id, package_id)
 );
 
 CREATE TABLE availability (
 	id SERIAL PRIMARY KEY,
-	status VARCHAR(500) NOT NULL
+	status VARCHAR(500) NOT NULL,
+	created_at TIMESTAMP DEFAULT NOW() NOT NULL
 );
 
 CREATE TABLE subvendor_availability (
 	subvendor_id INT NOT NULL REFERENCES subvendors,
 	day DATE NOT NULL,
     availability_id INT NOT NULL REFERENCES availability,
+	created_at TIMESTAMP DEFAULT NOW() NOT NULL,
 	PRIMARY KEY(subvendor_id, day)
 );
 
 CREATE TABLE stripe_charge_attempts (
 	id SERIAL PRIMARY KEY,
 	response_object TEXT NOT NULL,
+	created_at TIMESTAMP DEFAULT NOW() NOT NULL,
 	was_successful BOOLEAN DEFAULT FALSE NOT NULL
 );
 
@@ -111,6 +134,7 @@ CREATE TABLE bookings (
 	requests TEXT,
 	location_name VARCHAR(1000) NOT NULL,
 	location geography NOT NULL,
+	created_at TIMESTAMP DEFAULT NOW() NOT NULL,
 	stripe_charge_id INT REFERENCES stripe_charge_attempts
 );
 
@@ -122,6 +146,7 @@ CREATE TABLE subvendor_images (
     subvendor_id INT NOT NULL REFERENCES subvendors,
 	is_public BOOLEAN DEFAULT FALSE NOT NULL,
 	is_in_gallery BOOLEAN DEFAULT FALSE NOT NULL,
+	created_at TIMESTAMP DEFAULT NOW() NOT NULL,
 	is_active BOOLEAN DEFAULT FALSE NOT NULL
 );
 
@@ -129,6 +154,7 @@ CREATE TABLE matchmaker_run (
 	id SERIAL PRIMARY KEY,
 	user_id INT NOT NULL REFERENCES users,
 	prior_run_id INT,
+	created_at TIMESTAMP DEFAULT NOW() NOT NULL,
 	FOREIGN KEY (prior_run_id) REFERENCES matchmaker_run(id)
 );
 
@@ -136,7 +162,8 @@ CREATE TABLE matchmaker_liked_photos (
 	id SERIAL PRIMARY KEY,
 	matchmaker_run_id INT NOT NULL REFERENCES matchmaker_run,
 	subvendor_images_id INT NOT NULL REFERENCES subvendor_images,
-	liked BOOLEAN DEFAULT FALSE NOT NULL
+	liked BOOLEAN DEFAULT FALSE NOT NULL,
+	created_at TIMESTAMP DEFAULT NOW() NOT NULL
 );
 
 -- INSERTING NECESSARY DATABASE DATA (NEEDED FOR ALL ENVIRONMENTS)
