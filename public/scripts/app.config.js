@@ -106,6 +106,14 @@ app.config(function ($stateProvider, $urlRouterProvider, $mdThemingProvider, Str
             url: '/packages',
             templateUrl: 'views/account/subvendor-details/packages.html'
         })
+        .state('invitation', {
+            url: '/invitation',
+            templateUrl: 'views/invitation/invitation.html'
+        })
+        .state('invitation.vendor', {
+            url: '/vendor?vendorId&invitationToken',
+            templateUrl: 'views/invitation/vendor.html'
+        })
         .state('404', {
             template: 'That is a 404'
         });

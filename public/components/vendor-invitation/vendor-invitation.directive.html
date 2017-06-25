@@ -1,0 +1,7 @@
+<span ng-hide="vm.userData.isSignedIn" flex>
+    <div class="md-padding" flex layout="row" layout-align="center center">Please sign in with google to accept this invitation</div>
+    <div class="md-padding" flex layout="row" layout-align="center center"><md-button class="md-raised" ng-click="vm.signIn('google')">Sign In With Google</md-button></div>
+</span>
+<span ng-if="vm.userData.isSignedIn" flex>
+    This invitation link is not valid. Please ask for a new one from the person who invited you to join.
+</span>
