@@ -1,4 +1,5 @@
 var pool = require('../modules/pg-pool');
+var moment = require('moment');
 
 async function vendorSearch(searchObject, orderBy, ratings) {
     var client = await pool.connect();
@@ -24,7 +25,7 @@ async function vendorSearch(searchObject, orderBy, ratings) {
             '		(CAST(ST_SetSRID(ST_Point($3, $4),4326) As geography))' +
             '	)) < (SELECT COALESCE(subvendors.travel_distance, vendors.travel_distance)) ' +
             (orderBy || '') + ' LIMIT 10 ',
-            [searchObject.vendorType, searchObject.package, searchObject.longitude, searchObject.latitude, searchObject.date, 'available'])
+            [searchObject.vendorType, searchObject.package, searchObject.longitude, searchObject.latitude, pgFormatDate(searchObject.date), 'available'])
 
         client.release();
 
@@ -42,5 +43,26 @@ async function vendorSearch(searchObject, orderBy, ratings) {
         throw e;
     }
 }
+
+    function pgFormatDate(date) {
+        // via https://stackoverflow.com/questions/44988104/remove-time-and-timezone-from-string-dates/44997832#44997832
+        if (typeof date != "string") {
+            date = date.toDateString();
+        }
+
+        if (date) {
+            if (moment(date.substring(4, 15), 'MMM DD YYYY').isValid() && date.substring(4, 15).length === 11) {
+                // this handles dates like: "Fri Jul 06 2017 22:10:08 GMT-0500 (CDT)"    
+                return moment(date.substring(4, 15), 'MMM DD YYYY').format('YYYY-MM-DD');
+            } else if (moment(date.substring(0, 10), "YYYY-MM-DD").isValid() && date.substring(0, 10).length === 10) {
+                // this handles dates like: "2017-07-06T02:59:12.037Z" and "2017-07-06"
+                return date.substring(0, 10);
+            } else {
+                throw 'Date not formatted correctly';
+            }
+        } else {
+            throw 'Date must exists for availability to insert'
+        }
+    }
 
 module.exports = vendorSearch;
