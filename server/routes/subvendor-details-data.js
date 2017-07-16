@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var pool = require('../modules/pg-pool');
-var moment = require('moment');
+var dateFormatter = require('../modules/date-formatter');
 
 router.get('/', async (req, res) => {
     var userId = req.decodedToken.userSQLId;
@@ -56,7 +56,7 @@ router.get('/packages', async (req, res) => {
 router.get('/availability', async (req, res) => {
     var userId = req.decodedToken.userSQLId;
     var subvendorId = req.headers.subvendor_id;
-    var selectedDate = pgFormatDate(req.headers.selected_date);
+    var selectedDate = dateFormatter.javascriptToPostgres(req.headers.selected_date);
     var client = await pool.connect();
     try {
         var subvendorQueryResult = await client.query(`SELECT day, status  
@@ -225,7 +225,7 @@ router.post('/upsertAvailability', async (req, res) => {
                     $` + (i + 4) + `, 
                     (SELECT id FROM availaibity_temp)
                 )`);
-        queryArgumentsArray.push(pgFormatDate(availability.day[i]));
+        queryArgumentsArray.push(dateFormatter.javascriptToPostgres(availability.day[i]));
     }
 
     var queryStatement = `WITH validated_subvendor AS (SELECT subvendors.id FROM users_vendors 
@@ -277,22 +277,5 @@ router.put('/updateImage', async (req, res) => {
         client && client.release && client.release();
     }
 });
-
-function pgFormatDate(date) {
-    // via https://stackoverflow.com/questions/44988104/remove-time-and-timezone-from-string-dates/44997832#44997832
-    if (date) {
-        if (moment(date.substring(4,15), 'MMM DD YYYY').isValid() && date.substring(4,15).length === 11) {
-            // this handles dates like: "Fri Jul 06 2017 22:10:08 GMT-0500 (CDT)"    
-            return moment(date.substring(4,15), 'MMM DD YYYY').format('YYYY-MM-DD');
-        } else if (moment(date.substring(0,10), "YYYY-MM-DD").isValid() && date.substring(0,10).length === 10) {
-            // this handles dates like: "2017-07-06T02:59:12.037Z" and "2017-07-06"
-            return date.substring(0,10); 
-        } else {
-            throw 'Date not formatted correctly';
-        }
-    } else {
-        throw 'Date must exists for availability to insert'
-    }
-}
 
 module.exports = router;
