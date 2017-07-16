@@ -15,7 +15,7 @@ app.factory("PhotographerSearchFactory", function (PackagesFactory, $http, $stat
         search.parameters.longitude = $stateParams.longitude || -93.26501080000003;
         search.parameters.latitude = $stateParams.latitude || 44.977753;
         search.parameters.package = $stateParams.package ? $stateParams.package : 2;
-        search.parameters.date = $stateParams.date ? new Date($stateParams.date) : new Date(new Date().setFullYear(new Date().getFullYear() + 1));
+        search.parameters.date = $stateParams.date ? new Date($stateParams.date) : saturdayOneYearFromNow();
         packages = PackagesFactory.packages;
         photographers = { list: [] };
         search.parameters.subvendorId = $stateParams.subvendorId;
@@ -44,7 +44,7 @@ app.factory("PhotographerSearchFactory", function (PackagesFactory, $http, $stat
         // update route parameters based on search
         var newStateParameters = angular.copy(search.parameters);
         newStateParameters.package = search.parameters.package;
-        newStateParameters.date = search.parameters.date.toDateString();
+        newStateParameters.date = stringifyDate(search.parameters.date);
         console.log('$state is currently:', $state);
         console.log('newStateParameters:', newStateParameters)
         $state.transitionTo($state.current.name, newStateParameters, { notify: false });
@@ -79,7 +79,7 @@ app.factory("PhotographerSearchFactory", function (PackagesFactory, $http, $stat
         // update route parameters based on search
         var newStateParameters = angular.copy(search.parameters);
         newStateParameters.package = search.parameters.package;
-        newStateParameters.date = search.parameters.date.toDateString();
+        newStateParameters.date = stringifyDate(search.parameters.date);
         console.log('$state is currently:', $state);
         console.log('newStateParameters:', newStateParameters)
         $state.transitionTo($state.current.name, newStateParameters, { notify: false });
@@ -108,6 +108,23 @@ app.factory("PhotographerSearchFactory", function (PackagesFactory, $http, $stat
         functionsToExecuteOnSearchChange.forEach(function(individualFunction) {
             individualFunction();
         });
+    }
+
+    function saturdayOneYearFromNow() {
+        var weekDayToFind = moment().day('saturday').weekday(); //change to searched day name
+
+        var saturdayOneYearFromToday = moment().add(1, 'years');
+
+        while (saturdayOneYearFromToday.weekday() !== weekDayToFind) {
+            saturdayOneYearFromToday = saturdayOneYearFromToday.add(1, 'day');
+        }
+
+        return new Date(saturdayOneYearFromToday.toISOString());
+    }
+
+    function stringifyDate(dateToStringify) {
+        var javascriptDateFormat = new Date(moment(dateToStringify).toISOString());
+        return javascriptDateFormat.toDateString();
     }
 
     return {

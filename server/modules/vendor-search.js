@@ -1,4 +1,5 @@
 var pool = require('../modules/pg-pool');
+var dateFormatter = require('../modules/date-formatter');
 
 async function vendorSearch(searchObject, orderBy, ratings) {
     var client = await pool.connect();
@@ -24,7 +25,7 @@ async function vendorSearch(searchObject, orderBy, ratings) {
             '		(CAST(ST_SetSRID(ST_Point($3, $4),4326) As geography))' +
             '	)) < (SELECT COALESCE(subvendors.travel_distance, vendors.travel_distance)) ' +
             (orderBy || '') + ' LIMIT 10 ',
-            [searchObject.vendorType, searchObject.package, searchObject.longitude, searchObject.latitude, searchObject.date, 'available'])
+            [searchObject.vendorType, searchObject.package, searchObject.longitude, searchObject.latitude, dateFormatter.javascriptToPostgres(searchObject.date), 'available'])
 
         client.release();
 
