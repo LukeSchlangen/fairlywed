@@ -90,12 +90,17 @@ app.controller("SubvendorAvailabilityDetailsController", function (SubvendorFact
         var current = startDate.clone();
 
         while (current.isBefore(end)) {
-            availability.day.push(current.clone());
+            availability.day.push(pgFormatDate(stringifyDate(current.clone())));
             current = current.add(7, 'days');
         }
 
         SubvendorFactory.updateAvailability(availability, self.setData);
     };
+
+    function stringifyDate(dateToStringify) {
+        var javascriptDateFormat = new Date(moment(dateToStringify).toISOString());
+        return javascriptDateFormat.toDateString();
+    }
 
     function pgFormatDate(date) {
         // via https://stackoverflow.com/questions/44988104/remove-time-and-timezone-from-string-dates/44997832#44997832
