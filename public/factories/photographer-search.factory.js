@@ -27,10 +27,12 @@ app.factory("PhotographerSearchFactory", function (PackagesFactory, $http, $stat
     function updatePhotographersList() {
         if (search.parameters.package && search.parameters.longitude && search.parameters.latitude) {
             search.parameters.vendorType = 'photographer';
+            var searchObject = angular.copy(search.parameters);
+            searchObject.date = pgFormatDate(searchObject.date);
             $http({
                 method: 'GET',
                 url: '/vendorSearchData',
-                params: { search: search.parameters }
+                params: { search: searchObject }
             }).then(function (response) {
                 console.log('Photographer factory received photographer data from the server: ', response.data);
                 photographers.list = response.data;
@@ -61,10 +63,12 @@ app.factory("PhotographerSearchFactory", function (PackagesFactory, $http, $stat
         // Description
         if (search.parameters.package && search.parameters.longitude && search.parameters.latitude && search.parameters.subvendorId) {
             search.parameters.vendorType = 'photographer';
+            var searchObject = angular.copy(search.parameters);
+            searchObject.date = pgFormatDate(searchObject.date);
             $http({
                 method: 'GET',
                 url: '/vendorSearchData/subvendorProfile',
-                params: { search: search.parameters }
+                params: { search: searchObject }
             }).then(function (response) {
                 console.log('Photographer factory received photographer profile data from the server: ', response.data);
                 currentSubvendor.details = response.data;
@@ -125,6 +129,27 @@ app.factory("PhotographerSearchFactory", function (PackagesFactory, $http, $stat
     function stringifyDate(dateToStringify) {
         var javascriptDateFormat = new Date(moment(dateToStringify).toISOString());
         return javascriptDateFormat.toDateString();
+    }
+
+    function pgFormatDate(date) {
+        // via https://stackoverflow.com/questions/44988104/remove-time-and-timezone-from-string-dates/44997832#44997832
+        if (typeof date != "string") {
+            date = date.toDateString();
+        }
+
+        if (date) {
+            if (moment(date.substring(4, 15), 'MMM DD YYYY').isValid() && date.substring(4, 15).length === 11) {
+                // this handles dates like: "Fri Jul 06 2017 22:10:08 GMT-0500 (CDT)"    
+                return moment(date.substring(4, 15), 'MMM DD YYYY').format('YYYY-MM-DD');
+            } else if (moment(date.substring(0, 10), "YYYY-MM-DD").isValid() && date.substring(0, 10).length === 10) {
+                // this handles dates like: "2017-07-06T02:59:12.037Z" and "2017-07-06"
+                return date.substring(0, 10);
+            } else {
+                throw 'Date not formatted correctly';
+            }
+        } else {
+            throw 'Date must exists for availability to insert'
+        }
     }
 
     return {
