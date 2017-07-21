@@ -149,7 +149,6 @@
   <!--<base href="/">-->
 
   <style>
-
     .md-tab {
       text-transform: none !important;
     }
@@ -263,11 +262,30 @@
       margin-right: 0;
       margin-left: 0;
     }
-    
+
     md-card.fw-footer {
       margin-bottom: 0;
       margin-right: 0;
       margin-left: 0;
+    }
+
+    .md-datepicker-button {
+      display: none;
+    }
+
+    ._md-datepicker-floating-label._md-datepicker-has-calendar-icon>label:not(.md-no-float):not(.md-container-ignore) {
+      right: inherit !important;
+      width: 100% !important;
+    }
+
+    .md-icon-button+.md-datepicker-input-container {
+      margin-left: inherit !important;
+    }
+
+    @media (min-width: 968px) {
+      .search-line {
+        max-height: 50px;
+      }
     }
   </style>
 </head>

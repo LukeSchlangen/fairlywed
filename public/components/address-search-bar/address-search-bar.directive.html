@@ -1,5 +1,5 @@
 <md-autocomplete md-no-cache="true" md-selected-item="vm.selectedItem" md-search-text-change="vm.search(vm.searchText)" md-selected-item-change="vm.updateCoordinates(vm.selectedItem)"
-    md-search-text="vm.searchText" md-items="item in vm.search(vm.searchText)" md-item-text="item.description" md-min-length="0" placeholder="Where is the wedding?">
+    md-search-text="vm.searchText" md-items="item in vm.search(vm.searchText)" md-item-text="item.description" md-min-length="0" md-floating-label="Where is the wedding?">
     <md-item-template>
         <span md-highlight-text="vm.searchText" md-highlight-flags="^i">{{item.description}}</span>
     </md-item-template>
@@ -8,4 +8,4 @@
         <span  ng-show="vm.searchText.length == 0">Start typing to find your address.</span>
     </md-not-found>
 </md-autocomplete>
-<small>Currently showing results for {{location}}</small>
+<!-- <small>Currently showing results for {{location}}</small>   -->
