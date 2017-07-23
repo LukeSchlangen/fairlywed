@@ -1,5 +1,5 @@
-<div layout="column" layout-gt-sm="row" flex class="search-line">
-    <md-input-container class="md-block">
+<div layout="column" layout-gt-sm="row" flex>
+    <md-input-container class="md-block" ng-hide="vm.packages.list.length>0">
         <label>Package</label>
         <md-select ng-model="vm.search.parameters.package" ng-change="vm.updatePhotographersList()" required>
             <md-option ng-repeat="package in vm.packages.list" ng-value="{{package.id}}">
@@ -7,11 +7,56 @@
             </md-option>
         </md-select>
     </md-input-container>
-    <md-input-container>
-        <label>Date</label>
-        <md-datepicker type="date" id="date" name="date" ng-model="vm.search.parameters.date" placeholder="yyyy-MM-dd" ng-change="vm.updatePhotographersList()"
-            required></md-datepicker>
-    </md-input-container>
-    <address-search-bar location="vm.search.parameters.location" longitude="vm.search.parameters.longitude" latitude="vm.search.parameters.latitude"
-        update-list="vm.updatePhotographersList()" required></address-search-bar>
+    <div layout="row" flex class="search-line">
+        <address-search-bar location="vm.search.parameters.location" longitude="vm.search.parameters.longitude" latitude="vm.search.parameters.latitude"
+            update-list="vm.updatePhotographersList()" required flex>
+        </address-search-bar>
+    </div>
+    <div layout="row" flex class="search-line">
+        <md-input-container class="md-block" flex>
+            <label>Photographers</label>
+            <md-select ng-model="vm.packageComponents.numberOfPhotographers" ng-change="vm.updatePhotographersList()">
+                <md-option ng-value="'1'">
+                    1
+                </md-option>
+                <md-option ng-value="'2'">
+                    2
+                </md-option>
+            </md-select>
+        </md-input-container>
+        <md-input-container class="md-block" flex>
+            <label>Hours</label>
+            <md-select ng-model="vm.packageComponents.numberOfHours" ng-change="vm.updatePhotographersList()">
+                <md-option ng-value="'4'">
+                    4
+                </md-option>
+                <md-option ng-value="'6'">
+                    6
+                </md-option>
+                <md-option ng-value="'8'">
+                    8
+                </md-option>
+                <md-option ng-value="'10'">
+                    10
+                </md-option>
+            </md-select>
+        </md-input-container>
+    </div>
+    <div layout="row" flex class="search-line">
+        <md-input-container class="md-block" flex>
+            <label>Engagement Session</label>
+            <md-select ng-model="vm.packageComponents.engagementSessionIsIncluded" ng-change="vm.updatePhotographersList()">
+                <md-option ng-value="true">
+                    Included
+                </md-option>
+                <md-option ng-value="false">
+                    Not Included
+                </md-option>
+            </md-select>
+        </md-input-container>
+        <md-input-container flex>
+            <label>Date</label>
+            <md-datepicker type="date" id="date" name="date" ng-model="vm.search.parameters.date" placeholder="yyyy-MM-dd" ng-change="vm.updatePhotographersList()"></md-datepicker>
+        </md-input-container>
+    </div>
 </div>
