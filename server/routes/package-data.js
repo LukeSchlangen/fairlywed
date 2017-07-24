@@ -7,7 +7,10 @@ router.get('/', async (req, res) => {
     try {
         var vendorType = req.query.vendorType;
         var photographerQueryResult = await client.query(
-            'SELECT packages.id, packages.name ' +
+            'SELECT packages.id, packages.name, '+
+            'packages.number_of_photographers, ' +
+            'packages.number_of_hours, ' +
+            'packages.engagement_session_is_included ' +
             'FROM packages ' +
             'JOIN subvendortypes ON packages.vendortype_id = subvendortypes.id ' +
             'WHERE subvendortypes.name = $1 ORDER BY id;',
