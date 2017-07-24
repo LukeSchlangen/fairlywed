@@ -87,6 +87,9 @@ CREATE TABLE packages(
 	id SERIAL PRIMARY KEY,
 	vendortype_id INT NOT NULL REFERENCES subvendortypes,
 	name VARCHAR(500) UNIQUE NOT NULL,
+	number_of_photographers BOOLEAN NOT NULL,
+	number_of_hours BOOLEAN NOT NULL,
+	engagement_session_is_included BOOLEAN NOT NULL,
 	created_at TIMESTAMP DEFAULT NOW() NOT NULL,
 	is_active BOOLEAN DEFAULT TRUE NOT NULL
 );
@@ -173,19 +176,23 @@ INSERT INTO subvendortypes (name)
 VALUES ('photographer'), ('videographer'), ('dj');
 
 -- INSERTING PACKAGES
-INSERT INTO packages (name, vendortype_id)
-VALUES ('Two Photographers: 10 Hours', 1),
-('Two Photographers: 8 Hours', 1),
-('One Photographer: 10 Hours', 1),
-('One Photographer: 8 Hours', 1),
-('One Photographer: 6 Hours', 1),
-('One Photographer: 4 Hours', 1),
-('Two Photographers: 10 Hours - 1 hour Engagement Session Included', 1),
-('Two Photographers: 8 Hours - 1 hour Engagement Session Included', 1),
-('One Photographer: 10 Hours - 1 hour Engagement Session Included', 1),
-('One Photographer: 8 Hours - 1 hour Engagement Session Included', 1),
-('One Photographer: 6 Hours - 1 hour Engagement Session Included', 1),
-('One Photographer: 4 Hours - 1 hour Engagement Session Included', 1);
+INSERT INTO packages (id, name, vendortype_id, number_of_photographers, number_of_hours, engagement_session_is_included)
+VALUES (1, 'Two Photographers: 10 Hours', 1, 2, 10, TRUE),
+(2, 'Two Photographers: 8 Hours', 1, 2, 8, TRUE),
+(3, 'One Photographer: 10 Hours', 1, 1, 10, TRUE),
+(4, 'One Photographer: 8 Hours', 1, 1, 8, TRUE),
+(5, 'One Photographer: 6 Hours', 1, 1, 6, TRUE),
+(6, 'One Photographer: 4 Hours', 1, 1, 4, TRUE),
+(7, 'Two Photographers: 10 Hours - 1 hour Engagement Session Included', 1, 2, 10, TRUE),
+(8, 'Two Photographers: 8 Hours - 1 hour Engagement Session Included', 1, 2, 8, TRUE),
+(9, 'One Photographer: 10 Hours - 1 hour Engagement Session Included', 1, 1, 10, TRUE),
+(10, 'One Photographer: 8 Hours - 1 hour Engagement Session Included', 1, 1, 8, TRUE),
+(11, 'One Photographer: 6 Hours - 1 hour Engagement Session Included', 1, 1, 6, TRUE),
+(12, 'One Photographer: 4 Hours - 1 hour Engagement Session Included', 1, 1, 4, TRUE),
+(13, 'Two Photographers: 6 Hours', 1, 2, 6, TRUE),
+(14, 'Two Photographers: 4 Hours', 1, 2, 4, TRUE),
+(15, 'Two Photographers: 6 Hours - 1 hour Engagement Session Included', 1, 2, 6, TRUE),
+(16, 'Two Photographers: 4 Hours - 1 hour Engagement Session Included', 1, 2, 4, TRUE);
 
 -- CREATING AVAILABILITY STATUSES
 INSERT INTO availability (status)
@@ -481,3 +488,30 @@ FROM users_vendors
 JOIN vendors ON users_vendors.user_id=1 AND vendors.id=users_vendors.vendor_id  
 JOIN subvendors ON vendors.id=subvendors.parent_vendor_id
 JOIN subvendor_images ON subvendor_images.id = 4 AND subvendor_images.subvendor_id=subvendors.id;
+
+
+-- Example of altering a table while being backwards compatible
+ALTER TABLE packages ADD COLUMN "number_of_photographers" integer;
+ALTER TABLE packages ADD COLUMN "number_of_hours" integer;
+ALTER TABLE packages ADD COLUMN "engagement_session_is_included" BOOLEAN;
+
+UPDATE packages SET number_of_photographers=2 WHERE name LIKE 'Two Photographers%';
+UPDATE packages SET number_of_photographers=1 WHERE name LIKE 'One Photographer%';
+UPDATE packages SET number_of_hours=10 WHERE name LIKE '%10 Hours%';
+UPDATE packages SET number_of_hours=8 WHERE name LIKE '%8 Hours%';
+UPDATE packages SET number_of_hours=6 WHERE name LIKE '%6 Hours%';
+UPDATE packages SET number_of_hours=4 WHERE name LIKE '%4 Hours%';
+UPDATE packages SET engagement_session_is_included=(name LIKE '%1 hour Engagement Session Included');
+
+ALTER TABLE packages ALTER COLUMN "number_of_hours" SET NOT NULL;
+ALTER TABLE packages ALTER COLUMN "number_of_photographers" SET NOT NULL;
+ALTER TABLE packages ALTER COLUMN "engagement_session_is_included" SET NOT NULL;
+
+INSERT INTO packages (id, name, vendortype_id, number_of_photographers, number_of_hours, engagement_session_is_included)
+VALUES 
+(13, 'Two Photographers: 6 Hours', 1, 2, 6, TRUE),
+(14, 'Two Photographers: 4 Hours', 1, 2, 4, TRUE),
+(15, 'Two Photographers: 6 Hours - 1 hour Engagement Session Included', 1, 2, 6, TRUE),
+(16, 'Two Photographers: 4 Hours - 1 hour Engagement Session Included', 1, 2, 4, TRUE);
+
+SELECT * FROM packages;

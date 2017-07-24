@@ -3,6 +3,11 @@ app.factory("PhotographerSearchFactory", function (PackagesFactory, $http, $stat
     console.log('photographer factory logging $stateParams: ', $stateParams);
 
     var packages = { list: [] };
+    var packageComponents = {
+        numberOfPhotographers: null,
+        numberOfHours: null,
+        engagementSessionIsIncluded: null
+    };
     var photographers = { list: [] };
     var functionsToExecuteOnSearchChange = [];
 
@@ -14,7 +19,7 @@ app.factory("PhotographerSearchFactory", function (PackagesFactory, $http, $stat
         search.parameters.location = $stateParams.location || "Minneapolis, MN, USA";
         search.parameters.longitude = $stateParams.longitude || -93.26501080000003;
         search.parameters.latitude = $stateParams.latitude || 44.977753;
-        search.parameters.package = $stateParams.package ? $stateParams.package : 2;
+        search.parameters.package = $stateParams.package ? $stateParams.package : setDefaultPackage();
         search.parameters.date = $stateParams.date ? new Date($stateParams.date) : saturdayOneYearFromNow();
         packages = PackagesFactory.packages;
         photographers = { list: [] };
@@ -26,6 +31,9 @@ app.factory("PhotographerSearchFactory", function (PackagesFactory, $http, $stat
     // -- RETURNING LIST OF PHOTOGRAPHERS BASED ON SEARCH PARAMETERS -- //
     function updatePhotographersList() {
         if (search.parameters.package && search.parameters.longitude && search.parameters.latitude) {
+            if(packages.list.length > 0) {
+                search.parameters.package = updatePackageBasedOnComponents(packages.list, search.parameters.package);
+            }
             search.parameters.vendorType = 'photographer';
             var searchObject = angular.copy(search.parameters);
             searchObject.date = pgFormatDate(searchObject.date);
@@ -114,6 +122,40 @@ app.factory("PhotographerSearchFactory", function (PackagesFactory, $http, $stat
         });
     }
 
+    function setDefaultPackage() {
+        packageComponents.numberOfPhotographers = 2;
+        packageComponents.numberOfHours = 8;
+        packageComponents.engagementSessionIsIncluded = false;
+        return 2;
+    }
+
+    function updatePackageBasedOnComponents(packageList, currentPackageId) {
+        if (packageComponents.numberOfHours && packageComponents.numberOfPhotographers) {
+            // use current package components to determine package
+            for(var i = 0; i < packageList.length; i++) {
+                packageList[i].engagement_session_is_included = !!packageList[i].engagement_session_is_included;
+                var numberOfPhotographersIsCorrect = packageComponents.numberOfPhotographers == packageList[i].number_of_photographers;
+                var numberOfHoursIsCorrect = packageComponents.numberOfHours == packageList[i].number_of_hours;
+                var engagementSessionIsIncludedIsCorrect = packageComponents.engagementSessionIsIncluded == packageList[i].engagement_session_is_included;
+                if(numberOfPhotographersIsCorrect && numberOfHoursIsCorrect && engagementSessionIsIncludedIsCorrect) {
+                    return packageList[i].id;
+                }
+            }
+        } else {
+            // use current package to determine the components
+            for(var i = 0; i < packageList.length; i++) {
+                if(packageList[i].id == currentPackageId) {
+                    packageComponents.numberOfPhotographers = packageList[i].number_of_photographers;
+                    packageComponents.numberOfHours = packageList[i].number_of_hours;
+                    packageComponents.engagementSessionIsIncluded = packageList[i].engagement_session_is_included;
+                    return packageList[i].id;
+                }
+            }
+        }
+        console.error('Something went wrong, packageList was', packageList)
+        console.error('currentPackageId was', currentPackageId)
+    }
+
     function saturdayOneYearFromNow() {
         var weekDayToFind = moment().day('saturday').weekday(); //change to searched day name
 
@@ -154,6 +196,7 @@ app.factory("PhotographerSearchFactory", function (PackagesFactory, $http, $stat
 
     return {
         packages: packages,
+        packageComponents: packageComponents,
         photographers: photographers,
         updatePhotographersList: updatePhotographersList,
         currentSubvendor: currentSubvendor,
