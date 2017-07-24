@@ -149,7 +149,6 @@
   <!--<base href="/">-->
 
   <style>
-
     .md-tab {
       text-transform: none !important;
     }
@@ -163,8 +162,10 @@
     }
 
     h3.md-headline.main-card-title.brand-font {
-      margin-top: 0px;
+      margin-top: 20px;
       margin-bottom: 0px;
+      line-height: 64px;
+      text-align: center;
     }
 
     .brand-font {
@@ -187,15 +188,10 @@
     .fw-move-to-back {
       z-index: 0;
     }
-
-    .cards-icon {
-      font-size: 64px;
-      padding: 36px;
-    }
-
+    
     .cards-text {
-      padding-top: 36px;
-      padding-bottom: 36px;
+      padding-top: 20px;
+      padding-bottom: 20px;
       padding-right: 24px;
       padding-left: 24px
     }
@@ -207,6 +203,7 @@
     header {
       margin-top: -50px;
       background-color: #FFFEEA;
+      text-align: center;
     }
 
     .image-below-header {
@@ -217,7 +214,7 @@
       height: 400px;
     }
 
-    @media (max-width: 800px) {
+    @media (max-width: 1800px) {
       .image-below-header {
         height: 200px;
       }
@@ -227,7 +224,7 @@
       background-repeat: no-repeat;
       background-size: cover;
       background-position: center center;
-      height: 400px;
+      height: 300px;
     }
 
     .photographer-upper.mid-section-image {
@@ -242,7 +239,7 @@
       background-repeat: no-repeat;
       background-size: cover;
       margin-top: -50px;
-      height: 800px;
+      height: 400px;
       background-position: left top;
     }
 
@@ -263,11 +260,28 @@
       margin-right: 0;
       margin-left: 0;
     }
-    
+
     md-card.fw-footer {
       margin-bottom: 0;
       margin-right: 0;
       margin-left: 0;
+    }
+
+    .md-datepicker-button {
+      display: none;
+    }
+
+    ._md-datepicker-floating-label._md-datepicker-has-calendar-icon>label:not(.md-no-float):not(.md-container-ignore) {
+      right: inherit !important;
+      width: 100% !important;
+    }
+
+    .md-icon-button+.md-datepicker-input-container {
+      margin-left: inherit !important;
+    }
+
+    .search-line {
+      max-height: 50px;
     }
   </style>
 </head>
