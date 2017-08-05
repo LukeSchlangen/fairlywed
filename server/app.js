@@ -23,7 +23,7 @@ var vendorPermissionsInvitation = require('./routes/vendor-permissions-invitatio
 var uploads = require('./routes/uploads');
 var portDecision = process.env.PORT || 5000;
 
-app.use(enfoceSSL);
+app.use(enfoceSSL.redirectChecker);
 
 app.get('/', function (req, res) {
   res.sendFile(path.resolve('./dist/public/views/index.html'));
