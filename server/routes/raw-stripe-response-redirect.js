@@ -16,6 +16,7 @@ router.get('/', async (req, res) => {
         }
         if (stripeConnectVendorId) {
             var redirectUrl = [req.protocol, '://', req.get('Host'), '/#/account/vendor/details/', stripeConnectVendorId, '?', req.originalUrl.split("?").pop()].join('');
+            console.log('Stripe connect successfully matched vendor ID. Redirecting to:', redirectUrl);
             res.redirect(redirectUrl);
         } else {
             console.log('There was no vendor id to match the stripe state received');
