@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var pool = require('../modules/pg-pool');
-var enfoceSSL = require('./modules/enforce-ssl');
+var enfoceSSL = require('../modules/enforce-ssl');
 
 
 router.get('/', async (req, res) => {
