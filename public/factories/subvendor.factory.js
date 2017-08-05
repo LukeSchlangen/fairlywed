@@ -21,7 +21,6 @@ app.factory("SubvendorFactory", function ($http, AuthFactory, $stateParams, Vend
                 subvendor_id: $stateParams.subvendorId
             }
         }).then(function (response) {
-            console.log('subvendor details factory returned: ', response.data);
             subvendor.packageList = response.data.packages;
             checkAccountStatus();
         }).catch(function (err) {
@@ -44,7 +43,6 @@ app.factory("SubvendorFactory", function ($http, AuthFactory, $stateParams, Vend
                 selected_date: selectedDate
             }
         }).then(function (response) {
-            console.log('subvendor details factory returned: ', response.data);
             subvendor.availabilityList = response.data;
             checkAccountStatus();
         }).catch(function (err) {
@@ -61,7 +59,6 @@ app.factory("SubvendorFactory", function ($http, AuthFactory, $stateParams, Vend
                 subvendor_id: $stateParams.subvendorId
             }
         }).then(function (response) {
-            console.log('subvendors controller returned: ', response.data);
 
             // Remove deleted images from imagesList that are not in the new response
             for (var i = subvendor.imagesList.length - 1; i >= 0; i--) {
@@ -104,7 +101,6 @@ app.factory("SubvendorFactory", function ($http, AuthFactory, $stateParams, Vend
                 subvendor_id: $stateParams.subvendorId
             }
         }).then(function (response) {
-            console.log('subvendors controller returned: ', response.data);
             subvendor.details = response.data;
             subvendor.savedDetails = angular.copy(subvendor.details);
         }).catch(function (err) {
@@ -122,7 +118,6 @@ app.factory("SubvendorFactory", function ($http, AuthFactory, $stateParams, Vend
             },
             data: packageToSave
         }).then(function (response) {
-            console.log('subvendor details controller returned: ', response.data);
             getPackagesList();
         }).catch(function (err) {
             console.error('Error retreiving private user data: ', err);
@@ -138,7 +133,6 @@ app.factory("SubvendorFactory", function ($http, AuthFactory, $stateParams, Vend
             },
             data: availabilityToSave
         }).then(function (response) {
-            console.log('subvendor details controller returned: ', response.data);
             getAvailabilityList(availabilityToSave.day).then(function () {
                 updateCalendar();
             });
@@ -156,7 +150,6 @@ app.factory("SubvendorFactory", function ($http, AuthFactory, $stateParams, Vend
             },
             data: subvendorToSave
         }).then(function (response) {
-            console.log('subvendor factory returned: ', response.data);
             getDetails();
             VendorDetailsFactory.getSubvendorList();
         }).catch(function (err) {
@@ -173,7 +166,6 @@ app.factory("SubvendorFactory", function ($http, AuthFactory, $stateParams, Vend
             },
             data: imageToSave
         }).then(function (response) {
-            console.log('subvendor factory returned: ', response.data);
             getImagesList();
         }).catch(function (err) {
             console.error('Error retreiving private user data: ', err);

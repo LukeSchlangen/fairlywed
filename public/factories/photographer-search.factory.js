@@ -1,7 +1,5 @@
 app.factory("PhotographerSearchFactory", function (PackagesFactory, $http, $stateParams, $state) {
 
-    console.log('photographer factory logging $stateParams: ', $stateParams);
-
     var packages = { list: [] };
     var packageComponents = {
         numberOfPhotographers: null,
@@ -42,7 +40,6 @@ app.factory("PhotographerSearchFactory", function (PackagesFactory, $http, $stat
                 url: '/vendorSearchData',
                 params: { search: searchObject }
             }).then(function (response) {
-                console.log('Photographer factory received photographer data from the server: ', response.data);
                 photographers.list = response.data;
             }).catch(function (err) {
                 console.error('Error retreiving photographer data: ', err);
@@ -55,8 +52,6 @@ app.factory("PhotographerSearchFactory", function (PackagesFactory, $http, $stat
         var newStateParameters = angular.copy(search.parameters);
         newStateParameters.package = search.parameters.package;
         newStateParameters.date = stringifyDate(search.parameters.date);
-        console.log('$state is currently:', $state);
-        console.log('newStateParameters:', newStateParameters)
         $state.transitionTo($state.current.name, newStateParameters, { notify: false });
         updateCurrentSubvendorCurrentPackage();
         executeSearchChangedFunctions();
@@ -78,7 +73,6 @@ app.factory("PhotographerSearchFactory", function (PackagesFactory, $http, $stat
                 url: '/vendorSearchData/subvendorProfile',
                 params: { search: searchObject }
             }).then(function (response) {
-                console.log('Photographer factory received photographer profile data from the server: ', response.data);
                 currentSubvendor.details = response.data;
                 updateCurrentSubvendorCurrentPackage();
             }).catch(function (err) {
@@ -92,8 +86,6 @@ app.factory("PhotographerSearchFactory", function (PackagesFactory, $http, $stat
         var newStateParameters = angular.copy(search.parameters);
         newStateParameters.package = search.parameters.package;
         newStateParameters.date = stringifyDate(search.parameters.date);
-        console.log('$state is currently:', $state);
-        console.log('newStateParameters:', newStateParameters)
         $state.transitionTo($state.current.name, newStateParameters, { notify: false });
         updateCurrentSubvendorCurrentPackage();
     }

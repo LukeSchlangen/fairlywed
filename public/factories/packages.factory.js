@@ -9,7 +9,6 @@ app.factory("PackagesFactory", function ($http) {
             params: { vendorType: 'photographer' }
         }).then(function (response) {
             packages.list = response.data.packages;
-            console.log('Packages factory returned: ', response.data.packages);
             return response;
         }).catch(function (err) {
             console.error('Error retreiving photographer packages data: ', err);

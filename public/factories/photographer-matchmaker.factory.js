@@ -24,7 +24,6 @@ app.factory("PhotographerMatchmakerFactory", ["PhotographerSearchFactory", "$htt
                     search: searchObject
                 },
             }).then(function (response) {
-                console.log('Photographer factory received photographer profile data from the server: ', response.data);
                 photos.list = response.data.images || [];
                 PhotographerSearchFactory.photographers.list = response.data.subvendor || [];
                 // currentSubvendor.details = response.data;

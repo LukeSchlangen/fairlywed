@@ -12,7 +12,6 @@ app.controller("VendorAccountController", function (PackagesFactory, VendorAccou
         var autocomplete = new google.maps.places.Autocomplete(input, {
             componentRestrictions: { 'country': 'us' }
         });
-        console.log("Initializing google maps");
         google.maps.event.addListener(autocomplete, 'place_changed', function () {
             var place = autocomplete.getPlace();
             self.newVendor.latitude = place.geometry.location.lat();
@@ -21,10 +20,6 @@ app.controller("VendorAccountController", function (PackagesFactory, VendorAccou
             $scope.$apply();
         });
     }
-
-    self.updatePrice = function (packageObject) {
-        console.log('Package price update: ', packageObject)
-    };
 
     self.addVendor = function () {
         VendorAccountFactory.addVendor(self.newVendor);
