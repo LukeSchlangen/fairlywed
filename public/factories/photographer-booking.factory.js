@@ -24,7 +24,6 @@ app.factory("PhotographerBookingFactory", ["PhotographerSearchFactory", "$http",
                 stripeToken: token
             }
         }).then(function (response) {
-            console.log('Photographer factory received photographer profile data from the server: ', response.data);
             alert('Hooray! Congratulations! You have booked your wedding photographer!');
         }).catch(function (err) {
             console.error('Error booking the photographer: ', err);

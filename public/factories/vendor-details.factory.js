@@ -24,7 +24,6 @@ app.factory("VendorDetailsFactory", function ($http, AuthFactory, $stateParams, 
                 vendor_id: $stateParams.vendorId
             }
         }).then(function (response) {
-            console.log('subvendors controller returned: ', response.data);
             vendor.subvendorList = response.data.subvendors;
             if (!$stateParams.subvendorId && vendor.subvendorList.length > 0) {
                 var newStateParams = angular.copy($stateParams);
@@ -45,7 +44,6 @@ app.factory("VendorDetailsFactory", function ($http, AuthFactory, $stateParams, 
                 vendor_id: $stateParams.vendorId
             }
         }).then(function (response) {
-            console.log('subvendors controller returned: ', response.data);
             vendor.details = response.data;
             vendor.details.travel_distance = Math.round(vendor.details.travel_distance / 1609.34);
             vendor.savedDetails = angular.copy(vendor.details);
@@ -64,7 +62,6 @@ app.factory("VendorDetailsFactory", function ($http, AuthFactory, $stateParams, 
             },
             data: vendorToSave
         }).then(function (response) {
-            console.log('vendor details factory returned: ', response.data);
             getDetails();
             VendorAccountFactory.getVendorList();
         }).catch(function (err) {
@@ -81,7 +78,6 @@ app.factory("VendorDetailsFactory", function ($http, AuthFactory, $stateParams, 
             },
             data: newSubvendor
         }).then(function (response) {
-            console.log('vendor details factory returned: ', response.data);
             getSubvendorList();
             $state.transitionTo('account.vendor.details.subvendor.details.about',
                 { vendorId: response.data.vendorId, subvendorId: response.data.newSubvendorId });

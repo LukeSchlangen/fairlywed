@@ -31,7 +31,6 @@ app.controller("AddressSearchBarController", function (PhotographerSearchFactory
 
     self.updateCoordinates = function (selectedPlace) {
         if (selectedPlace) {
-            console.log(selectedPlace);
             var googlePlacesService = new google.maps.places.PlacesService(document.createElement('div'));
             googlePlacesService.getDetails({
                 reference: selectedPlace.reference
