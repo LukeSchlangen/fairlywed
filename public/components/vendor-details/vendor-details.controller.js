@@ -39,7 +39,6 @@ app.controller("VendorDetailsController", function (VendorDetailsFactory, UserDa
         var autocomplete = new google.maps.places.Autocomplete(input, {
             componentRestrictions: { 'country': 'us' }
         });
-        console.log("Initializing google maps");
         google.maps.event.addListener(autocomplete, 'place_changed', function () {
             var place = autocomplete.getPlace();
             self.vendor.details.latitude = place.geometry.location.lat();

@@ -36,20 +36,17 @@ app.factory("UserDataFactory", function (AuthFactory, $http) {
                 method: 'GET',
                 url: '/anonymousUserData'
             }).then(function (response) {
-                console.log('User was logged in, and auth factory received data from the server: ', response.data);
             }).catch(function (err) {
                 console.error('Error retreiving private user data: ', err);
             });
         } else {
             userData.isSignedIn = false;
-            console.log('Anonymous Sign in triggered');
             anonymousSignIn();
         }
     });
 
     function getUserData(requestConfigObject) {
         $http(requestConfigObject).then(function (response) {
-            console.log('User was logged in, and auth factory received data from the server: ', response.data);
         }).catch(function (err) {
             console.error('Error retreiving private user data: ', err);
         });
