@@ -36,7 +36,7 @@
                     <md-button ng-click="vm.shareWithBusinessPartner()">
                         Add Business Partner
                     </md-button>
-                    <md-button ng-href="{{vm.connectToStripeLink.url}}" ng-show="vm.vendor.details.stripe_is_active">
+                    <md-button ng-href="{{vm.connectToStripeLink.url}}&state={{vm.vendor.details.stripe_connect_state}}" ng-show="vm.vendor.details.stripe_is_active">
                         Change Stripe Account
                     </md-button>
                     <span flex></span>
