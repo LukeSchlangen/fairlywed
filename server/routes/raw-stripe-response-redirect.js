@@ -17,7 +17,6 @@ router.get('/', async (req, res) => {
             var stripeConnectVendorId = stripeConnectVendorIdResult.rows[0].vendor_id;
         }
         if (stripeConnectVendorId) {
-            var env = process.env.NODE_ENV || 'development';
             var redirectUrl = [req.protocol, '://', req.get('Host'), '/#/account/vendor/details/', stripeConnectVendorId, '?', req.originalUrl.split("?").pop()].join('');
             redirectUrl = enfoceSSL.forceSSLInProduction(redirectUrl);
             res.redirect(redirectUrl);

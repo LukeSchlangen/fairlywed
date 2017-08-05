@@ -4,22 +4,58 @@
             <md-card-content>
                 <photographer-search></photographer-search>
                 <form ng-submit="vm.doCheckout()">
-                    <md-input-container md-no-float class="md-block">
-                        <label>Time</label>
-                        <input type="time" id="time" name="time" ng-model="vm.bookingDetails.time" required>
-                    </md-input-container>
-                    <md-input-container md-no-float class="md-block">
-                        <label>Phone Number</label>
-                        <input  type="tel" id="phoneNumber" name="phoneNumber" ng-model="vm.bookingDetails.phoneNumber" required >
-                    </md-input-container>
-                    <md-input-container md-no-float class="md-block">
-                        <label>Notes or Special Requests</label>
-                        <input type="text" id="requests" name="requests" ng-model="vm.bookingDetails.requests" >
-                    </md-input-container>
-                    <h3>{{vm.currentSubvendor.details.currentPackage.price ? (vm.currentSubvendor.details.currentPackage.price | currency:"$":0) : 'This photographer does not offer this package on this day for your location'}}</h3>
-                    <md-button class="md-raised" type="submit">Book</button>
+                    <div layout="row" flex class="search-line">
+                        <md-input-container class="md-block" flex>
+                            <label>Phone Number</label>
+                            <input type="tel" id="phoneNumber" name="phoneNumber" ng-model="vm.bookingDetails.phoneNumber" required>
+                        </md-input-container>
+                        <md-input-container class="md-block" flex>
+                            <label>Time</label>
+                            <input type="time" id="time" name="time" ng-model="vm.bookingDetails.time" required>
+                        </md-input-container>
+                    </div>
+                    <div flex layout="column">
+                        <md-input-container class="md-block">
+                            <label>Notes or Special Requests</label>
+                            <textarea id="requests" name="requests" ng-model="vm.bookingDetails.requests" md-maxlength="2000" rows="1" md-select-on-focus></textarea>
+                        </md-input-container>
+                    </div>
+                    <div layout="column" layout-align="center center" flex>
+                        <h3 flex class="md-block">
+                            {{vm.currentSubvendor.details.currentPackage.price ? (vm.currentSubvendor.details.currentPackage.price | currency:"$":0)
+                            : 'This photographer does not offer this package on this day for your location'}}
+                        </h3>
+                        <div flex class="md-block">
+                            <md-button class="md-raised" type="submit" ng-disabled="!vm.currentSubvendor.details.currentPackage.price">Book</button>
+                        </div>
+                    </div>
                 </form>
             </md-card-content>
         </md-card>
     </md-content>
 </div>
+
+<!-- 
+<form ng-submit="vm.doCheckout()">
+    <div layout="column" layout-gt-sm="row" flex>
+        <div layout="row" flex class="search-line">
+            <md-input-container flex>
+                <label>Phone Number</label>
+                <input type="tel" id="phoneNumber" name="phoneNumber" ng-model="vm.bookingDetails.phoneNumber" required>
+            </md-input-container>
+            <md-input-container flex>
+                <label>Time</label>
+                <input type="time" id="time" name="time" ng-model="vm.bookingDetails.time" required>
+            </md-input-container>
+        </div>
+        <div layout="row" flex class="search-line">
+            <md-input-container flex>
+                {{vm.currentSubvendor.details.currentPackage.price ? (vm.currentSubvendor.details.currentPackage.price | currency:"$":0)
+                : 'This photographer does not offer this package on this day for your location'}}
+            </md-input-container>
+            <md-input-container flex>
+                <md-button class="md-raised" type="submit" ng-disabled="!vm.currentSubvendor.details.currentPackage.price">Book</button>
+            </md-input-container>
+        </div>
+    </div>
+</form> -->
