@@ -10,7 +10,6 @@ app.factory("VendorInvitationFactory", function ($http, $stateParams, $state) {
                 vendor_id: $stateParams.vendorId
             }
         }).then(function (response) {
-            console.log('subvendors controller returned: ', response.data);
             vendorInvitation.details = response.data;
         }).catch(function (err) {
             console.error('Error retreiving vendor permissions invitation: ', err);
@@ -27,7 +26,6 @@ app.factory("VendorInvitationFactory", function ($http, $stateParams, $state) {
                 invitation_token: $stateParams.invitationToken
             }
         }).then(function (response) {
-            console.log('subvendors controller returned: ', response.data);
             vendorInvitation.details = response.data;
             $state.transitionTo('account.vendor.details', { vendorId: $stateParams.vendorId });
         }).catch(function (err) {

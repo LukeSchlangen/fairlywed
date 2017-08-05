@@ -9,7 +9,6 @@ app.factory("VendorAccountFactory", function ($http, AuthFactory, $state, $state
             method: 'GET',
             url: '/vendorAccountData'
         }).then(function (response) {
-            console.log('Vendors factory returned: ', response.data.vendors);
             vendors.list = response.data.vendors;
             if (!$stateParams.vendorId && vendors.list.length > 0) {
                 var newStateParams = angular.copy($stateParams);
@@ -28,7 +27,6 @@ app.factory("VendorAccountFactory", function ($http, AuthFactory, $state, $state
             url: '/vendorAccountData',
             data: newVendor
         }).then(function (response) {
-            console.log('vendor details factory returned: ', response.data);
             getVendorList();
             $state.transitionTo('account.vendor.details', { vendorId: response.data.newVendorId });
         }).catch(function (err) {
