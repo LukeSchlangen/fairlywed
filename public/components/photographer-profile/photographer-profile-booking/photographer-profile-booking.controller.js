@@ -9,14 +9,14 @@ app.controller("PhotographerProfileBookingController", ["PhotographerSearchFacto
         // You should configure a handler when the view is loaded,
         // just as you would if you were using checkout.js directly.
         var handler = StripeCheckout.configure({
-            name: "Custom Example",
+            name: "Book the day!",
             token: function (token, args) {
                 PhotographerBookingFactory.bookPhotographer(token);
             }
         });
         self.doCheckout = function (token, args) {
             var options = {
-                description: "Book the day!",
+                description: "",
                 amount: PhotographerSearchFactory.currentSubvendor.details.currentPackage.price * 100
             };
             // The default handler API is enhanced by having open()
