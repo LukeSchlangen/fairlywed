@@ -9,7 +9,7 @@
     </md-content>
 </div> -->
 
-<header ng-if="vm.images.list.length > 1" class="mid-section-image" background-image="{{vm.images.list[vm.images.list.length - 1].id}}"></header>
+<div class="top-section-image" background-image="{{vm.images.list[0].id}}"></div>
 <md-content class="md-padding" layout="column" layout-gt-sm="row" layout-fill>
     <md-card flex>
         <md-card-content flex>
@@ -22,4 +22,4 @@
         </md-card-content>
     </md-card>
 </md-content>
-<div ng-if="vm.images.list.length > 1" class="mid-section-image" background-image="{{vm.images.list[vm.images.list.length - 2].id}}"></div>
+<div class="mid-section-image" background-image="{{vm.images.list[1].id}}"></div>
