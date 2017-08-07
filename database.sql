@@ -509,8 +509,8 @@ ALTER TABLE packages ALTER COLUMN "engagement_session_is_included" SET NOT NULL;
 
 INSERT INTO packages (id, name, vendortype_id, number_of_photographers, number_of_hours, engagement_session_is_included)
 VALUES 
-(13, 'Two Photographers: 6 Hours', 1, 2, 6, TRUE),
-(14, 'Two Photographers: 4 Hours', 1, 2, 4, TRUE),
+(13, 'Two Photographers: 6 Hours', 1, 2, 6, FALSE),
+(14, 'Two Photographers: 4 Hours', 1, 2, 4, FALSE),
 (15, 'Two Photographers: 6 Hours - 1 hour Engagement Session Included', 1, 2, 6, TRUE),
 (16, 'Two Photographers: 4 Hours - 1 hour Engagement Session Included', 1, 2, 4, TRUE);
 
