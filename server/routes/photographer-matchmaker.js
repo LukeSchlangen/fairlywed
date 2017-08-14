@@ -55,7 +55,7 @@ async function getMatchmakerImages(userId, searchObject) {
     var orderBy = simpleRanker.orderBy(userId);
     var client = await pool.connect();
 
-    var images = await client.query(`SELECT DISTINCT ON (subvendor_id) * FROM subvendor_images 
+    var images = await client.query(`WITH initial_query AS (SELECT DISTINCT ON (subvendor_id) * FROM subvendor_images 
         left outer join (
         select subvendor_images_id  from matchmaker_liked_photos join matchmaker_run on matchmaker_run_id = matchmaker_run.id where matchmaker_run.user_id = $1
         ) as joined_matchmaker on subvendor_images.id=joined_matchmaker.subvendor_images_id 
@@ -77,7 +77,8 @@ async function getMatchmakerImages(userId, searchObject) {
             		(CAST(ST_SetSRID(ST_Point($4, $5),4326) As geography)) 
             	)) < (SELECT COALESCE(subvendors.travel_distance, vendors.travel_distance))) 
 
-        ORDER BY ` + ( orderBy || ` subvendor_id, RANDOM()` ) + `LIMIT 2;`,
+        ORDER BY ` + (orderBy || `subvendor_id, RANDOM() `) + `)
+        SELECT * FROM initial_query ORDER BY RANDOM() LIMIT 2;`,
         [userId, searchObject.vendorType, searchObject.package, searchObject.longitude, searchObject.latitude, searchObject.date, 'available']);
 
     client.release();
