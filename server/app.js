@@ -10,6 +10,8 @@ var portDecision = process.env.PORT || 5000;
 
 app.use(enfoceSSL.redirectChecker);
 
+app.use(require('prerender-node').set('prerenderToken', process.env.PRERENDER_TOKEN));
+
 app.use('/invitation/vendor/:id', mainRoute);
 app.use('/invitation/vendor', mainRoute);
 app.use('/invitation', mainRoute);
