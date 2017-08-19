@@ -2,8 +2,8 @@ app.config(function ($stateProvider, $urlRouterProvider, $mdThemingProvider, Str
 
     StripeCheckoutProvider.defaults(stripeConfig);
     
-    // $locationProvider.hashPrefix(''); // by default '!'
-    // $locationProvider.html5Mode(true);
+    $locationProvider.hashPrefix(''); // by default '!'
+    $locationProvider.html5Mode(true);
 
     $urlRouterProvider.otherwise(function ($injector) {
 
@@ -40,30 +40,30 @@ app.config(function ($stateProvider, $urlRouterProvider, $mdThemingProvider, Str
             url: '/about',
             templateUrl: 'views/photographers/about.html'
         })
-        .state('photographers.gallery', {
-            url: '/gallery',
-            templateUrl: 'views/photographers/gallery.html'
-        })
-        .state('photographers.booking', {
-            url: '/booking',
-            templateUrl: 'views/photographers/booking.html'
-        })
-        .state('home.videographers', {
-            url: '/videographers',
-            templateUrl: 'views/home/videographers.html'
-        })
-        .state('home.djs', {
-            url: '/djs',
-            templateUrl: 'views/home/djs.html'
-        })
+        // .state('photographers.gallery', {
+        //     url: '/gallery',
+        //     templateUrl: 'views/photographers/gallery.html'
+        // })
+        // .state('photographers.booking', {
+        //     url: '/booking',
+        //     templateUrl: 'views/photographers/booking.html'
+        // })
+        // .state('home.videographers', {
+        //     url: '/videographers',
+        //     templateUrl: 'views/home/videographers.html'
+        // })
+        // .state('home.djs', {
+        //     url: '/djs',
+        //     templateUrl: 'views/home/djs.html'
+        // })
         .state('account', {
             url: '/account',
             templateUrl: 'views/account/account.html'
         })
-        .state('account.client', {
-            url: '/client',
-            templateUrl: 'views/account/client.html'
-        })
+        // .state('account.client', {
+        //     url: '/client',
+        //     templateUrl: 'views/account/client.html'
+        // })
         .state('account.vendor', {
             url: '/vendor',
             templateUrl: 'views/account/vendor.html'
@@ -115,7 +115,7 @@ app.config(function ($stateProvider, $urlRouterProvider, $mdThemingProvider, Str
             templateUrl: 'views/invitation/vendor.html'
         })
         .state('404', {
-            template: 'That is a 404'
+            templateUrl: 'views/404.html'
         });
 
 
