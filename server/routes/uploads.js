@@ -3,6 +3,7 @@ var router = express.Router();
 var pool = require('../modules/pg-pool');
 const imagemin = require('imagemin');
 const imageminJpegtran = require('imagemin-jpegtran');
+const imageminJpegoptim = require('imagemin-jpegoptim');
 const imageminPngquant = require('imagemin-pngquant');
 var bucket = require('../modules/google-storage-bucket');
 var Multer = require('multer');
@@ -62,6 +63,7 @@ router.post('/', multer.single('file'), (req, res) => {
           imagemin.buffer(req.file.buffer, {
             plugins: [
               imageminJpegtran(),
+              imageminJpegoptim({ max: 80 }),
               imageminPngquant({ quality: '65-80' })
             ]
           }).then(function(compressedImageBuffer) {
