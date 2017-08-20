@@ -1,6 +1,9 @@
 var express = require('express');
 var router = express.Router();
 var pool = require('../modules/pg-pool');
+const imagemin = require('imagemin');
+const imageminJpegtran = require('imagemin-jpegtran');
+const imageminPngquant = require('imagemin-pngquant');
 var bucket = require('../modules/google-storage-bucket');
 var Multer = require('multer');
 var multer = Multer({
@@ -32,7 +35,7 @@ router.post('/', multer.single('file'), (req, res) => {
       [file.originalname, file.encoding, file.mimetype, userId, subvendorId], function (err, imageId) {
         done();
         if (err) {
-          console.log('Error user data root GET SQL query task', err);
+          console.log('Error image INSERT SQL query task', err);
           res.sendStatus(500);
         } else {
           var newImageId = imageId.rows[0].id.toString();
@@ -46,7 +49,7 @@ router.post('/', multer.single('file'), (req, res) => {
           });
 
           blobStream.on('finish', () => {
-            client.query('UPDATE subvendor_images SET is_active=TRUE WHERE id = $1', [newImageId], function(err) {
+            client.query('UPDATE subvendor_images SET is_active=TRUE WHERE id = $1', [newImageId], function (err) {
               if (err) {
                 console.log('error updating is_active status of new image:', err);
                 res.sendStatus(500);
@@ -56,7 +59,14 @@ router.post('/', multer.single('file'), (req, res) => {
             });
           });
 
-          blobStream.end(req.file.buffer);
+          imagemin.buffer(req.file.buffer, {
+            plugins: [
+              imageminJpegtran(),
+              imageminPngquant({ quality: '65-80' })
+            ]
+          }).then(function(compressedImageBuffer) {
+            blobStream.end(compressedImageBuffer);
+          });
         }
       });
   });
