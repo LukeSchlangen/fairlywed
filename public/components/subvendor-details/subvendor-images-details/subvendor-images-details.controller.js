@@ -16,7 +16,7 @@ app.controller("SubvendorImagesDetailsController", function (SubvendorFactory, $
         addRemoveLinks: true,
         paramName: "file",
         filesizeBase: 1024,
-        maxFilesize: 5 // MB
+        maxFilesize: 50 // 50MB limit
     };
 
     // It Doesn't get intercepted by the http-interceptor
