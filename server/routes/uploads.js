@@ -92,7 +92,7 @@ router.post('/', multer.single('file'), (req, res) => {
   });
 });
 
-router.get('/:imageId', function (req, res, next) {
+router.get('/:imageId', function (req, res) {
   var userId = req.decodedToken.userSQLId;
   var imageIdToRetrieve = req.params.imageId;
 
