@@ -27,6 +27,8 @@ app.use('/account', mainRoute);
 app.use('/photographers/:id/about', mainRoute);
 app.use('/photographers/:id', mainRoute);
 app.use('/photographers', mainRoute);
+app.use('/privacy', mainRoute);
+app.use('/terms', mainRoute);
 app.use('/home/photographers', mainRoute);
 app.use('/home', mainRoute);
 app.use('/', mainRoute);

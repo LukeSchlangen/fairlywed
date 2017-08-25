@@ -114,6 +114,14 @@ app.config(function ($stateProvider, $urlRouterProvider, $mdThemingProvider, Str
             url: '/vendor?vendorId&invitationToken',
             templateUrl: 'views/invitation/vendor.html'
         })
+        .state('privacy', {
+            url: '/privacy',
+            templateUrl: 'views/privacy.html'
+        })
+        .state('terms', {
+            url: '/terms',
+            templateUrl: 'views/terms.html'
+        })
         .state('404', {
             templateUrl: 'views/404.html'
         });
