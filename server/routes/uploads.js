@@ -68,7 +68,7 @@ router.post('/', multer.single('file'), (req, res) => {
                 });
 
                 blobStream.on('finish', () => {
-                  client.query('UPDATE subvendor_images SET is_active=TRUE WHERE id = $1', [newImageId], function (err) {
+                  client.query('UPDATE subvendor_images SET is_public=TRUE, is_in_gallery=TRUE, is_active=TRUE WHERE id = $1', [newImageId], function (err) {
                     if (err) {
                       console.log('error updating is_active status of new image:', err);
                       res.sendStatus(500);
