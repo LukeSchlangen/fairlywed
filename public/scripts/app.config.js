@@ -147,6 +147,14 @@ app.config(function ($stateProvider, $urlRouterProvider, $mdThemingProvider, Str
             url: '/terms',
             templateUrl: 'views/policies/terms.html'
         })
+        .state('help', {
+            url: '/help',
+            templateUrl: 'views/help/home.html'
+        })
+        .state('help.faq', {
+            url: '/faq',
+            templateUrl: 'views/help/faq.html'
+        })
         .state('404', {
             templateUrl: 'views/404.html'
         });

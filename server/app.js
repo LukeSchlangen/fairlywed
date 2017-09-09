@@ -35,6 +35,8 @@ app.use('/policies/privacy', mainRoute);
 app.use('/policies/refund', mainRoute);
 app.use('/policies/terms', mainRoute);
 app.use('/policies', mainRoute);
+app.use('/help/faq', mainRoute);
+app.use('/help', mainRoute);
 app.use('/home/photographers', mainRoute);
 app.use('/home', mainRoute);
 app.use('/', mainRoute);
