@@ -123,6 +123,10 @@ app.config(function ($stateProvider, $urlRouterProvider, $mdThemingProvider, Str
             url: '/cookie',
             templateUrl: 'views/policies/cookie.html'
         })
+        .state('policies.contracts', {
+            url: '/contracts',
+            templateUrl: 'views/policies/contracts.html'
+        })
         .state('policies.copyright', {
             url: '/copyright',
             templateUrl: 'views/policies/copyright.html'
@@ -131,17 +135,9 @@ app.config(function ($stateProvider, $urlRouterProvider, $mdThemingProvider, Str
             url: '/nondiscrimination',
             templateUrl: 'views/policies/nondiscrimination.html'
         })
-        .state('policies.payment', {
-            url: '/payment',
-            templateUrl: 'views/policies/payment.html'
-        })
         .state('policies.privacy', {
             url: '/privacy',
             templateUrl: 'views/policies/privacy.html'
-        })
-        .state('policies.refund', {
-            url: '/refund',
-            templateUrl: 'views/policies/refund.html'
         })
         .state('policies.terms', {
             url: '/terms',
