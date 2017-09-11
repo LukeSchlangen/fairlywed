@@ -19,6 +19,7 @@ app.config(function ($stateProvider, $urlRouterProvider, $mdThemingProvider, Str
     $urlRouterProvider.when('/', '/home/photographers');
     $urlRouterProvider.when('/home', '/home/photographers');
     $urlRouterProvider.when('/account', '/account/vendor');
+    $urlRouterProvider.when('/policies', '/policies/terms');
     $urlRouterProvider.when('/photographers/:subvendorId', '/photographers/:subvendorId/about');
     $urlRouterProvider.when('/account/vendor/details/:vendorId/subvendor/details/:subvendorId', '/account/vendor/details/:vendorId/subvendor/details/:subvendorId/about');
 
@@ -113,6 +114,46 @@ app.config(function ($stateProvider, $urlRouterProvider, $mdThemingProvider, Str
         .state('invitation.vendor', {
             url: '/vendor?vendorId&invitationToken',
             templateUrl: 'views/invitation/vendor.html'
+        })
+        .state('policies', {
+            url: '/policies',
+            templateUrl: 'views/policies/home.html'
+        })
+        .state('policies.cookie', {
+            url: '/cookie',
+            templateUrl: 'views/policies/cookie.html'
+        })
+        .state('policies.contracts', {
+            url: '/contracts',
+            templateUrl: 'views/policies/contracts.html'
+        })
+        .state('policies.copyright', {
+            url: '/copyright',
+            templateUrl: 'views/policies/copyright.html'
+        })
+        .state('policies.nondiscrimination', {
+            url: '/nondiscrimination',
+            templateUrl: 'views/policies/nondiscrimination.html'
+        })
+        .state('policies.payment', {
+            url: '/payment',
+            templateUrl: 'views/policies/payment.html'
+        })
+        .state('policies.privacy', {
+            url: '/privacy',
+            templateUrl: 'views/policies/privacy.html'
+        })
+        .state('policies.terms', {
+            url: '/terms',
+            templateUrl: 'views/policies/terms.html'
+        })
+        .state('help', {
+            url: '/help',
+            templateUrl: 'views/help/home.html'
+        })
+        .state('help.faq', {
+            url: '/faq',
+            templateUrl: 'views/help/faq.html'
         })
         .state('404', {
             templateUrl: 'views/404.html'
