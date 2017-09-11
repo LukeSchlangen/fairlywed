@@ -135,6 +135,10 @@ app.config(function ($stateProvider, $urlRouterProvider, $mdThemingProvider, Str
             url: '/nondiscrimination',
             templateUrl: 'views/policies/nondiscrimination.html'
         })
+        .state('policies.payment', {
+            url: '/payment',
+            templateUrl: 'views/policies/payment.html'
+        })
         .state('policies.privacy', {
             url: '/privacy',
             templateUrl: 'views/policies/privacy.html'

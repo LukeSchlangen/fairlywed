@@ -31,6 +31,7 @@ app.use('/policies/contracts', mainRoute);
 app.use('/policies/cookie', mainRoute);
 app.use('/policies/copyright', mainRoute);
 app.use('/policies/nondiscrimination', mainRoute);
+app.use('/policies/payment', mainRoute);
 app.use('/policies/privacy', mainRoute);
 app.use('/policies/terms', mainRoute);
 app.use('/policies', mainRoute);
