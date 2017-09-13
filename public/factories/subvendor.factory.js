@@ -124,6 +124,25 @@ app.factory("SubvendorFactory", function ($http, AuthFactory, $stateParams, Vend
         });
     }
 
+    function updateAllPackages(packages) {
+        packages.forEach(function(packageToSave) {
+            if(packageToSave.price) {
+                $http({
+                    method: 'POST',
+                    url: '/subvendorDetailsData/upsertPackage',
+                    headers: {
+                        subvendor_id: $stateParams.subvendorId
+                    },
+                    data: packageToSave
+                }).then(function (response) {
+                    getPackagesList();
+                }).catch(function (err) {
+                    console.error('Error retreiving private user data: ', err);
+                });
+            }
+        });
+    }
+
     function updateAvailability(availabilityToSave, updateCalendar) {
         $http({
             method: 'POST',
@@ -209,6 +228,7 @@ app.factory("SubvendorFactory", function ($http, AuthFactory, $stateParams, Vend
         subvendor: subvendor,
         updateDetails: updateDetails,
         updatePackage: updatePackage,
+        updateAllPackages: updateAllPackages,
         updateAvailability: updateAvailability,
         saveImage: saveImage
     };
