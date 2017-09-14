@@ -7,7 +7,7 @@ router.get('/', async (req, res) => {
   try {
     var userId = req.decodedToken.userSQLId;
     var searchObject = JSON.parse(req.query.search);
-    var subvendorsWithRatings = await vendorSearch(searchObject);
+    var subvendorsWithRatings = await vendorSearch(searchObject, userId);
     res.send(subvendorsWithRatings);
   } catch (e) {
     console.log('Error in vendor search data', e);

@@ -10,17 +10,19 @@ app.factory("PhotographerMatchmakerFactory", ["PhotographerSearchFactory", "$htt
             search.parameters.vendorType = 'photographer';
             var searchObject = angular.copy(search.parameters);
             searchObject.date = pgFormatDate(searchObject.date);
-            var returnPhotos = photos.list.map(function (photo) {
-                return {
-                    id: photo.id,
-                    liked: photo.liked
+            var subvendorSelection = {};
+            photos.list.forEach(function(photo){
+                if (photo.liked) {
+                    subvendorSelection.winning_image = photo.id;
+                } else {
+                    subvendorSelection.losing_image = photo.id;
                 }
-            })
+            });
             $http({
                 method: 'GET',
                 url: '/matchmaker/',
                 params: { 
-                    photos: returnPhotos,
+                    subvendor_selection: subvendorSelection,
                     search: searchObject
                 },
             }).then(function (response) {

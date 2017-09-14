@@ -1,17 +1,17 @@
 var pool = require('../modules/pg-pool');
 var dateFormatter = require('../modules/date-formatter');
 
-async function vendorSearch(searchObject) {
+async function vendorSearch(searchObject, userId) {
     var client = await pool.connect();
     try {
         var vendorQueryResult = await client.query(
             `WITH winning_counts AS (SELECT subvendor_id, count(winning_image=subvendor_id) AS wins FROM subvendor_matchup 
             FULL OUTER JOIN subvendor_images ON subvendor_matchup.winning_image = subvendor_images.id 
-            WHERE subvendor_matchup.user_id=1 
+            WHERE subvendor_matchup.user_id=$7 
             group by subvendor_id), 
             losing_counts AS (SELECT subvendor_id, count(winning_image=subvendor_id) AS losses FROM subvendor_matchup 
             FULL OUTER JOIN subvendor_images ON subvendor_matchup.losing_image = subvendor_images.id 
-            WHERE subvendor_matchup.user_id=1 
+            WHERE subvendor_matchup.user_id=$7 
             group by subvendor_id) 
             SELECT COALESCE(subvendors.name, vendors.name) AS name,  
             subvendors.id AS id,  
@@ -36,16 +36,16 @@ async function vendorSearch(searchObject) {
             		(SELECT COALESCE(subvendors.location, vendors.location)), 
             		(CAST(ST_SetSRID(ST_Point($3, $4),4326) As geography)) 
             	)) < (SELECT COALESCE(subvendors.travel_distance, vendors.travel_distance))  
-             LIMIT 10; `,
-            [searchObject.vendorType, searchObject.package, searchObject.longitude, searchObject.latitude, dateFormatter.javascriptToPostgres(searchObject.date), 'available'])
+            LIMIT 10; `,
+            [searchObject.vendorType, searchObject.package, searchObject.longitude, searchObject.latitude, dateFormatter.javascriptToPostgres(searchObject.date), 'available', userId])
 
         client.release();
 
         // Adds ratings previously found in ratings array (passed in above) and adds them to the subvendors returned
         var subvendorsWithRatings = vendorQueryResult.rows.map((row) => {
-            var wins = row.wins || 0;
-            var losses = row.losses || 0;
-            row.rating = wins / (wins + losses + 1); // find subvendor with matching id and use that rating
+            var wins = parseInt(row.wins) || 0;
+            var losses = parseInt(row.losses) || 0;
+            row.rating = parseInt(wins / (wins + losses + 1) * 100); // find subvendor with matching id and use that rating
             return row;
         });
 
