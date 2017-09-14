@@ -17,8 +17,7 @@ async function vendorSearch(searchObject, userId) {
             subvendors.id AS id,  
             packages.name AS package,  
             subvendors_packages.price,  
-            wins, 
-            losses, 
+            (COALESCE(wins, 0) * 100 / (COALESCE(wins, 0) + COALESCE(losses, 0) + 1)) AS rating,
             ST_Distance((SELECT COALESCE(subvendors.location, vendors.location)), CAST(ST_SetSRID(ST_Point($3, $4),4326) As geography)) AS distance  
             FROM subvendors JOIN subvendortypes ON subvendors.vendortype_id = subvendortypes.id  
             AND subvendortypes.name=$1  
@@ -35,21 +34,14 @@ async function vendorSearch(searchObject, userId) {
             WHERE (SELECT ST_Distance( 
             		(SELECT COALESCE(subvendors.location, vendors.location)), 
             		(CAST(ST_SetSRID(ST_Point($3, $4),4326) As geography)) 
-            	)) < (SELECT COALESCE(subvendors.travel_distance, vendors.travel_distance))  
+                )) < (SELECT COALESCE(subvendors.travel_distance, vendors.travel_distance))  
+            ORDER BY rating DESC
             LIMIT 10; `,
             [searchObject.vendorType, searchObject.package, searchObject.longitude, searchObject.latitude, dateFormatter.javascriptToPostgres(searchObject.date), 'available', userId])
 
         client.release();
 
-        // Adds ratings previously found in ratings array (passed in above) and adds them to the subvendors returned
-        var subvendorsWithRatings = vendorQueryResult.rows.map((row) => {
-            var wins = parseInt(row.wins) || 0;
-            var losses = parseInt(row.losses) || 0;
-            row.rating = parseInt(wins / (wins + losses + 1) * 100); // find subvendor with matching id and use that rating
-            return row;
-        });
-
-        return subvendorsWithRatings;
+        return vendorQueryResult.rows;
 
     } catch (e) {
         console.log('Error user data root GET SQL query task', e);
