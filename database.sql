@@ -153,19 +153,11 @@ CREATE TABLE subvendor_images (
 	is_active BOOLEAN DEFAULT FALSE NOT NULL
 );
 
-CREATE TABLE matchmaker_run (
+CREATE TABLE subvendor_matchup (
 	id SERIAL PRIMARY KEY,
 	user_id INT NOT NULL REFERENCES users,
-	prior_run_id INT,
-	created_at TIMESTAMP DEFAULT NOW() NOT NULL,
-	FOREIGN KEY (prior_run_id) REFERENCES matchmaker_run(id)
-);
-
-CREATE TABLE matchmaker_liked_photos (
-	id SERIAL PRIMARY KEY,
-	matchmaker_run_id INT NOT NULL REFERENCES matchmaker_run,
-	subvendor_images_id INT NOT NULL REFERENCES subvendor_images,
-	liked BOOLEAN DEFAULT FALSE NOT NULL,
+	winning_image INT REFERENCES subvendor_images,
+	losing_image INT REFERENCES subvendor_images,
 	created_at TIMESTAMP DEFAULT NOW() NOT NULL
 );
 
@@ -358,6 +350,42 @@ AND (SELECT ST_Distance(
 	)) < (SELECT COALESCE(subvendors.travel_distance, vendors.travel_distance)) 
 AND subvendor_availability.day = '2017-12-12'
 LIMIT 10;
+
+-- Current full vendor query with rating
+WITH winning_counts AS (SELECT subvendor_id, count(winning_image=subvendor_id) AS wins FROM subvendor_matchup 
+FULL OUTER JOIN subvendor_images ON subvendor_matchup.winning_image = subvendor_images.id 
+WHERE subvendor_matchup.user_id=1 
+group by subvendor_id), 
+losing_counts AS (SELECT subvendor_id, count(winning_image=subvendor_id) AS losses FROM subvendor_matchup 
+FULL OUTER JOIN subvendor_images ON subvendor_matchup.losing_image = subvendor_images.id 
+WHERE subvendor_matchup.user_id=1 
+group by subvendor_id) 
+SELECT COALESCE(subvendors.name, vendors.name) AS name,  
+subvendors.id AS id,  
+packages.name AS package,  
+subvendors_packages.price,  
+wins, 
+losses, 
+(COALESCE(wins, 0) * 100 / (COALESCE(wins, 0) + COALESCE(losses, 0) + 1)) AS rating,
+ST_Distance((SELECT COALESCE(subvendors.location, vendors.location)), CAST(ST_SetSRID(ST_Point(-93.4708, 44.8547),4326) As geography)) AS distance  
+FROM subvendors JOIN subvendortypes ON subvendors.vendortype_id = subvendortypes.id  
+AND subvendortypes.name='photographer'  
+JOIN vendors ON vendors.id = subvendors.parent_vendor_id  
+JOIN stripe_accounts ON vendors.stripe_account_id=stripe_accounts.id AND stripe_accounts.is_active=TRUE  
+JOIN subvendors_packages ON subvendors.id = subvendors_packages.subvendor_id  
+AND subvendors_packages.package_id=2  
+JOIN packages ON subvendors_packages.package_id = packages.id  
+JOIN subvendor_availability ON subvendor_availability.subvendor_id = subvendors.id  
+AND day='2017-12-12'  
+AND subvendor_availability.availability_id = (SELECT id FROM availability WHERE status='available')  
+LEFT OUTER JOIN winning_counts ON subvendors.id = winning_counts.subvendor_id  
+LEFT OUTER JOIN losing_counts ON subvendors.id = losing_counts.subvendor_id  
+WHERE (SELECT ST_Distance( 
+		(SELECT COALESCE(subvendors.location, vendors.location)), 
+		(CAST(ST_SetSRID(ST_Point(-93.4708, 44.8547),4326) As geography)) 
+	)) < (SELECT COALESCE(subvendors.travel_distance, vendors.travel_distance))  
+ORDER BY rating
+LIMIT 10; 
 
 -- Select all packages for a specific subvender
 SELECT subvendors_packages.id AS id, 

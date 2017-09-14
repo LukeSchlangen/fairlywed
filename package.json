@@ -31,8 +31,7 @@
     "request": "^2.81.0",
     "request-promise": "^4.2.0",
     "sharp": "^0.18.2",
-    "stripe": "^4.18.0",
-    "synaptic": "^1.0.10"
+    "stripe": "^4.18.0"
   },
   "devDependencies": {
     "eslint": "^3.19.0",

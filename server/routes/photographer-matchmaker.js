@@ -1,22 +1,14 @@
 var express = require('express');
 var router = express.Router();
 var pool = require('../modules/pg-pool');
-// var neuralNetwork = require('../modules/neural-network');
-var simpleRanker = require('../modules/simple-ranker');
 var vendorSearch = require('../modules/vendor-search');
 
 router.get('/', async (req, res) => {
     try {
         var userId = req.decodedToken.userSQLId;
         var searchObject = JSON.parse(req.query.search);
-        if (req.query.photos && req.query.photos.length > 0) {
-            var photos = objectToArrayCheck(req.query.photos).map((photo) => {
-                var returnPhoto = JSON.parse(photo);
-                returnPhoto.liked = returnPhoto.liked || false;
-                return returnPhoto;
-            });
-            var likes = await saveLikes(photos, userId);
-        }
+        var subvendorSelectionObject = JSON.parse(req.query.subvendor_selection);
+        var likes = await saveSubvendorMatchup(userId, subvendorSelectionObject);
         var [images, subvendorsWithRatings] = await Promise.all([getMatchmakerImages(userId, searchObject), getSubvendorsWithRating(userId, searchObject)]);
 
         res.send({ images: images, subvendor: subvendorsWithRatings });
@@ -27,24 +19,18 @@ router.get('/', async (req, res) => {
 });
 
 async function getSubvendorsWithRating(userId, searchObject) {
-    var recommendedPhotographers = await simpleRanker.recommendedPhotographers(userId);
-    var subvendorsWithRatings = await vendorSearch(searchObject, recommendedPhotographers.orderBy, recommendedPhotographers.ratings);
+    var subvendorsWithRatings = await vendorSearch(searchObject, userId);
     return subvendorsWithRatings;
 }
 
-async function saveLikes(photos, userId) {
+async function saveSubvendorMatchup(userId, subvendorSelection) {
     var client = await pool.connect();
     try {
-        var likes = photos.map((photo) => photo.liked);
-        var ids = photos.map((photo) => photo.id);
-
-        var success = await client.query('WITH new_matchmaker_run_id AS ( INSERT INTO matchmaker_run (user_id, prior_run_id) ' +
-            'VALUES ($1, (SELECT id FROM matchmaker_run where user_id=$1 ORDER BY id DESC LIMIT 1)) RETURNING id) ' +
-            'INSERT INTO matchmaker_liked_photos (liked, subvendor_images_id, matchmaker_run_id)' +
-            'VALUES (unnest($2::bool[]), UNNEST($3::int[]), (SELECT id FROM new_matchmaker_run_id));',
-            [userId, likes, ids])
+        var success = await client.query(`INSERT INTO subvendor_matchup (user_id, winning_image, losing_image)
+            VALUES ($1, $2, $3);`,
+            [userId, subvendorSelection.winning_image, subvendorSelection.losing_image])
     } catch (e) {
-        console.log('Error matchmaker_run INSERT SQL query task', e);
+        console.log('Error subvendor_matchup INSERT SQL query task', e);
     } finally {
         client && client.release && client.release();
     }
@@ -52,14 +38,13 @@ async function saveLikes(photos, userId) {
 }
 
 async function getMatchmakerImages(userId, searchObject) {
-    var orderBy = simpleRanker.orderBy(userId);
     var client = await pool.connect();
 
-    var images = await client.query(`WITH initial_query AS (SELECT DISTINCT ON (subvendor_id) * FROM subvendor_images 
-        left outer join (
-        select subvendor_images_id  from matchmaker_liked_photos join matchmaker_run on matchmaker_run_id = matchmaker_run.id where matchmaker_run.user_id = $1
-        ) as joined_matchmaker on subvendor_images.id=joined_matchmaker.subvendor_images_id 
-        WHERE is_public=true AND is_active=true AND is_in_gallery=true AND joined_matchmaker.subvendor_images_id is null
+    var images = await client.query(`WITH initial_query AS (SELECT DISTINCT ON (subvendor_id) * FROM subvendor_images left outer join (
+        select losing_image from subvendor_matchup where user_id = $1
+        
+        ) as joined_matchmaker on subvendor_images.id=joined_matchmaker.losing_image 
+        WHERE is_public=true AND is_active=true AND is_in_gallery=true AND joined_matchmaker.losing_image is null
 
         AND subvendor_id = ANY (SELECT subvendors.id
             FROM subvendors JOIN subvendortypes ON subvendors.vendortype_id = subvendortypes.id  
@@ -77,7 +62,7 @@ async function getMatchmakerImages(userId, searchObject) {
             		(CAST(ST_SetSRID(ST_Point($4, $5),4326) As geography)) 
             	)) < (SELECT COALESCE(subvendors.travel_distance, vendors.travel_distance))) 
 
-        ORDER BY ` + (orderBy || `subvendor_id, RANDOM() `) + `)
+        ORDER BY  subvendor_id, RANDOM() )
         SELECT * FROM initial_query ORDER BY RANDOM() LIMIT 2;`,
         [userId, searchObject.vendorType, searchObject.package, searchObject.longitude, searchObject.latitude, searchObject.date, 'available']);
 
