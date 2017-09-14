@@ -2,14 +2,12 @@ var express = require('express');
 var router = express.Router();
 var pool = require('../modules/pg-pool');
 var vendorSearch = require('../modules/vendor-search')
-var simpleRanker = require('../modules/simple-ranker')
 
 router.get('/', async (req, res) => {
   try {
     var userId = req.decodedToken.userSQLId;
     var searchObject = JSON.parse(req.query.search);
-    var recommendedPhotographers = await simpleRanker.recommendedPhotographers(userId);
-    var subvendorsWithRatings = await vendorSearch(searchObject, recommendedPhotographers.orderBy, recommendedPhotographers.ratings);
+    var subvendorsWithRatings = await vendorSearch(searchObject);
     res.send(subvendorsWithRatings);
   } catch (e) {
     console.log('Error in vendor search data', e);
