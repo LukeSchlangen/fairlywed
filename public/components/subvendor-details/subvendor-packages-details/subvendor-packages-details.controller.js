@@ -5,6 +5,5 @@ app.controller("SubvendorPackagesDetailsController", function (AuthFactory, Subv
 
     SubvendorFactory.getPackagesList();
 
-    self.savePackage = SubvendorFactory.updatePackage;
     self.saveAllPackages = SubvendorFactory.updateAllPackages;
 });
