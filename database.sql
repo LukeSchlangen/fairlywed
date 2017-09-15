@@ -156,8 +156,8 @@ CREATE TABLE subvendor_images (
 CREATE TABLE subvendor_matchup (
 	id SERIAL PRIMARY KEY,
 	user_id INT NOT NULL REFERENCES users,
-	winning_image INT REFERENCES subvendor_images,
-	losing_image INT REFERENCES subvendor_images,
+	winning_image INT NOT NULL REFERENCES subvendor_images,
+	losing_image INT NOT NULL REFERENCES subvendor_images,
 	created_at TIMESTAMP DEFAULT NOW() NOT NULL
 );
 
