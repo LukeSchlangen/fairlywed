@@ -1,4 +1,4 @@
-app.factory("UserDataFactory", function (AuthFactory, $http) {
+app.factory("UserDataFactory", function (AuthFactory, $http, PhotographerMatchmakerFactory, PhotographerSearchFactory) {
     var userData = { details: {}, isSignedIn: false };
     var anonymousSignIn = function () {
         AuthFactory.$signInAnonymously().then(function (firebaseUser) {
@@ -47,6 +47,8 @@ app.factory("UserDataFactory", function (AuthFactory, $http) {
 
     function getUserData(requestConfigObject) {
         $http(requestConfigObject).then(function (response) {
+            PhotographerSearchFactory.updatePhotographersList();
+            PhotographerMatchmakerFactory.getPhotos();
         }).catch(function (err) {
             console.error('Error retreiving private user data: ', err);
         });

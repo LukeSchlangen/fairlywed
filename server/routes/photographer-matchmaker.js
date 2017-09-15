@@ -8,7 +8,9 @@ router.get('/', async (req, res) => {
         var userId = req.decodedToken.userSQLId;
         var searchObject = JSON.parse(req.query.search);
         var subvendorSelectionObject = JSON.parse(req.query.subvendor_selection);
-        var likes = await saveSubvendorMatchup(userId, subvendorSelectionObject);
+        if (subvendorSelectionObject.winning_image && subvendorSelectionObject.losing_image) {
+            var likes = await saveSubvendorMatchup(userId, subvendorSelectionObject);
+        }
         var [images, subvendorsWithRatings] = await Promise.all([getMatchmakerImages(userId, searchObject), getSubvendorsWithRating(userId, searchObject)]);
 
         res.send({ images: images, subvendor: subvendorsWithRatings });
