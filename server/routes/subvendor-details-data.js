@@ -168,6 +168,7 @@ router.post('/upsertAllPackages', async (req, res) => {
 
 async function upsertPackage(userId, subvendorId, packageObject) {
     var client = await pool.connect();
+    packageObject.price = packageObject && packageObject.price ? packageObject.price.toString().replace(/\D/g,'') : null; // remove non-numeric, $1,234 becomes 1234
     try {
         if ((isNaN(packageObject.price) || packageObject.price == "") && packageObject.id) {
             // if package was removed
