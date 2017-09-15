@@ -33,9 +33,9 @@ router.use('/rawStripeResponse', rawStripeResponseRedirect);
 /* Anonymous auth is ok for these routes, created for matchmaking/image comparison
 This is used for tracking a user while they are not logged in
 and then that tracking can be saved to the user after they log in */
-router.use("/vendorSearchData", auth.tokenDecoder, vendorSearchData);
-router.use('/matchmaker', auth.tokenDecoder, photographerMatchmaker);
-router.use("/anonymousUserData", auth.tokenDecoder, anonymousUserData);
+router.use("/vendorSearchData", auth.tokenDecoder, auth.linkPreviouslyAnonymousUser, vendorSearchData);
+router.use('/matchmaker', auth.tokenDecoder, auth.linkPreviouslyAnonymousUser, photographerMatchmaker);
+router.use("/anonymousUserData", auth.tokenDecoder, auth.linkPreviouslyAnonymousUser, anonymousUserData);
 
 /* These routes must be protected with authentication, so the middleware is listed here. */
 router.use('/booking', auth.tokenDecoder, auth.noAnonymousUsers, auth.linkPreviouslyAnonymousUser, booking);
