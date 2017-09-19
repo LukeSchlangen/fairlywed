@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var pool = require('../modules/pg-pool');
 var request = require('request-promise');
+var emailSiteAdministrators = require('../modules/email-site-administrators');
 
 router.get('/getConnectUrl', async (req, res) => {
     var client = await pool.connect();
@@ -85,10 +86,12 @@ router.post('/authorizeStripeAccount', async (req, res) => {
                             'UPDATE vendors SET stripe_account_id=(SELECT id FROM stripe_account_id) ' +
                             'WHERE id=$4;',
                             [userId, stripeUserAuthenticationCredentials.stripe_user_id, stripeUserAuthenticationCredentials.refresh_token, stripeConnectVendorId]);
+                        // Send an email to administrators that a new user just connected Stripe
+                        emailSiteAdministrators('User with id ' + userId + ' just connected a Stripe account');
                         res.sendStatus(200);
-                    } catch (e) {
+                    } catch (err) {
                         console.log('Error adding stripe account to vendor', err);
-                        throw e;
+                        throw err;
                     }
                 } else {
                     console.error('Stripe livemode did not match environment. Environment is ', env, ' and livemode is ', stripeUserAuthenticationCredentials.livemode);
