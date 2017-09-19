@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var pool = require('../modules/pg-pool');
 var stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+var emailSiteAdministrators = require('../modules/email-site-administrators');
 
 router.post('/', async (req, res) => {
     var client = await pool.connect();
@@ -41,6 +42,7 @@ router.post('/', async (req, res) => {
 
                 SELECT *, (SELECT id FROM booking_temp_table) AS booking_id FROM subvendor_pricing_info;`,
                 [packageId, time, requests, longitude, latitude, clientUserId, subvendorId, locationName]);
+                emailSiteAdministrators('Client user with id ' + clientUserId + ' just attempted to book a wedding');
         } catch (e) {
             console.log('error making booking query', e);
             throw e;
@@ -64,19 +66,23 @@ router.post('/', async (req, res) => {
                     var success = await client.query(`WITH charge_id_table AS (INSERT INTO stripe_charge_attempts (response_object, was_successful) VALUES ($2, TRUE) RETURNING id)
                         UPDATE bookings SET stripe_charge_id=(SELECT id FROM charge_id_table) WHERE id=$1;`,
                         [booking.booking_id, JSON.stringify(charge)]);
+                    emailSiteAdministrators('Client user just successfully booked a wedding');
                 } catch (e) {
                     console.log('Error with stripe_charge_id INSERT or tying booking to stripe charge after success on creating stripe charge', e);
+                    emailSiteAdministrators('Client user just failed at attempt to book a wedding due to' + e);
                     throw e;
                 }
             } catch (e) {
                 await undoBooking('Error creating stripe charge', booking);
                 console.log('Error creating stripe charge', e);
+                emailSiteAdministrators('Client user just failed at attempt to book a wedding due to' + e);
                 try {
                     var success = await client.query(`WITH charge_id_table AS (INSERT INTO stripe_charge_attempts (response_object, was_successful) VALUES ($2, FALSE) RETURNING id)
                         UPDATE bookings SET stripe_charge_id=(SELECT id FROM charge_id_table) WHERE id=$1;`,
                         [booking.booking_id, JSON.stringify(e)]);
                 } catch (e) {
                     console.log('Error with stripe_charge_id INSERT or tying booking to stripe charge after success on creating stripe charge', e);
+                    emailSiteAdministrators('Client user just failed at attempt to book a wedding due to' + e);
                     throw e;
                 }
             }
@@ -86,6 +92,7 @@ router.post('/', async (req, res) => {
         }
     } catch (e) {
         console.log('error in booking', e);
+        emailSiteAdministrators('Client user just failed at attempt to book a wedding due to' + e);
         res.sendStatus(500);
     } finally {
         client && client.release && client.release();
@@ -101,9 +108,11 @@ async function undoBooking(reasonForUndo, bookingToUndo) {
             WHERE id=$1`, [bookingToUndo.subvendor_availability_id]);
         client.release();
         console.log('Booking created than undone due to ', reasonForUndo);
+        emailSiteAdministrators('Booking created then undone due to ' + reasonForUndo);
         return success;
     } catch (e) {
-        console.log('UNDO BOOKING FAILED!! Booking created than undone due to ', reasonForUndo, 'but undo failed meaning photographer may have been booked multiple times for the same date.');
+        console.log('UNDO BOOKING FAILED!! Booking created then undone due to ', reasonForUndo, 'but undo failed meaning photographer may have been booked multiple times for the same date. Failure was due to', e);
+        emailSiteAdministrators('UNDO BOOKING FAILED!! Booking created then undone due to ' + reasonForUndo + 'but undo failed meaning photographer may have been booked multiple times for the same date. Failure was due to' + e);
         throw e;
     }
 }
