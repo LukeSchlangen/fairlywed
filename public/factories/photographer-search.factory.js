@@ -21,7 +21,7 @@ app.factory("PhotographerSearchFactory", function (PackagesFactory, $http, $stat
         search.parameters.date = $stateParams.date ? new Date($stateParams.date) : saturdayOneYearFromNow();
         packages = PackagesFactory.packages;
         photographers = { list: [] };
-        search.parameters.subvendorId = $stateParams.subvendorId;
+        search.parameters.subvendorId = $stateParams.subvendorId ? $stateParams.subvendorId : search.parameters.subvendorId;
         updateCurrentSubvendorCurrentPackage();
     }
     // ------------------------------------------------------------------------------------ //
