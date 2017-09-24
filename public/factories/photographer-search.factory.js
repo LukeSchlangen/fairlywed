@@ -11,7 +11,6 @@ app.factory("PhotographerSearchFactory", function (PackagesFactory, $http, $stat
 
     // -- SETTING DEFAULT VALUES FOR SEARCH OR GETTING THEM FROM STATE PARAMETERS ROUTING -- //
     var search = {};
-    updateSearchParameters();
     function updateSearchParameters() {
         search.parameters = {};
         search.parameters.location = $stateParams.location || "Minneapolis, MN, USA";
@@ -28,8 +27,9 @@ app.factory("PhotographerSearchFactory", function (PackagesFactory, $http, $stat
 
     // -- RETURNING LIST OF PHOTOGRAPHERS BASED ON SEARCH PARAMETERS -- //
     function updatePhotographersList() {
+        updateSearchParameters();
         if (search.parameters.package && search.parameters.longitude && search.parameters.latitude) {
-            if(packages.list.length > 0) {
+            if (packages.list.length > 0) {
                 search.parameters.package = updatePackageBasedOnComponents(packages.list, search.parameters.package);
             }
             search.parameters.vendorType = 'photographer';
@@ -52,11 +52,9 @@ app.factory("PhotographerSearchFactory", function (PackagesFactory, $http, $stat
         var newStateParameters = angular.copy(search.parameters);
         newStateParameters.package = search.parameters.package;
         newStateParameters.date = stringifyDate(search.parameters.date);
-        if($stateParams) { // if $stateparams haven't loaded yet, don't fire transitions
-            $state.transitionTo($state.current.name, newStateParameters, { notify: false });
-            updateCurrentSubvendorCurrentPackage();
-            executeSearchChangedFunctions();
-        }
+        $state.transitionTo($state.current.name, newStateParameters, { notify: false });
+        updateCurrentSubvendorCurrentPackage();
+        executeSearchChangedFunctions();
     }
     // --------------------------------------------------------------- //
 
@@ -106,12 +104,12 @@ app.factory("PhotographerSearchFactory", function (PackagesFactory, $http, $stat
         }
     }
 
-    function onSearchParametersChanged (functionToExecuteOnSearchChange) {
+    function onSearchParametersChanged(functionToExecuteOnSearchChange) {
         functionsToExecuteOnSearchChange.push(functionToExecuteOnSearchChange);
     }
 
     function executeSearchChangedFunctions() {
-        functionsToExecuteOnSearchChange.forEach(function(individualFunction) {
+        functionsToExecuteOnSearchChange.forEach(function (individualFunction) {
             individualFunction();
         });
     }
@@ -126,19 +124,19 @@ app.factory("PhotographerSearchFactory", function (PackagesFactory, $http, $stat
     function updatePackageBasedOnComponents(packageList, currentPackageId) {
         if (packageComponents.numberOfHours && packageComponents.numberOfPhotographers) {
             // use current package components to determine package
-            for(var i = 0; i < packageList.length; i++) {
+            for (var i = 0; i < packageList.length; i++) {
                 packageList[i].engagement_session_is_included = !!packageList[i].engagement_session_is_included;
                 var numberOfPhotographersIsCorrect = packageComponents.numberOfPhotographers == packageList[i].number_of_photographers;
                 var numberOfHoursIsCorrect = packageComponents.numberOfHours == packageList[i].number_of_hours;
                 var engagementSessionIsIncludedIsCorrect = packageComponents.engagementSessionIsIncluded == packageList[i].engagement_session_is_included;
-                if(numberOfPhotographersIsCorrect && numberOfHoursIsCorrect && engagementSessionIsIncludedIsCorrect) {
+                if (numberOfPhotographersIsCorrect && numberOfHoursIsCorrect && engagementSessionIsIncludedIsCorrect) {
                     return packageList[i].id;
                 }
             }
         } else {
             // use current package to determine the components
-            for(var i = 0; i < packageList.length; i++) {
-                if(packageList[i].id == currentPackageId) {
+            for (var i = 0; i < packageList.length; i++) {
+                if (packageList[i].id == currentPackageId) {
                     packageComponents.numberOfPhotographers = packageList[i].number_of_photographers;
                     packageComponents.numberOfHours = packageList[i].number_of_hours;
                     packageComponents.engagementSessionIsIncluded = packageList[i].engagement_session_is_included;
