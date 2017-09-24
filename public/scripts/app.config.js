@@ -34,8 +34,7 @@ app.config(function ($stateProvider, $urlRouterProvider, $mdThemingProvider, Str
         })
         .state('photographers', {
             url: '/photographers/:subvendorId?package&location&longitude&latitude&date',
-            templateUrl: 'views/photographers/home.html',
-            abstract: true
+            templateUrl: 'views/photographers/home.html'
         })
         .state('photographers.about', {
             url: '/about',
