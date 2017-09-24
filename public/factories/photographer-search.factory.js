@@ -27,34 +27,36 @@ app.factory("PhotographerSearchFactory", function (PackagesFactory, $http, $stat
 
     // -- RETURNING LIST OF PHOTOGRAPHERS BASED ON SEARCH PARAMETERS -- //
     function updatePhotographersList() {
-        updateSearchParameters();
-        if (search.parameters.package && search.parameters.longitude && search.parameters.latitude) {
-            if (packages.list.length > 0) {
-                search.parameters.package = updatePackageBasedOnComponents(packages.list, search.parameters.package);
+        if ($stateParams) {
+            updateSearchParameters();
+            if (search.parameters.package && search.parameters.longitude && search.parameters.latitude) {
+                if (packages.list.length > 0) {
+                    search.parameters.package = updatePackageBasedOnComponents(packages.list, search.parameters.package);
+                }
+                search.parameters.vendorType = 'photographer';
+                var searchObject = angular.copy(search.parameters);
+                searchObject.date = pgFormatDate(searchObject.date);
+                $http({
+                    method: 'GET',
+                    url: '/vendorSearchData',
+                    params: { search: searchObject }
+                }).then(function (response) {
+                    photographers.list = response.data;
+                }).catch(function (err) {
+                    console.error('Error retreiving photographer data: ', err);
+                });
+            } else {
+                console.error("All photographer searches must have a package id, longitude, and latitude");
             }
-            search.parameters.vendorType = 'photographer';
-            var searchObject = angular.copy(search.parameters);
-            searchObject.date = pgFormatDate(searchObject.date);
-            $http({
-                method: 'GET',
-                url: '/vendorSearchData',
-                params: { search: searchObject }
-            }).then(function (response) {
-                photographers.list = response.data;
-            }).catch(function (err) {
-                console.error('Error retreiving photographer data: ', err);
-            });
-        } else {
-            console.error("All photographer searches must have a package id, longitude, and latitude");
-        }
 
-        // update route parameters based on search
-        var newStateParameters = angular.copy(search.parameters);
-        newStateParameters.package = search.parameters.package;
-        newStateParameters.date = stringifyDate(search.parameters.date);
-        $state.transitionTo($state.current.name, newStateParameters, { notify: false });
-        updateCurrentSubvendorCurrentPackage();
-        executeSearchChangedFunctions();
+            // update route parameters based on search
+            var newStateParameters = angular.copy(search.parameters);
+            newStateParameters.package = search.parameters.package;
+            newStateParameters.date = stringifyDate(search.parameters.date);
+            $state.transitionTo($state.current.name, newStateParameters, { notify: false });
+            updateCurrentSubvendorCurrentPackage();
+            executeSearchChangedFunctions();
+        }
     }
     // --------------------------------------------------------------- //
 
@@ -62,32 +64,34 @@ app.factory("PhotographerSearchFactory", function (PackagesFactory, $http, $stat
     var currentSubvendor = {};
 
     function getSubvendorProfileDetails() {
-        updateSearchParameters();
-        // Description
-        if (search.parameters.package && search.parameters.longitude && search.parameters.latitude && search.parameters.subvendorId) {
-            search.parameters.vendorType = 'photographer';
-            var searchObject = angular.copy(search.parameters);
-            searchObject.date = pgFormatDate(searchObject.date);
-            $http({
-                method: 'GET',
-                url: '/vendorSearchData/subvendorProfile',
-                params: { search: searchObject }
-            }).then(function (response) {
-                currentSubvendor.details = response.data;
-                updateCurrentSubvendorCurrentPackage();
-            }).catch(function (err) {
-                console.error('Error retreiving photographer profile data: ', err);
-            });
-        } else {
-            console.error("All photographer searches must have a package id, longitude, latitude, and subvendorId. Current object is:", search.parameters);
-        }
+        if ($stateParams) {
+            updateSearchParameters();
+            // Description
+            if (search.parameters.package && search.parameters.longitude && search.parameters.latitude && search.parameters.subvendorId) {
+                search.parameters.vendorType = 'photographer';
+                var searchObject = angular.copy(search.parameters);
+                searchObject.date = pgFormatDate(searchObject.date);
+                $http({
+                    method: 'GET',
+                    url: '/vendorSearchData/subvendorProfile',
+                    params: { search: searchObject }
+                }).then(function (response) {
+                    currentSubvendor.details = response.data;
+                    updateCurrentSubvendorCurrentPackage();
+                }).catch(function (err) {
+                    console.error('Error retreiving photographer profile data: ', err);
+                });
+            } else {
+                console.error("All photographer searches must have a package id, longitude, latitude, and subvendorId. Current object is:", search.parameters);
+            }
 
-        // update route parameters based on search
-        var newStateParameters = angular.copy(search.parameters);
-        newStateParameters.package = search.parameters.package;
-        newStateParameters.date = stringifyDate(search.parameters.date);
-        $state.transitionTo($state.current.name, newStateParameters, { notify: false });
-        updateCurrentSubvendorCurrentPackage();
+            // update route parameters based on search
+            var newStateParameters = angular.copy(search.parameters);
+            newStateParameters.package = search.parameters.package;
+            newStateParameters.date = stringifyDate(search.parameters.date);
+            $state.transitionTo($state.current.name, newStateParameters, { notify: false });
+            updateCurrentSubvendorCurrentPackage();
+        }
     }
     // ------------------------------------------------------------------------------------ //
 
