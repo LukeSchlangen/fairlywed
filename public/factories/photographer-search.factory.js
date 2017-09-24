@@ -52,9 +52,11 @@ app.factory("PhotographerSearchFactory", function (PackagesFactory, $http, $stat
         var newStateParameters = angular.copy(search.parameters);
         newStateParameters.package = search.parameters.package;
         newStateParameters.date = stringifyDate(search.parameters.date);
-        $state.transitionTo($state.current.name, newStateParameters, { notify: false });
-        updateCurrentSubvendorCurrentPackage();
-        executeSearchChangedFunctions();
+        if($stateParams) { // if $stateparams haven't loaded yet, don't fire transitions
+            $state.transitionTo($state.current.name, newStateParameters, { notify: false });
+            updateCurrentSubvendorCurrentPackage();
+            executeSearchChangedFunctions();
+        }
     }
     // --------------------------------------------------------------- //
 
