@@ -2,8 +2,8 @@ app.config(function ($stateProvider, $urlRouterProvider, $mdThemingProvider, Str
 
     StripeCheckoutProvider.defaults(stripeConfig);
     
-    // $locationProvider.hashPrefix(''); // by default '!'
-    // $locationProvider.html5Mode(true);
+    $locationProvider.hashPrefix(''); // by default '!'
+    $locationProvider.html5Mode(true);
 
     $urlRouterProvider.otherwise(function ($injector) {
 
@@ -19,6 +19,7 @@ app.config(function ($stateProvider, $urlRouterProvider, $mdThemingProvider, Str
     $urlRouterProvider.when('/', '/home/photographers');
     $urlRouterProvider.when('/home', '/home/photographers');
     $urlRouterProvider.when('/account', '/account/vendor');
+    $urlRouterProvider.when('/policies', '/policies/terms');
     $urlRouterProvider.when('/photographers/:subvendorId', '/photographers/:subvendorId/about');
     $urlRouterProvider.when('/account/vendor/details/:vendorId/subvendor/details/:subvendorId', '/account/vendor/details/:vendorId/subvendor/details/:subvendorId/about');
 
@@ -40,30 +41,30 @@ app.config(function ($stateProvider, $urlRouterProvider, $mdThemingProvider, Str
             url: '/about',
             templateUrl: 'views/photographers/about.html'
         })
-        .state('photographers.gallery', {
-            url: '/gallery',
-            templateUrl: 'views/photographers/gallery.html'
-        })
-        .state('photographers.booking', {
-            url: '/booking',
-            templateUrl: 'views/photographers/booking.html'
-        })
-        .state('home.videographers', {
-            url: '/videographers',
-            templateUrl: 'views/home/videographers.html'
-        })
-        .state('home.djs', {
-            url: '/djs',
-            templateUrl: 'views/home/djs.html'
-        })
+        // .state('photographers.gallery', {
+        //     url: '/gallery',
+        //     templateUrl: 'views/photographers/gallery.html'
+        // })
+        // .state('photographers.booking', {
+        //     url: '/booking',
+        //     templateUrl: 'views/photographers/booking.html'
+        // })
+        // .state('home.videographers', {
+        //     url: '/videographers',
+        //     templateUrl: 'views/home/videographers.html'
+        // })
+        // .state('home.djs', {
+        //     url: '/djs',
+        //     templateUrl: 'views/home/djs.html'
+        // })
         .state('account', {
             url: '/account',
             templateUrl: 'views/account/account.html'
         })
-        .state('account.client', {
-            url: '/client',
-            templateUrl: 'views/account/client.html'
-        })
+        // .state('account.client', {
+        //     url: '/client',
+        //     templateUrl: 'views/account/client.html'
+        // })
         .state('account.vendor', {
             url: '/vendor',
             templateUrl: 'views/account/vendor.html'
@@ -114,8 +115,48 @@ app.config(function ($stateProvider, $urlRouterProvider, $mdThemingProvider, Str
             url: '/vendor?vendorId&invitationToken',
             templateUrl: 'views/invitation/vendor.html'
         })
+        .state('policies', {
+            url: '/policies',
+            templateUrl: 'views/policies/home.html'
+        })
+        .state('policies.cookie', {
+            url: '/cookie',
+            templateUrl: 'views/policies/cookie.html'
+        })
+        .state('policies.contracts', {
+            url: '/contracts',
+            templateUrl: 'views/policies/contracts.html'
+        })
+        .state('policies.copyright', {
+            url: '/copyright',
+            templateUrl: 'views/policies/copyright.html'
+        })
+        .state('policies.nondiscrimination', {
+            url: '/nondiscrimination',
+            templateUrl: 'views/policies/nondiscrimination.html'
+        })
+        .state('policies.payment', {
+            url: '/payment',
+            templateUrl: 'views/policies/payment.html'
+        })
+        .state('policies.privacy', {
+            url: '/privacy',
+            templateUrl: 'views/policies/privacy.html'
+        })
+        .state('policies.terms', {
+            url: '/terms',
+            templateUrl: 'views/policies/terms.html'
+        })
+        .state('help', {
+            url: '/help',
+            templateUrl: 'views/help/home.html'
+        })
+        .state('help.faq', {
+            url: '/faq',
+            templateUrl: 'views/help/faq.html'
+        })
         .state('404', {
-            template: 'That is a 404'
+            templateUrl: 'views/404.html'
         });
 
 

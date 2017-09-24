@@ -1,3 +1,4 @@
+<span layout="row" flex layout-align="end center"><md-button class="md-raised" ng-click="vm.saveAllPackages(vm.subvendor.packageList)">Save Packages</md-button></span>
 <div ng-repeat="package in vm.subvendor.packageList">
     <div layout="row" flex>
         <span flex layout="row" layout-align="start center">{{package.name}}</span>
@@ -6,7 +7,7 @@
             <input ng-model="package.price">
         </md-input-container>
         <span layout="row" flex layout-align="center center"><md-checkbox class="md-secondary" ng-model="package.is_active">Is Offerred</md-checkbox></span>
-        <span layout="row" flex layout-align="end center"><md-button class="md-raised" ng-click="vm.savePackage(package)">Save</md-button></span>
     </div>
     <hr>
 </div>
+<span layout="row" flex layout-align="end center"><md-button class="md-raised" ng-click="vm.saveAllPackages(vm.subvendor.packageList)">Save Packages</md-button></span>

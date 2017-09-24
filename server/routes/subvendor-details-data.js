@@ -149,15 +149,30 @@ router.put('/', async (req, res) => {
     }
 });
 
-router.post('/upsertPackage', async (req, res) => {
+router.post('/upsertAllPackages', async (req, res) => {
     var userId = req.decodedToken.userSQLId;
     var subvendorId = req.headers.subvendor_id;
-    var packageObject = req.body;
+    var allPackagesArray = req.body;
+    var packagePromises = [];
+    try {
+        allPackagesArray.forEach(function(packageObject) {
+            packagePromises.push(upsertPackage(userId, subvendorId, packageObject));
+        });
+        var upsertComplete = await Promise.all(packagePromises);
+        res.sendStatus(200);
+    } catch(e) {
+        console.log(e);
+        res.sendStatus(500);
+    }
+});
+
+async function upsertPackage(userId, subvendorId, packageObject) {
     var client = await pool.connect();
+    packageObject.price = packageObject && packageObject.price ? packageObject.price.toString().replace(/\D/g,'') : null; // remove non-numeric, $1,234 becomes 1234
     try {
         if ((isNaN(packageObject.price) || packageObject.price == "") && packageObject.id) {
             // if package was removed
-            await client.query(`DELETE FROM subvendors_packages 
+            return client.query(`DELETE FROM subvendors_packages 
                 WHERE id = ( 
                 SELECT subvendors_packages.id 
                 FROM users_vendors 
@@ -168,7 +183,7 @@ router.post('/upsertPackage', async (req, res) => {
                 [userId, subvendorId, packageObject.id]);
         } else if (packageObject.id) {
             // if package was updated
-            await client.query(`UPDATE subvendors_packages 
+            return client.query(`UPDATE subvendors_packages 
                 SET price=$4, is_active=$5 
                 WHERE id = ( 
                 SELECT subvendors_packages.id 
@@ -181,7 +196,7 @@ router.post('/upsertPackage', async (req, res) => {
 
         } else if (!isNaN(Number(packageObject.price)) && !packageObject.price == "") {
             // new package was created
-            await client.query(`INSERT INTO subvendors_packages (subvendor_id, package_id, price, is_active)
+            return client.query(`INSERT INTO subvendors_packages (subvendor_id, package_id, price, is_active)
                 VALUES (
                     (SELECT subvendors.id  
                     FROM users_vendors 
@@ -194,18 +209,15 @@ router.post('/upsertPackage', async (req, res) => {
                     $5
                 );`,
                 [userId, subvendorId, packageObject.package_id, packageObject.price, !!packageObject.is_active]);
-        } else {
-            // attempt to create a new package, but price isn't valid
-            throw 'New package price was invalid: ' + packageObject.price;
         }
-        res.sendStatus(200);
+        
+        return Promise.resolve();
     } catch (e) {
         console.log('Error adding updating subvendor data, UPDATE SQL query task', e);
-        res.sendStatus(500);
     } finally {
         client && client.release && client.release();
     }
-});
+}
 
 // This route accepts an availability to change that includes, the subvendorId, availabilityStatus, and the day of the availability
 // If an array is passed in for the availability, the upsert will update all of the dates, allowing for mass changes

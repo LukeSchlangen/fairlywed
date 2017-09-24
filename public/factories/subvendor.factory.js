@@ -34,7 +34,7 @@ app.factory("SubvendorFactory", function ($http, AuthFactory, $stateParams, Vend
             previousAvailabilitySearchDate = selectedDate;
         } else {
             selectedDate = previousAvailabilitySearchDate;
-        }        
+        }
         return $http({
             method: 'GET',
             url: '/subvendorDetailsData/availability',
@@ -109,14 +109,14 @@ app.factory("SubvendorFactory", function ($http, AuthFactory, $stateParams, Vend
         });
     }
 
-    function updatePackage(packageToSave) {
+    function updateAllPackages(packagesToSave) {
         $http({
             method: 'POST',
-            url: '/subvendorDetailsData/upsertPackage',
+            url: '/subvendorDetailsData/upsertAllPackages',
             headers: {
                 subvendor_id: $stateParams.subvendorId
             },
-            data: packageToSave
+            data: packagesToSave
         }).then(function (response) {
             getPackagesList();
         }).catch(function (err) {
@@ -208,7 +208,7 @@ app.factory("SubvendorFactory", function ($http, AuthFactory, $stateParams, Vend
         getImagesList: getImagesList,
         subvendor: subvendor,
         updateDetails: updateDetails,
-        updatePackage: updatePackage,
+        updateAllPackages: updateAllPackages,
         updateAvailability: updateAvailability,
         saveImage: saveImage
     };
