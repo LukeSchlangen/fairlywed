@@ -20,6 +20,7 @@ app.config(function ($stateProvider, $urlRouterProvider, $mdThemingProvider, Str
     $urlRouterProvider.when('/home', '/home/photographers');
     $urlRouterProvider.when('/account', '/account/vendor');
     $urlRouterProvider.when('/policies', '/policies/terms');
+    $urlRouterProvider.when('/photographers/:subvendorId', '/photographers/:subvendorId/about');
     $urlRouterProvider.when('/account/vendor/details/:vendorId/subvendor/details/:subvendorId', '/account/vendor/details/:vendorId/subvendor/details/:subvendorId/about');
 
     $stateProvider
@@ -33,8 +34,29 @@ app.config(function ($stateProvider, $urlRouterProvider, $mdThemingProvider, Str
         })
         .state('photographers', {
             url: '/photographers/:subvendorId?package&location&longitude&latitude&date',
-            templateUrl: 'views/photographers/home.html'
+            templateUrl: 'views/photographers/home.html',
+            abstract: true
         })
+        .state('photographers.about', {
+            url: '/about',
+            templateUrl: 'views/photographers/about.html'
+        })
+        // .state('photographers.gallery', {
+        //     url: '/gallery',
+        //     templateUrl: 'views/photographers/gallery.html'
+        // })
+        // .state('photographers.booking', {
+        //     url: '/booking',
+        //     templateUrl: 'views/photographers/booking.html'
+        // })
+        // .state('home.videographers', {
+        //     url: '/videographers',
+        //     templateUrl: 'views/home/videographers.html'
+        // })
+        // .state('home.djs', {
+        //     url: '/djs',
+        //     templateUrl: 'views/home/djs.html'
+        // })
         .state('account', {
             url: '/account',
             templateUrl: 'views/account/account.html'

@@ -24,6 +24,7 @@ app.use('/account/vendor/details/:id', mainRoute);
 app.use('/account/vendor/details', mainRoute);
 app.use('/account/vendor', mainRoute);
 app.use('/account', mainRoute);
+app.use('/photographers/:id/about', mainRoute);
 app.use('/photographers/:id', mainRoute);
 app.use('/photographers', mainRoute);
 app.use('/policies/contracts', mainRoute);

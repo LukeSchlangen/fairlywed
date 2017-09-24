@@ -16,7 +16,7 @@ if (process.env.DATABASE_URL) {
     database: params.pathname.split('/')[1],
     ssl: true, // heroku requires ssl to be true
     max: 10, // max number of clients in the pool
-    idleTimeoutMillis: 3000, // how long a client is allowed to remain idle before being closed
+    idleTimeoutMillis: 30000, // how long a client is allowed to remain idle before being closed
   };
 
 } else {
@@ -27,7 +27,7 @@ if (process.env.DATABASE_URL) {
     port: process.env.DATABASE_PORT || 5432, //env var: PGPORT    
     database: process.env.DATABASE_NAME || 'fairlywed', //env var: PGDATABASE
     max: 10, // max number of clients in the pool
-    idleTimeoutMillis: 3000, // how long a client is allowed to remain idle before being closed
+    idleTimeoutMillis: 30000, // how long a client is allowed to remain idle before being closed
   };
 }
 
