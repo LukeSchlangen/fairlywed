@@ -10,11 +10,11 @@
 </div> -->
 
 <div class="top-section-image" background-image="{{vm.images.list[0].id}}"></div>
-<md-content class="md-padding" layout="column" layout-gt-sm="row" layout-fill>
+<md-content class="md-padding" layout="column" layout-gt-sm="row" layout-fill ng-show="vm.currentSubvendor.details.name">
     <md-card flex>
         <md-card-content flex>
             <md-card-title-text layout="row" layout-align="center center" class="cards-title">
-                <h3 class="md-headline main-card-title brand-font">{{vm.currentSubvendor.details.name}}</h3>
+                <h1 class="md-headline main-card-title brand-font">{{vm.currentSubvendor.details.name}}</h1>
             </md-card-title-text>
             <div class="cards-text">
                 {{vm.currentSubvendor.details.description}}
