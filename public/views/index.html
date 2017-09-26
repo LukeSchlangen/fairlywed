@@ -93,6 +93,7 @@
 
   <!-- Angular Controllers - Should have a matching directive -->
   <script src="components/auth/auth.controller.js"></script>
+  <script src="components/bride-loading/bride-loading.controller.js"></script>
   <script src="components/page-footer/page-footer.controller.js"></script>
   <script src="components/photographer-search/photographer-search.controller.js"></script>
   <script src="components/photographer-list/photographer-list.controller.js"></script>
@@ -103,6 +104,7 @@
 
   <!-- Angular Directives - Should have a matching controller -->
   <script src="components/auth/auth.directive.js"></script>
+  <script src="components/bride-loading/bride-loading.directive.js"></script>
   <script src="components/page-footer/page-footer.directive.js"></script>
   <script src="components/photographer-search/photographer-search.directive.js"></script>
   <script src="components/photographer-list/photographer-list.directive.js"></script>
@@ -196,7 +198,7 @@
     .fw-move-to-back {
       z-index: 0;
     }
-    
+
     .cards-text {
       padding-top: 20px;
       padding-bottom: 20px;
@@ -251,12 +253,12 @@
       background-position: center center;
     }
 
-    .page-not-found.top-section-image  {
+    .page-not-found.top-section-image {
       background-position: bottom right;
       background-image: url("assets/page-not-found.jpg");
     }
 
-    .photographer-vendor.top-section-image  {
+    .photographer-vendor.top-section-image {
       background-position: top left;
       background-image: url("assets/photographer-vendor-top-section-background.jpg");
     }
@@ -281,7 +283,7 @@
       margin-left: 0;
     }
 
-    md-card > md-card-title {
+    md-card>md-card-title {
       padding: 0px 16px;
     }
 
@@ -306,6 +308,11 @@
       max-height: 100%;
       max-width: 100%;
     }
+
+    .fill-container {
+        width: 100%;
+        height: 100%;
+    }
   </style>
 </head>
 
@@ -314,8 +321,9 @@
     <auth></auth>
   </span>
   <span class="fw-move-to-back">
-    <span ui-view></span>
+     <span ui-view></span>
   </span>
+  <bride-loading class="fill-container"></bride-loading>
   <page-footer></page-footer>
 </body>
 
