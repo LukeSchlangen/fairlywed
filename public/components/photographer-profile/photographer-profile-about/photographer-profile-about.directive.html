@@ -10,7 +10,7 @@
 </div> -->
 
 <div class="top-section-image" background-image="{{vm.images.list[0].id}}"></div>
-<md-content class="md-padding" layout="column" layout-gt-sm="row" layout-fill ng-show="vm.currentSubvendor.details.name">
+<md-content class="md-padding" layout="column" layout-gt-sm="row" layout-fill ng-if="vm.currentSubvendor.details.name">
     <md-card flex>
         <md-card-content flex>
             <md-card-title-text layout="row" layout-align="center center" class="cards-title">
