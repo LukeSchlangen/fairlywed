@@ -61,7 +61,7 @@ app.factory("PhotographerSearchFactory", function (PackagesFactory, $http, $stat
     // --------------------------------------------------------------- //
 
     // -- PROFILE VIEW CURRENT PHOTOGRAPHER INFROMATION RETREIVAL - MORE DETAILS ABOUT ONE PHOTOGRAPHER -- //
-    var currentSubvendor = {};
+    var currentSubvendor = { details: {} };
 
     function getSubvendorProfileDetails() {
         if ($stateParams) {
