@@ -11,16 +11,17 @@ app.factory("PhotographerSearchFactory", function (PackagesFactory, $http, $stat
 
     // -- SETTING DEFAULT VALUES FOR SEARCH OR GETTING THEM FROM STATE PARAMETERS ROUTING -- //
     var search = {};
+    search.parameters = {};
+
     function updateSearchParameters() {
-        search.parameters = {};
-        search.parameters.location = $stateParams.location || "Minneapolis, MN, USA";
-        search.parameters.longitude = $stateParams.longitude || -93.26501080000003;
-        search.parameters.latitude = $stateParams.latitude || 44.977753;
-        search.parameters.package = $stateParams.package ? $stateParams.package : setDefaultPackage();
-        search.parameters.date = $stateParams.date ? new Date($stateParams.date) : saturdayOneYearFromNow();
+        search.parameters.location = search.parameters.location || $stateParams.location || "Minneapolis, MN, USA";
+        search.parameters.longitude = search.parameters.longitude || $stateParams.longitude || -93.26501080000003;
+        search.parameters.latitude = search.parameters.latitude || $stateParams.latitude || 44.977753;
+        search.parameters.package = search.parameters.package || $stateParams.package ? $stateParams.package : setDefaultPackage();
+        search.parameters.date = search.parameters.date || $stateParams.date ? new Date($stateParams.date) : saturdayOneYearFromNow();
         packages = PackagesFactory.packages;
         photographers = { list: [] };
-        search.parameters.subvendorId = $stateParams.subvendorId ? $stateParams.subvendorId : search.parameters.subvendorId;
+        search.parameters.subvendorId = search.parameters.subvendorId || $stateParams.subvendorId ? $stateParams.subvendorId : search.parameters.subvendorId;
         updateCurrentSubvendorCurrentPackage();
     }
     // ------------------------------------------------------------------------------------ //
