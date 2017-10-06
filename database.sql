@@ -16,12 +16,12 @@ CREATE TABLE users (
 	is_active BOOLEAN DEFAULT TRUE NOT NULL
 );
 
-CREATE TABLE logs (
-	id SERIAL PRIMARY KEY,
-	created_at TIMESTAMP DEFAULT NOW() NOT NULL,
-	action VARCHAR(200) NOT NULL,
-	user_id INT NOT NULL REFERENCES users
-);
+-- CREATE TABLE logs (
+-- 	id SERIAL PRIMARY KEY,
+-- 	created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+-- 	action VARCHAR(200) NOT NULL,
+-- 	user_id INT NOT NULL REFERENCES users
+-- );
 
 CREATE TABLE stripe_accounts (
 	id SERIAL PRIMARY KEY,
