@@ -72,8 +72,7 @@ var linkPreviouslyAnonymousUser = async (req, res, next) => {
     if (req.headers.previously_anonymous_id_token) {
       var previousAnonymousUserDecodedToken = await admin.auth().verifyIdToken(req.headers.previously_anonymous_id_token);
       var previousAnonymousFirebaseUserId = previousAnonymousUserDecodedToken.user_id || previousAnonymousUserDecodedToken.uid;
-      var success = await client.query(`WITH log_update AS (UPDATE logs SET user_id=$1 WHERE user_id=(SELECT id FROM users WHERE firebase_user_id=$2) RETURNING id), 
-          subvendor_matchup_update AS (UPDATE subvendor_matchup SET user_id=$1 WHERE user_id=(SELECT id FROM users WHERE firebase_user_id=$2) RETURNING id)
+      var success = await client.query(`subvendor_matchup_update AS (UPDATE subvendor_matchup SET user_id=$1 WHERE user_id=(SELECT id FROM users WHERE firebase_user_id=$2) RETURNING id)
           DELETE FROM users WHERE id=(SELECT id FROM users WHERE firebase_user_id=$2)`,
         [req.decodedToken.userSQLId, previousAnonymousFirebaseUserId]);
     }
